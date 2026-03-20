@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>湖南方言与普通话转换台</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div class="bg-shape bg-shape-a"></div>
+  <div class="bg-shape bg-shape-b"></div>
+
+  <main class="page">
+    <header class="hero">
+      <p class="kicker">HUNAN DIALECT STUDIO</p>
+      <h1>湖南方言 · 普通话<br>互转实验台</h1>
+      <p class="hero-desc">支持双向转换、词库可编辑、实时生效。默认词条覆盖常见湖南口语表达，可继续按你习惯扩展。</p>
+    </header>
+
+    <section class="card converter-card">
+      <div class="toolbar">
+        <div class="mode" id="modeLabel">普通话 → 湖南方言</div>
+        <div class="toolbar-actions">
+          <button id="swapBtn" class="btn btn-secondary" type="button">切换方向</button>
+          <button id="convertBtn" class="btn btn-primary" type="button">立即转换</button>
+        </div>
+      </div>
+
+      <div class="panel-grid">
+        <div class="panel">
+          <label id="inputLabel" for="inputText">输入（普通话）</label>
+          <textarea id="inputText" placeholder="例如：你今天去哪里？吃饭了吗？"></textarea>
+        </div>
+        <div class="panel">
+          <label id="outputLabel" for="outputText">输出（湖南方言）</label>
+          <textarea id="outputText" readonly placeholder="转换结果显示在这里"></textarea>
+        </div>
+      </div>
+
+      <div class="samples">
+        <span>示例：</span>
+        <button class="chip" type="button" data-text="你在干嘛？今天忙不忙？">你在干嘛？今天忙不忙？</button>
+        <button class="chip" type="button" data-text="快一点，我等你很久了。">快一点，我等你很久了。</button>
+        <button class="chip" type="button" data-text="这件事真的假的？别骗我。">这件事真的假的？别骗我。</button>
+      </div>
+    </section>
+
+    <section class="card lexicon-card">
+      <div class="lexicon-head">
+        <h2>可编辑词库面板</h2>
+        <p id="countInfo">词条数量：0</p>
+      </div>
+
+      <form id="addForm" class="add-form">
+        <div class="field">
+          <label for="mandarinInput">普通话词</label>
+          <input id="mandarinInput" type="text" placeholder="例如：漂亮" required>
+        </div>
+        <div class="field">
+          <label for="hunanInput">湖南方言词</label>
+          <input id="hunanInput" type="text" placeholder="例如：标致" required>
+        </div>
+        <button class="btn btn-primary add-btn" type="submit">新增 / 覆盖词条</button>
+      </form>
+
+      <div class="lexicon-toolbar">
+        <input id="searchInput" type="text" placeholder="搜索词条（普通话或方言）">
+        <div class="lexicon-actions">
+          <button id="exportBtn" class="btn btn-ghost" type="button">导出词库 JSON</button>
+          <button id="importBtn" class="btn btn-ghost" type="button">导入词库 JSON</button>
+          <button id="resetBtn" class="btn btn-danger" type="button">恢复默认词库</button>
+        </div>
+        <input id="importFile" type="file" accept="application/json" hidden>
+      </div>
+
+      <div id="entryList" class="entry-list"></div>
+    </section>
+  </main>
+
+  <script src="./app.js"></script>
+</body>
+</html>
