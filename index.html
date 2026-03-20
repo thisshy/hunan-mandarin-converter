@@ -7,14 +7,34 @@
   <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-  <div class="bg-shape bg-shape-a"></div>
-  <div class="bg-shape bg-shape-b"></div>
+  <div class="grid-overlay"></div>
+  <div class="blob blob-a"></div>
+  <div class="blob blob-b"></div>
 
   <main class="page">
     <header class="hero">
-      <p class="kicker">HUNAN DIALECT STUDIO</p>
-      <h1>湖南方言 · 普通话<br>互转实验台</h1>
-      <p class="hero-desc">支持双向转换、词库可编辑、实时生效。默认词条按长沙常见口语和公开方言词表扩充。</p>
+      <div class="hero-topline">
+        <span class="brand-chip">CHANGSHA DIALECT LAB</span>
+        <span class="brand-chip ghost">拼音纠偏已启用</span>
+      </div>
+      <h1>湖南方言 · 普通话<br>智能互转台</h1>
+      <p class="hero-desc">
+        支持双向转换、同音错字识别、词库在线编辑和 JSON 导入导出。默认词库覆盖长沙常见口语场景，可继续扩展。
+      </p>
+      <div class="hero-metrics">
+        <div class="metric">
+          <strong>实时转换</strong>
+          <span>输入即翻译</span>
+        </div>
+        <div class="metric">
+          <strong>容错识别</strong>
+          <span>同音错字可匹配</span>
+        </div>
+        <div class="metric">
+          <strong>可持续维护</strong>
+          <span>词条可增删改</span>
+        </div>
+      </div>
     </header>
 
     <section class="card converter-card">
@@ -27,11 +47,11 @@
       </div>
 
       <div class="panel-grid">
-        <div class="panel">
+        <div class="panel input-panel">
           <label id="inputLabel" for="inputText">输入（普通话）</label>
           <textarea id="inputText" placeholder="例如：你今天去哪里？吃饭了吗？"></textarea>
         </div>
-        <div class="panel">
+        <div class="panel output-panel">
           <label id="outputLabel" for="outputText">输出（湖南方言）</label>
           <textarea id="outputText" readonly placeholder="转换结果显示在这里"></textarea>
         </div>
