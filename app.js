@@ -19,6 +19,10 @@ const exportBtn = document.getElementById("exportBtn");
 const importBtn = document.getElementById("importBtn");
 const importFile = document.getElementById("importFile");
 const resetBtn = document.getElementById("resetBtn");
+const pendingList = document.getElementById("pendingList");
+const pendingCountInfo = document.getElementById("pendingCountInfo");
+const approveAllBtn = document.getElementById("approveAllBtn");
+const rejectAllBtn = document.getElementById("rejectAllBtn");
 
 const defaultLexicon = {
   "你": "你咯",
@@ -219,6 +223,8 @@ const defaultLexicon = {
 let lexicon = loadLexicon();
 let mode = "m2h";
 const pinyinCache = new Map();
+const PENDING_STORAGE_KEY = "hunan_lexicon_pending_v1";
+let pendingQueue = loadPendingQueue();
 
 function loadLexicon() {
   try {
@@ -236,6 +242,99 @@ function loadLexicon() {
 
 function saveLexicon() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(lexicon));
+}
+
+function loadPendingQueue() {
+  try {
+    const raw = localStorage.getItem(PENDING_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    return [];
+  }
+}
+
+function savePendingQueue() {
+  localStorage.setItem(PENDING_STORAGE_KEY, JSON.stringify(pendingQueue));
+}
+
+function enqueueReview(action) {
+  pendingQueue.push({
+    id: `${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+    createdAt: new Date().toISOString(),
+    ...action
+  });
+  savePendingQueue();
+  renderPendingQueue();
+}
+
+function applyAction(action) {
+  if (action.type === "upsert") {
+    lexicon[action.mandarin] = action.hunan;
+  } else if (action.type === "delete") {
+    delete lexicon[action.mandarin];
+  }
+}
+
+function approveAction(actionId) {
+  const action = pendingQueue.find((item) => item.id === actionId);
+  if (!action) return;
+  applyAction(action);
+  pendingQueue = pendingQueue.filter((item) => item.id !== actionId);
+  savePendingQueue();
+  saveLexicon();
+  renderPendingQueue();
+  renderEntries();
+  convert();
+}
+
+function rejectAction(actionId) {
+  pendingQueue = pendingQueue.filter((item) => item.id !== actionId);
+  savePendingQueue();
+  renderPendingQueue();
+}
+
+function approveAllActions() {
+  pendingQueue.forEach((action) => applyAction(action));
+  pendingQueue = [];
+  savePendingQueue();
+  saveLexicon();
+  renderPendingQueue();
+  renderEntries();
+  convert();
+}
+
+function rejectAllActions() {
+  pendingQueue = [];
+  savePendingQueue();
+  renderPendingQueue();
+}
+
+function renderPendingQueue() {
+  if (!pendingList || !pendingCountInfo) return;
+  pendingCountInfo.textContent = `待审核：${pendingQueue.length}`;
+
+  if (!pendingQueue.length) {
+    pendingList.innerHTML = `<div class="pending-empty">暂无待审核变更。</div>`;
+    return;
+  }
+
+  pendingList.innerHTML = pendingQueue
+    .map((item) => {
+      const tag = item.type === "delete" ? "删除" : "新增/修改";
+      const rightText = item.type === "delete" ? "-" : item.hunan;
+      return `
+        <div class="pending-row">
+          <span class="pending-tag">${tag}</span>
+          <span>${item.mandarin}</span>
+          <span>${rightText}</span>
+          <button class="pending-approve" type="button" data-action="approve" data-id="${item.id}">通过</button>
+          <button class="pending-reject" type="button" data-action="reject" data-id="${item.id}">驳回</button>
+        </div>
+      `;
+    })
+    .join("");
 }
 
 function createReverseMap(source) {
@@ -439,10 +538,11 @@ function addOrUpdateEntry(event) {
   const hunan = hunanInput.value.trim();
   if (!mandarin || !hunan) return;
 
-  lexicon[mandarin] = hunan;
-  saveLexicon();
-  renderEntries();
-  convert();
+  enqueueReview({
+    type: "upsert",
+    mandarin,
+    hunan
+  });
 
   mandarinInput.value = "";
   hunanInput.value = "";
@@ -455,10 +555,10 @@ function removeEntry(event) {
   const key = decodeURIComponent(button.dataset.key || "");
   if (!key || !lexicon[key]) return;
 
-  delete lexicon[key];
-  saveLexicon();
-  renderEntries();
-  convert();
+  enqueueReview({
+    type: "delete",
+    mandarin: key
+  });
 }
 
 function exportLexicon() {
@@ -496,7 +596,10 @@ function importLexiconFromFile(file) {
       }
 
       lexicon = cleaned;
+      pendingQueue = [];
+      savePendingQueue();
       saveLexicon();
+      renderPendingQueue();
       renderEntries();
       convert();
       alert("词库导入成功。");
@@ -511,7 +614,10 @@ function importLexiconFromFile(file) {
 
 function resetLexicon() {
   lexicon = { ...defaultLexicon };
+  pendingQueue = [];
+  savePendingQueue();
   saveLexicon();
+  renderPendingQueue();
   renderEntries();
   convert();
 }
@@ -535,6 +641,14 @@ sampleBtns.forEach((btn) => {
 
 addForm.addEventListener("submit", addOrUpdateEntry);
 entryList.addEventListener("click", removeEntry);
+pendingList.addEventListener("click", (event) => {
+  const button = event.target.closest("button");
+  if (!button) return;
+  const action = button.dataset.action;
+  const actionId = button.dataset.id;
+  if (action === "approve") approveAction(actionId);
+  if (action === "reject") rejectAction(actionId);
+});
 searchInput.addEventListener("input", renderEntries);
 exportBtn.addEventListener("click", exportLexicon);
 importBtn.addEventListener("click", () => importFile.click());
@@ -543,6 +657,9 @@ importFile.addEventListener("change", () => {
   if (file) importLexiconFromFile(file);
 });
 resetBtn.addEventListener("click", resetLexicon);
+approveAllBtn.addEventListener("click", approveAllActions);
+rejectAllBtn.addEventListener("click", rejectAllActions);
 
 syncLabels();
+renderPendingQueue();
 renderEntries();

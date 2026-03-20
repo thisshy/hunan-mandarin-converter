@@ -18,22 +18,11 @@
         <span class="brand-chip ghost">拼音纠偏已启用</span>
       </div>
       <h1>湖南方言 · 普通话<br>智能互转台</h1>
-      <p class="hero-desc">
-        支持双向转换、同音错字识别、词库在线编辑和 JSON 导入导出。默认词库覆盖长沙常见口语场景，可继续扩展。
-      </p>
+      <p class="hero-desc">支持双向转换、同音错字识别、词库在线编辑和 JSON 导入导出。默认词库覆盖长沙常见口语场景，可继续扩展。</p>
       <div class="hero-metrics">
-        <div class="metric">
-          <strong>实时转换</strong>
-          <span>输入即翻译</span>
-        </div>
-        <div class="metric">
-          <strong>容错识别</strong>
-          <span>同音错字可匹配</span>
-        </div>
-        <div class="metric">
-          <strong>可持续维护</strong>
-          <span>词条可增删改</span>
-        </div>
+        <div class="metric"><strong>实时转换</strong><span>输入即翻译</span></div>
+        <div class="metric"><strong>容错识别</strong><span>同音错字可匹配</span></div>
+        <div class="metric"><strong>可持续维护</strong><span>词条可增删改（需审核）</span></div>
       </div>
     </header>
 
@@ -80,8 +69,18 @@
           <label for="hunanInput">湖南方言词</label>
           <input id="hunanInput" type="text" placeholder="例如：标致" required>
         </div>
-        <button class="btn btn-primary add-btn" type="submit">新增 / 覆盖词条</button>
+        <button class="btn btn-primary add-btn" type="submit">提交审核</button>
       </form>
+
+      <div class="review-head">
+        <h3>待审核变更</h3>
+        <p id="pendingCountInfo">待审核：0</p>
+      </div>
+      <div class="review-actions">
+        <button id="approveAllBtn" class="btn btn-ghost" type="button">全部通过</button>
+        <button id="rejectAllBtn" class="btn btn-danger" type="button">全部驳回</button>
+      </div>
+      <div id="pendingList" class="pending-list"></div>
 
       <div class="lexicon-toolbar">
         <input id="searchInput" type="text" placeholder="搜索词条（普通话或方言）">
