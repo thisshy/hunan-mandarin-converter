@@ -1,4 +1,4 @@
-const STORAGE_KEY = "hunan_lexicon_v3";
+﻿const STORAGE_KEY = "hunan_lexicon_v3";
 
 const inputText = document.getElementById("inputText");
 const outputText = document.getElementById("outputText");
@@ -23,6 +23,20 @@ const pendingList = document.getElementById("pendingList");
 const pendingCountInfo = document.getElementById("pendingCountInfo");
 const approveAllBtn = document.getElementById("approveAllBtn");
 const rejectAllBtn = document.getElementById("rejectAllBtn");
+const dialectSelect = document.getElementById("dialectSelect");
+const sceneSelect = document.getElementById("sceneSelect");
+const candidateList = document.getElementById("candidateList");
+const explainBox = document.getElementById("explainBox");
+const sceneTip = document.getElementById("sceneTip");
+const evaluationForm = document.getElementById("evaluationForm");
+const scoreAccuracy = document.getElementById("scoreAccuracy");
+const scoreNaturalness = document.getElementById("scoreNaturalness");
+const scoreUnderstandability = document.getElementById("scoreUnderstandability");
+const evaluationComment = document.getElementById("evaluationComment");
+const evaluationStats = document.getElementById("evaluationStats");
+const evaluationList = document.getElementById("evaluationList");
+const exportEvaluationBtn = document.getElementById("exportEvaluationBtn");
+const clearEvaluationBtn = document.getElementById("clearEvaluationBtn");
 
 const defaultLexicon = {
   "你": "你咯",
@@ -220,11 +234,181 @@ const defaultLexicon = {
   "再见": "回见"
 };
 
+const PENDING_STORAGE_KEY = "hunan_lexicon_pending_v1";
+const DIALECT_STORAGE_KEY = "hunan_dialect_mode_v1";
+const SCENE_STORAGE_KEY = "hunan_scene_mode_v1";
+const EVALUATION_STORAGE_KEY = "hunan_eval_records_v1";
+
+const DIALECT_PROFILES = {
+  changsha: {
+    name: "长沙口语",
+    lexicon: {
+      "朋友": "老倌",
+      "小孩子": "伢子"
+    }
+  },
+  xiangtan: {
+    name: "湘潭口语",
+    lexicon: {
+      "什么": "么里子",
+      "快点": "快点子",
+      "朋友": "伙计"
+    }
+  },
+  zhuzhou: {
+    name: "株洲口语",
+    lexicon: {
+      "吃饭": "呷饭",
+      "小孩子": "小伢子",
+      "厉害": "蛮扎实"
+    }
+  }
+};
+
+const SCENE_PROFILES = {
+  daily: {
+    name: "日常交流",
+    tip: "优先转换日常高频口语表达，适合聊天和家庭沟通。",
+    sampleM2H: "例如：你今天去哪里？吃饭了吗？",
+    sampleH2M: "例如：你咯今朝克哪凯？恰饭冒得？",
+    lexiconM2H: {},
+    lexiconH2M: {},
+    rulesM2H: [],
+    rulesH2M: []
+  },
+  campus: {
+    name: "校园沟通",
+    tip: "会优先启用“上课、下课、食堂、作业、考试”等校园场景词条。",
+    sampleM2H: "例如：我们下课后去食堂，然后去图书馆。",
+    sampleH2M: "例如：我哒下堂后克堂子，再克图书馆。",
+    lexiconM2H: {
+      "上课": "上堂",
+      "下课": "下堂",
+      "食堂": "堂子",
+      "作业": "作业",
+      "考试": "赶考"
+    },
+    lexiconH2M: {
+      "上堂": "上课",
+      "下堂": "下课",
+      "堂子": "食堂",
+      "赶考": "考试"
+    },
+    rulesM2H: [
+      { name: "校园问候", pattern: /老师您好/g, replacement: "老师好咯" },
+      { name: "去上课短句", pattern: /去上课/g, replacement: "克上堂" }
+    ],
+    rulesH2M: [
+      { name: "校园问候回译", pattern: /老师好咯/g, replacement: "老师您好" },
+      { name: "去上课短句回译", pattern: /克上堂/g, replacement: "去上课" }
+    ]
+  },
+  travel: {
+    name: "文旅问路",
+    tip: "会强化问路、景点和交通相关词句，适合游客交流。",
+    sampleM2H: "例如：请问橘子洲在哪里？地铁怎么坐？",
+    sampleH2M: "例如：请问橘子洲在哪凯？地铁啷个坐？",
+    lexiconM2H: {
+      "景区": "景点",
+      "地铁": "地铁",
+      "公交车": "公交",
+      "导航": "导航"
+    },
+    lexiconH2M: {
+      "哪凯": "哪里",
+      "公交": "公交车"
+    },
+    rulesM2H: [
+      { name: "问路句式", pattern: /请问(.+?)在哪里/g, replacement: "请问$1在哪凯" },
+      { name: "路线询问", pattern: /怎么走/g, replacement: "啷个走" }
+    ],
+    rulesH2M: [
+      { name: "问路句式回译", pattern: /在哪凯/g, replacement: "在哪里" },
+      { name: "路线询问回译", pattern: /啷个走/g, replacement: "怎么走" }
+    ]
+  },
+  video: {
+    name: "短视频文案",
+    tip: "会偏向口语化、情绪化表达，适合短视频标题和台词草稿。",
+    sampleM2H: "例如：兄弟们点个赞，马上开播！",
+    sampleH2M: "例如：兄弟们点个赞咯，立马开播！",
+    lexiconM2H: {
+      "点赞": "点个赞",
+      "评论": "留言",
+      "直播": "开播",
+      "马上": "立马"
+    },
+    lexiconH2M: {
+      "开播": "直播",
+      "留言": "评论"
+    },
+    rulesM2H: [
+      { name: "视频开场", pattern: /大家好/g, replacement: "各位老铁好咯" },
+      { name: "互动引导", pattern: /点个赞/g, replacement: "点个赞咯" }
+    ],
+    rulesH2M: [
+      { name: "视频开场回译", pattern: /各位老铁好咯/g, replacement: "大家好" },
+      { name: "互动引导回译", pattern: /点个赞咯/g, replacement: "点个赞" }
+    ]
+  }
+};
+
+const COMMON_RULES = {
+  m2h: [
+    { name: "高频句式-你在干什么", pattern: /你在干(嘛|吗|什么)/g, replacement: "你在搞么子" },
+    { name: "高频句式-怎么办", pattern: /怎么办/g, replacement: "啷个搞" },
+    { name: "高频句式-真的假的", pattern: /真的假的/g, replacement: "港真啵" },
+    { name: "高频句式-别着急", pattern: /别着急/g, replacement: "莫急莫慌" },
+    { name: "高频句式-快一点", pattern: /快一点/g, replacement: "搞快点" },
+    { name: "高频句式-没关系", pattern: /没关系/g, replacement: "冒关系" }
+  ],
+  h2m: [
+    { name: "高频句式回译-搞么子", pattern: /你在搞么子/g, replacement: "你在干什么" },
+    { name: "高频句式回译-啷个搞", pattern: /啷个搞/g, replacement: "怎么办" },
+    { name: "高频句式回译-港真啵", pattern: /港真啵/g, replacement: "真的假的" },
+    { name: "高频句式回译-莫急莫慌", pattern: /莫急莫慌/g, replacement: "别着急" },
+    { name: "高频句式回译-搞快点", pattern: /搞快点/g, replacement: "快一点" },
+    { name: "高频句式回译-冒关系", pattern: /冒关系/g, replacement: "没关系" }
+  ]
+};
+
 let lexicon = loadLexicon();
 let mode = "m2h";
 const pinyinCache = new Map();
-const PENDING_STORAGE_KEY = "hunan_lexicon_pending_v1";
 let pendingQueue = loadPendingQueue();
+let selectedDialect = loadPreference(DIALECT_STORAGE_KEY, "changsha");
+let selectedScene = loadPreference(SCENE_STORAGE_KEY, "daily");
+let evaluations = loadEvaluations();
+let currentCandidates = [];
+
+if (!DIALECT_PROFILES[selectedDialect]) {
+  selectedDialect = "changsha";
+}
+if (!SCENE_PROFILES[selectedScene]) {
+  selectedScene = "daily";
+}
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function loadPreference(key, fallback) {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw || fallback;
+  } catch (error) {
+    return fallback;
+  }
+}
+
+function savePreference(key, value) {
+  localStorage.setItem(key, value);
+}
 
 function loadLexicon() {
   try {
@@ -257,6 +441,47 @@ function loadPendingQueue() {
 
 function savePendingQueue() {
   localStorage.setItem(PENDING_STORAGE_KEY, JSON.stringify(pendingQueue));
+}
+
+function loadEvaluations() {
+  try {
+    const raw = localStorage.getItem(EVALUATION_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    return [];
+  }
+}
+
+function saveEvaluations() {
+  localStorage.setItem(EVALUATION_STORAGE_KEY, JSON.stringify(evaluations));
+}
+
+function getDialectProfile() {
+  return DIALECT_PROFILES[selectedDialect] || DIALECT_PROFILES.changsha;
+}
+
+function getSceneProfile() {
+  return SCENE_PROFILES[selectedScene] || SCENE_PROFILES.daily;
+}
+
+function getActiveForwardLexicon() {
+  const dialectLexicon = getDialectProfile().lexicon || {};
+  const sceneLexicon = getSceneProfile().lexiconM2H || {};
+  return {
+    ...lexicon,
+    ...dialectLexicon,
+    ...sceneLexicon
+  };
+}
+
+function getActiveReverseLexicon() {
+  const forward = getActiveForwardLexicon();
+  return {
+    ...createReverseMap(forward),
+    ...(getSceneProfile().lexiconH2M || {})
+  };
 }
 
 function enqueueReview(action) {
@@ -327,8 +552,8 @@ function renderPendingQueue() {
       return `
         <div class="pending-row">
           <span class="pending-tag">${tag}</span>
-          <span>${item.mandarin}</span>
-          <span>${rightText}</span>
+          <span>${escapeHtml(item.mandarin)}</span>
+          <span>${escapeHtml(rightText)}</span>
           <button class="pending-approve" type="button" data-action="approve" data-id="${item.id}">通过</button>
           <button class="pending-reject" type="button" data-action="reject" data-id="${item.id}">驳回</button>
         </div>
@@ -343,10 +568,6 @@ function createReverseMap(source) {
     result[hunan] = mandarin;
   });
   return result;
-}
-
-function escapeRegex(value) {
-  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
 function isChineseText(text) {
@@ -440,10 +661,34 @@ function buildEntries(dictionary) {
     }));
 }
 
-function replaceByDictionaryWithPinyinFallback(text, dictionary) {
+function applyRulesWithTrace(text, rules) {
+  let output = text;
+  const traces = [];
+  rules.forEach((rule) => {
+    let hitCount = 0;
+    output = output.replace(rule.pattern, (...args) => {
+      hitCount += 1;
+      return typeof rule.replacement === "function"
+        ? rule.replacement(...args)
+        : rule.replacement;
+    });
+    if (hitCount > 0) {
+      traces.push(`${rule.name}×${hitCount}`);
+    }
+  });
+  return {
+    text: output,
+    traces
+  };
+}
+
+function replaceByDictionaryWithPinyinFallbackDetailed(text, dictionary, options = {}) {
+  const { usePinyin = true } = options;
   const entries = buildEntries(dictionary);
   let index = 0;
   let output = "";
+  let exactHits = 0;
+  let pinyinHits = 0;
 
   while (index < text.length) {
     let matched = false;
@@ -455,15 +700,17 @@ function replaceByDictionaryWithPinyinFallback(text, dictionary) {
       if (segment === entry.key) {
         output += entry.value;
         index += entry.length;
+        exactHits += 1;
         matched = true;
         break;
       }
 
-      if (!entry.pinyin || !isChineseText(segment)) continue;
+      if (!usePinyin || !entry.pinyin || !isChineseText(segment)) continue;
       const segmentPinyin = getPinyinNormalized(segment);
       if (segmentPinyin && isPinyinNear(segmentPinyin, entry.pinyin)) {
         output += entry.value;
         index += entry.length;
+        pinyinHits += 1;
         matched = true;
         break;
       }
@@ -475,33 +722,173 @@ function replaceByDictionaryWithPinyinFallback(text, dictionary) {
     }
   }
 
-  return output;
+  return {
+    text: output,
+    exactHits,
+    pinyinHits
+  };
+}
+
+function uniqueCandidates(candidates) {
+  const seen = new Set();
+  return candidates.filter((item) => {
+    const normalized = item.text.trim();
+    if (!normalized || seen.has(normalized)) return false;
+    seen.add(normalized);
+    return true;
+  });
+}
+
+function buildCandidateResults(source) {
+  const scene = getSceneProfile();
+  const dialect = getDialectProfile();
+  const commonRules = mode === "m2h" ? COMMON_RULES.m2h : COMMON_RULES.h2m;
+  const sceneRules = mode === "m2h" ? scene.rulesM2H : scene.rulesH2M;
+  const allRules = [...commonRules, ...sceneRules];
+
+  if (mode === "m2h") {
+    const primaryRuleResult = applyRulesWithTrace(source, allRules);
+    const primary = replaceByDictionaryWithPinyinFallbackDetailed(
+      primaryRuleResult.text,
+      getActiveForwardLexicon(),
+      { usePinyin: true }
+    );
+    const strict = replaceByDictionaryWithPinyinFallbackDetailed(
+      primaryRuleResult.text,
+      getActiveForwardLexicon(),
+      { usePinyin: false }
+    );
+    const baseRuleResult = applyRulesWithTrace(source, commonRules);
+    const base = replaceByDictionaryWithPinyinFallbackDetailed(
+      baseRuleResult.text,
+      lexicon,
+      { usePinyin: true }
+    );
+
+    return {
+      primary: primary.text,
+      candidates: uniqueCandidates([
+        { name: "主推荐（场景+容错）", text: primary.text },
+        { name: "严格映射（无拼音容错）", text: strict.text },
+        { name: "通用口语版（基础词库）", text: base.text }
+      ]),
+      meta: {
+        dialect: dialect.name,
+        scene: scene.name,
+        exactHits: primary.exactHits,
+        pinyinHits: primary.pinyinHits,
+        ruleHits: primaryRuleResult.traces
+      }
+    };
+  }
+
+  const activeReverseLexicon = getActiveReverseLexicon();
+  const baseReverseLexicon = createReverseMap(lexicon);
+  const primaryRuleResult = applyRulesWithTrace(source, allRules);
+  const primary = replaceByDictionaryWithPinyinFallbackDetailed(
+    primaryRuleResult.text,
+    activeReverseLexicon,
+    { usePinyin: true }
+  );
+  const strict = replaceByDictionaryWithPinyinFallbackDetailed(
+    primaryRuleResult.text,
+    activeReverseLexicon,
+    { usePinyin: false }
+  );
+  const baseRuleResult = applyRulesWithTrace(source, commonRules);
+  const base = replaceByDictionaryWithPinyinFallbackDetailed(
+    baseRuleResult.text,
+    baseReverseLexicon,
+    { usePinyin: true }
+  );
+
+  return {
+    primary: primary.text,
+    candidates: uniqueCandidates([
+      { name: "主推荐（场景+容错）", text: primary.text },
+      { name: "严格映射（无拼音容错）", text: strict.text },
+      { name: "通用回译版（基础词库）", text: base.text }
+    ]),
+    meta: {
+      dialect: dialect.name,
+      scene: scene.name,
+      exactHits: primary.exactHits,
+      pinyinHits: primary.pinyinHits,
+      ruleHits: primaryRuleResult.traces
+    }
+  };
+}
+
+function renderCandidateList(candidates) {
+  if (!candidateList) return;
+  currentCandidates = candidates;
+
+  if (!candidates.length) {
+    candidateList.innerHTML = `<div class="candidate-empty">暂无候选表达。</div>`;
+    return;
+  }
+
+  candidateList.innerHTML = candidates
+    .map((item, index) => `
+      <div class="candidate-row">
+        <span class="candidate-rank">#${index + 1}</span>
+        <span class="candidate-text">${escapeHtml(item.name)}：${escapeHtml(item.text)}</span>
+        <button class="candidate-apply" type="button" data-index="${index}">使用</button>
+      </div>
+    `)
+    .join("");
+}
+
+function renderExplain(meta) {
+  if (!explainBox) return;
+  const ruleText = meta.ruleHits.length ? meta.ruleHits.join("、") : "无";
+  explainBox.innerHTML = `
+    <div>当前方向：${mode === "m2h" ? "普通话 → 方言" : "方言 → 普通话"}</div>
+    <div>方言子区域：${escapeHtml(meta.dialect)}｜场景：${escapeHtml(meta.scene)}</div>
+    <div>精确命中：${meta.exactHits} 次｜拼音容错命中：${meta.pinyinHits} 次</div>
+    <div>规则命中：${escapeHtml(ruleText)}</div>
+  `;
 }
 
 function convert() {
   const source = inputText.value.trim();
   if (!source) {
     outputText.value = "";
+    renderCandidateList([]);
+    if (explainBox) {
+      explainBox.textContent = "将展示匹配词条数量、拼音容错命中数和规则命中情况。";
+    }
     return;
   }
 
-  const reverseLexicon = createReverseMap(lexicon);
-  outputText.value = mode === "m2h"
-    ? replaceByDictionaryWithPinyinFallback(source, lexicon)
-    : replaceByDictionaryWithPinyinFallback(source, reverseLexicon);
+  const result = buildCandidateResults(source);
+  outputText.value = result.primary;
+  renderCandidateList(result.candidates);
+  renderExplain(result.meta);
 }
 
 function syncLabels() {
+  const dialectName = getDialectProfile().name;
+  const scene = getSceneProfile();
   if (mode === "m2h") {
-    modeLabel.textContent = "普通话 → 湖南方言";
+    modeLabel.textContent = `普通话 → ${dialectName}`;
     inputLabel.textContent = "输入（普通话）";
-    outputLabel.textContent = "输出（湖南方言）";
-    inputText.placeholder = "例如：你今天去哪里？吃饭了吗？";
+    outputLabel.textContent = `输出（${dialectName}）`;
+    inputText.placeholder = scene.sampleM2H;
   } else {
-    modeLabel.textContent = "湖南方言 → 普通话";
-    inputLabel.textContent = "输入（湖南方言）";
+    modeLabel.textContent = `${dialectName} → 普通话`;
+    inputLabel.textContent = `输入（${dialectName}）`;
     outputLabel.textContent = "输出（普通话）";
-    inputText.placeholder = "例如：你咯今朝克哪凯？恰饭冒得？";
+    inputText.placeholder = scene.sampleH2M;
+  }
+}
+
+function syncContextState() {
+  const scene = getSceneProfile();
+  if (dialectSelect) dialectSelect.value = selectedDialect;
+  if (sceneSelect) sceneSelect.value = selectedScene;
+  if (sceneTip) {
+    sceneTip.textContent = `当前场景：${scene.name}。${scene.tip}`;
   }
 }
 
@@ -524,8 +911,8 @@ function renderEntries() {
   entryList.innerHTML = entries
     .map(([mandarin, hunan]) => `
       <div class="entry-row">
-        <span>${mandarin}</span>
-        <span>${hunan}</span>
+        <span>${escapeHtml(mandarin)}</span>
+        <span>${escapeHtml(hunan)}</span>
         <button class="entry-delete" type="button" data-key="${encodeURIComponent(mandarin)}">删除</button>
       </div>
     `)
@@ -561,16 +948,20 @@ function removeEntry(event) {
   });
 }
 
-function exportLexicon() {
-  const blob = new Blob([JSON.stringify(lexicon, null, 2)], { type: "application/json" });
+function downloadJson(payload, filename) {
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = "hunan-lexicon.json";
+  a.download = filename;
   document.body.appendChild(a);
   a.click();
   a.remove();
   URL.revokeObjectURL(url);
+}
+
+function exportLexicon() {
+  downloadJson(lexicon, "hunan-lexicon.json");
 }
 
 function importLexiconFromFile(file) {
@@ -622,11 +1013,120 @@ function resetLexicon() {
   convert();
 }
 
+function clampScore(value) {
+  const parsed = Number(value);
+  if (!Number.isFinite(parsed)) return 3;
+  return Math.min(5, Math.max(1, Math.round(parsed)));
+}
+
+function saveEvaluation(event) {
+  event.preventDefault();
+  const source = inputText.value.trim();
+  const output = outputText.value.trim();
+
+  if (!source || !output) {
+    alert("请先输入并完成一次转换，再保存评测。");
+    return;
+  }
+
+  const record = {
+    id: `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+    createdAt: new Date().toISOString(),
+    mode,
+    dialect: selectedDialect,
+    scene: selectedScene,
+    source,
+    output,
+    accuracy: clampScore(scoreAccuracy.value),
+    naturalness: clampScore(scoreNaturalness.value),
+    understandability: clampScore(scoreUnderstandability.value),
+    comment: evaluationComment.value.trim()
+  };
+
+  evaluations.unshift(record);
+  if (evaluations.length > 200) {
+    evaluations = evaluations.slice(0, 200);
+  }
+  saveEvaluations();
+  renderEvaluationStats();
+  renderEvaluationList();
+  evaluationComment.value = "";
+}
+
+function formatTime(isoString) {
+  try {
+    return new Date(isoString).toLocaleString("zh-CN", { hour12: false });
+  } catch (error) {
+    return isoString;
+  }
+}
+
+function renderEvaluationStats() {
+  if (!evaluationStats) return;
+  if (!evaluations.length) {
+    evaluationStats.textContent = "暂无评测记录";
+    return;
+  }
+
+  const total = evaluations.length;
+  const sum = evaluations.reduce((acc, item) => {
+    acc.accuracy += item.accuracy || 0;
+    acc.naturalness += item.naturalness || 0;
+    acc.understandability += item.understandability || 0;
+    return acc;
+  }, { accuracy: 0, naturalness: 0, understandability: 0 });
+
+  evaluationStats.textContent =
+    `共${total}条评测｜准确性 ${(sum.accuracy / total).toFixed(2)}｜自然度 ${(sum.naturalness / total).toFixed(2)}｜可理解性 ${(sum.understandability / total).toFixed(2)}`;
+}
+
+function renderEvaluationList() {
+  if (!evaluationList) return;
+  if (!evaluations.length) {
+    evaluationList.innerHTML = `<div class="entry-empty">暂无历史评测。</div>`;
+    return;
+  }
+
+  evaluationList.innerHTML = evaluations
+    .slice(0, 20)
+    .map((item) => {
+      const dialectName = DIALECT_PROFILES[item.dialect]
+        ? DIALECT_PROFILES[item.dialect].name
+        : item.dialect;
+      const sceneName = SCENE_PROFILES[item.scene]
+        ? SCENE_PROFILES[item.scene].name
+        : item.scene;
+      const comment = item.comment ? `备注：${escapeHtml(item.comment)}` : "备注：无";
+      return `
+        <div class="evaluation-row">
+          <div class="evaluation-meta">${escapeHtml(formatTime(item.createdAt))}｜${item.mode === "m2h" ? "普通话→方言" : "方言→普通话"}｜${escapeHtml(dialectName)}｜${escapeHtml(sceneName)}</div>
+          <div class="evaluation-score">准确性 ${item.accuracy} / 自然度 ${item.naturalness} / 可理解性 ${item.understandability}</div>
+          <div class="evaluation-comment-text">${comment}</div>
+        </div>
+      `;
+    })
+    .join("");
+}
+
+function exportEvaluations() {
+  downloadJson(evaluations, "hunan-evaluation-records.json");
+}
+
+function clearEvaluations() {
+  if (!confirm("确定清空全部评测记录吗？此操作不可撤销。")) return;
+  evaluations = [];
+  saveEvaluations();
+  renderEvaluationStats();
+  renderEvaluationList();
+}
+
 swapBtn.addEventListener("click", () => {
   mode = mode === "m2h" ? "h2m" : "m2h";
   inputText.value = "";
   outputText.value = "";
+  renderCandidateList([]);
   syncLabels();
+  convert();
 });
 
 convertBtn.addEventListener("click", convert);
@@ -660,6 +1160,50 @@ resetBtn.addEventListener("click", resetLexicon);
 approveAllBtn.addEventListener("click", approveAllActions);
 rejectAllBtn.addEventListener("click", rejectAllActions);
 
+if (dialectSelect) {
+  dialectSelect.addEventListener("change", () => {
+    selectedDialect = dialectSelect.value;
+    savePreference(DIALECT_STORAGE_KEY, selectedDialect);
+    syncLabels();
+    syncContextState();
+    convert();
+  });
+}
+
+if (sceneSelect) {
+  sceneSelect.addEventListener("change", () => {
+    selectedScene = sceneSelect.value;
+    savePreference(SCENE_STORAGE_KEY, selectedScene);
+    syncLabels();
+    syncContextState();
+    convert();
+  });
+}
+
+if (candidateList) {
+  candidateList.addEventListener("click", (event) => {
+    const button = event.target.closest(".candidate-apply");
+    if (!button) return;
+    const index = Number(button.dataset.index);
+    if (!Number.isInteger(index) || !currentCandidates[index]) return;
+    outputText.value = currentCandidates[index].text;
+  });
+}
+
+if (evaluationForm) {
+  evaluationForm.addEventListener("submit", saveEvaluation);
+}
+if (exportEvaluationBtn) {
+  exportEvaluationBtn.addEventListener("click", exportEvaluations);
+}
+if (clearEvaluationBtn) {
+  clearEvaluationBtn.addEventListener("click", clearEvaluations);
+}
+
 syncLabels();
+syncContextState();
 renderPendingQueue();
 renderEntries();
+renderEvaluationStats();
+renderEvaluationList();
+renderCandidateList([]);

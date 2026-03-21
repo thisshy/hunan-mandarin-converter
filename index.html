@@ -35,6 +35,30 @@
         </div>
       </div>
 
+      <div class="context-grid">
+        <div class="field">
+          <label for="dialectSelect">方言子区域</label>
+          <select id="dialectSelect">
+            <option value="changsha">长沙口语（默认）</option>
+            <option value="xiangtan">湘潭口语</option>
+            <option value="zhuzhou">株洲口语</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="sceneSelect">使用场景</label>
+          <select id="sceneSelect">
+            <option value="daily">日常交流</option>
+            <option value="campus">校园沟通</option>
+            <option value="travel">文旅问路</option>
+            <option value="video">短视频文案</option>
+          </select>
+        </div>
+      </div>
+
+      <div id="sceneTip" class="scene-tip">
+        当前场景：日常交流。系统会优先使用该场景下的高频词句规则。
+      </div>
+
       <div class="panel-grid">
         <div class="panel input-panel">
           <label id="inputLabel" for="inputText">输入（普通话）</label>
@@ -46,11 +70,61 @@
         </div>
       </div>
 
+      <div class="insight-grid">
+        <div class="insight-box">
+          <h3>候选表达</h3>
+          <div id="candidateList" class="candidate-list">
+            <div class="candidate-empty">输入内容后将显示多候选转换结果。</div>
+          </div>
+        </div>
+        <div class="insight-box">
+          <h3>转换依据</h3>
+          <div id="explainBox" class="explain-box">
+            将展示匹配词条数量、拼音容错命中数和规则命中情况。
+          </div>
+        </div>
+      </div>
+
       <div class="samples">
         <span>示例：</span>
         <button class="chip" type="button" data-text="你在干嘛？今天忙不忙？">你在干嘛？今天忙不忙？</button>
         <button class="chip" type="button" data-text="快一点，我等你很久了。">快一点，我等你很久了。</button>
         <button class="chip" type="button" data-text="这件事真的假的？别骗我。">这件事真的假的？别骗我。</button>
+      </div>
+    </section>
+
+    <section class="card evaluation-card">
+      <div class="lexicon-head">
+        <h2>转换效果评测记录</h2>
+        <p id="evaluationStats">暂无评测记录</p>
+      </div>
+
+      <form id="evaluationForm" class="evaluation-form">
+        <div class="field">
+          <label for="scoreAccuracy">准确性（1-5）</label>
+          <input id="scoreAccuracy" type="number" min="1" max="5" value="4" required>
+        </div>
+        <div class="field">
+          <label for="scoreNaturalness">自然度（1-5）</label>
+          <input id="scoreNaturalness" type="number" min="1" max="5" value="4" required>
+        </div>
+        <div class="field">
+          <label for="scoreUnderstandability">可理解性（1-5）</label>
+          <input id="scoreUnderstandability" type="number" min="1" max="5" value="4" required>
+        </div>
+        <div class="field field-wide">
+          <label for="evaluationComment">评测备注（可选）</label>
+          <textarea id="evaluationComment" class="evaluation-comment" placeholder="例如：场景词命中较好，但个别句式还不自然。"></textarea>
+        </div>
+        <div class="evaluation-actions">
+          <button class="btn btn-primary" type="submit">保存本次评测</button>
+          <button id="exportEvaluationBtn" class="btn btn-ghost" type="button">导出评测 JSON</button>
+          <button id="clearEvaluationBtn" class="btn btn-danger" type="button">清空评测</button>
+        </div>
+      </form>
+
+      <div id="evaluationList" class="evaluation-list">
+        <div class="entry-empty">暂无历史评测。</div>
       </div>
     </section>
 
