@@ -1,0 +1,12 @@
+﻿{
+  "name": "hunan-mandarin-converter",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Hunan dialect converter with backend review workflow",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

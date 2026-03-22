@@ -1,11 +1,5 @@
-function resolveApiBase() {
-  const config = window.APP_CONFIG || {};
-  const raw = typeof config.API_BASE_URL === "string" ? config.API_BASE_URL.trim() : "";
-  if (!raw) return "/api";
-  return raw.replace(/\/+$/, "");
-}
+﻿const STORAGE_KEY = "hunan_lexicon_v3";
 
-const API_BASE = resolveApiBase();
 const inputText = document.getElementById("inputText");
 const outputText = document.getElementById("outputText");
 const modeLabel = document.getElementById("modeLabel");
@@ -44,9 +38,206 @@ const evaluationList = document.getElementById("evaluationList");
 const exportEvaluationBtn = document.getElementById("exportEvaluationBtn");
 const clearEvaluationBtn = document.getElementById("clearEvaluationBtn");
 
+const defaultLexicon = {
+  "你": "你咯",
+  "你们": "你哒",
+  "我们": "我哒",
+  "他们": "渠哒",
+  "她们": "渠哒",
+  "大家": "伙计们",
+  "爷爷": "嗲嗲",
+  "外公": "嗲嗲",
+  "奶奶": "娭毑",
+  "外婆": "娭毑",
+  "阿姨": "娭毑",
+  "叔叔": "满哥",
+  "男生": "满哥",
+  "年轻男子": "满哥",
+  "男孩子": "细伢子",
+  "女孩子": "妹陀",
+  "小孩子": "伢子",
+  "孩子": "崽崽",
+  "朋友": "老倌",
+  "小伙子": "伢子",
+  "姐妹": "姊妹伙",
+  "兄弟": "老弟",
+
+  "什么": "么子",
+  "为什么": "做么子",
+  "怎么": "啷个",
+  "怎么会": "哦得会",
+  "哪里": "哪凯",
+  "这儿": "这凯",
+  "那儿": "那凯",
+  "这里": "这凯",
+  "那里": "那凯",
+  "这个": "咯杂",
+  "那个": "嘎杂",
+  "哪个": "哪个杂",
+  "谁": "哪个",
+  "是不是": "是啵",
+  "是的": "嗯咯",
+  "好吧": "要得咯",
+  "可以": "要得",
+  "不可以": "要不得",
+  "不行": "要不得",
+  "行": "行得通",
+  "可能": "怕么",
+  "知道": "晓得",
+  "不懂": "搞驼不清",
+  "不明白": "搞驼不清",
+  "了解": "门清",
+
+  "不要": "莫",
+  "别": "莫",
+  "没有": "冒得",
+  "没得": "冒得",
+  "不是": "不是咯",
+  "不": "莫",
+  "不理你": "不次你",
+  "讨厌": "不带爱相",
+  "骗子": "撮巴子",
+  "诈骗犯": "撮巴子",
+  "诈骗": "撮汤锅子",
+  "骗": "撮",
+
+  "说": "港",
+  "说话": "港话",
+  "聊天": "扯白",
+  "吹牛": "扯卵筋",
+  "骗人胡扯": "扯卵谈",
+  "开玩笑": "打哈哈",
+  "啰嗦": "七里八里",
+  "啰里啰嗦": "七里八里",
+  "吵": "仅叫",
+  "吵死人": "仅叫的",
+  "吵架": "呷架",
+  "打架": "搞架",
+
+  "吃": "恰",
+  "吃饭": "恰饭",
+  "好吃": "好恰",
+  "难吃": "不好恰",
+  "嚼": "qiò",
+  "喝水": "喝口水先",
+  "辣": "辣得跳",
+  "甜": "甜滋滋",
+  "咸": "咸口",
+  "味道": "口味",
+  "恶心": "透人",
+
+  "去": "克",
+  "来": "来咯",
+  "走": "走起",
+  "回家": "归屋",
+  "出去": "出去耍",
+  "过来": "过来咯",
+  "进来": "进来咯",
+  "快点": "搞快点",
+  "慢一点": "慢点搞",
+  "等一下": "等哈",
+  "等会儿": "等哈",
+  "马上": "立马",
+  "现在": "而家",
+  "刚刚": "哈子",
+  "今天": "今朝",
+  "昨天": "昨朝",
+  "明天": "明朝",
+  "早上": "清早八晨",
+  "中午": "晌午",
+  "晚上": "夜里头",
+  "总是": "时刻子",
+  "经常": "老是",
+  "偶尔": "间或",
+
+  "看": "瞄",
+  "听": "听哈",
+  "想": "想得起",
+  "喜欢": "稀罕",
+  "爱": "疼你",
+  "生气": "冒火",
+  "累": "lia",
+  "困": "瞌睡来了",
+  "睡觉": "困觉",
+  "起床": "起铺",
+  "舒服": "了瞥",
+  "爽快": "了瞥",
+  "吓人": "黑人",
+  "搞笑": "斗霸",
+  "滚开": "弹开",
+  "暗示": "丢驼",
+  "出错": "筐瓢",
+  "解决": "了难",
+  "过于勉强": "霸蛮",
+  "很厉害": "霸蛮",
+  "厉害": "恩杂",
+  "很胖": "垒壮的",
+  "专心致志": "昧心昧意",
+  "不收拾": "冒点检十",
+  "剥": "蔑",
+  "掉": "跌",
+  "丢": "跌",
+  "鼻涕": "鼻斗龙",
+
+  "工作": "做事",
+  "上班": "做工",
+  "下班": "散工",
+  "学习": "搞学习",
+  "上学": "读书去",
+  "考试": "赶考",
+  "问题": "岔子",
+  "办法": "路数",
+  "事情": "事体",
+  "消息": "信儿",
+  "真的": "港真",
+  "真的吗": "港真啵",
+  "假的": "鬼扯",
+  "有点": "有滴",
+  "一点": "滴点",
+  "很多": "蛮多",
+  "非常": "蛮扎实",
+  "很": "蛮",
+  "全部": "一哈子",
+
+  "便宜": "划算",
+  "贵": "贵得很",
+  "排队": "扎堆等",
+  "堵车": "塞车",
+  "下雨": "落雨",
+  "刮风": "起风",
+  "天气": "天色",
+  "洗澡": "冲凉",
+  "洗衣服": "洗衫",
+  "手机": "电话机",
+  "电脑": "机子",
+  "网络": "网路",
+  "视频": "片片",
+  "照片": "相片子",
+  "直播": "开播",
+  "玩": "耍",
+  "逛街": "上街耍",
+  "买东西": "买家伙",
+  "无所事事到处闲逛": "打流",
+
+  "不靠谱": "冇得屁眼",
+  "干净": "索索利利",
+  "破烂": "稀撕挎烂",
+  "倒霉": "背扎大时",
+  "话痨": "屎少屁多",
+  "怀疑一下": "一扎鬼呢",
+  "真离谱": "太拐哒",
+  "太好了": "好得板",
+  "别说了": "莫港哒",
+  "别担心": "莫急莫慌",
+  "谢谢": "多谢咯",
+  "没关系": "冒关系",
+  "再见": "回见"
+};
+
+const PENDING_STORAGE_KEY = "hunan_lexicon_pending_v1";
 const DIALECT_STORAGE_KEY = "hunan_dialect_mode_v1";
 const SCENE_STORAGE_KEY = "hunan_scene_mode_v1";
-const ADMIN_TOKEN_STORAGE_KEY = "hunan_admin_token_v1";
+const EVALUATION_STORAGE_KEY = "hunan_eval_records_v1";
 
 const DIALECT_PROFILES = {
   changsha: {
@@ -87,7 +278,7 @@ const SCENE_PROFILES = {
   },
   campus: {
     name: "校园沟通",
-    tip: "会优先启用上课、下课、食堂、作业、考试等校园场景词条。",
+    tip: "会优先启用“上课、下课、食堂、作业、考试”等校园场景词条。",
     sampleM2H: "例如：我们下课后去食堂，然后去图书馆。",
     sampleH2M: "例如：我哒下堂后克堂子，再克图书馆。",
     lexiconM2H: {
@@ -181,17 +372,14 @@ const COMMON_RULES = {
   ]
 };
 
-const query = new URLSearchParams(window.location.search);
-const IS_ADMIN_MODE = query.get("admin") === "1";
-
-let lexicon = {};
+let lexicon = loadLexicon();
 let mode = "m2h";
-let pendingQueue = [];
-let evaluations = [];
+const pinyinCache = new Map();
+let pendingQueue = loadPendingQueue();
 let selectedDialect = loadPreference(DIALECT_STORAGE_KEY, "changsha");
 let selectedScene = loadPreference(SCENE_STORAGE_KEY, "daily");
+let evaluations = loadEvaluations();
 let currentCandidates = [];
-const pinyinCache = new Map();
 
 if (!DIALECT_PROFILES[selectedDialect]) {
   selectedDialect = "changsha";
@@ -205,7 +393,7 @@ function escapeHtml(value) {
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
-    .replace(/\"/g, "&quot;")
+    .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
 }
 
@@ -222,121 +410,52 @@ function savePreference(key, value) {
   localStorage.setItem(key, value);
 }
 
-function getAdminToken() {
+function loadLexicon() {
   try {
-    return localStorage.getItem(ADMIN_TOKEN_STORAGE_KEY) || "";
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return { ...defaultLexicon };
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== "object" || Array.isArray(parsed)) {
+      return { ...defaultLexicon };
+    }
+    return parsed;
   } catch (error) {
-    return "";
+    return { ...defaultLexicon };
   }
 }
 
-function setAdminToken(token) {
+function saveLexicon() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(lexicon));
+}
+
+function loadPendingQueue() {
   try {
-    localStorage.setItem(ADMIN_TOKEN_STORAGE_KEY, token);
+    const raw = localStorage.getItem(PENDING_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
   } catch (error) {
-    // no-op
+    return [];
   }
 }
 
-function promptAdminToken(message) {
-  const next = window.prompt(message || "请输入管理员令牌：", getAdminToken());
-  if (!next) return "";
-  const trimmed = next.trim();
-  if (!trimmed) return "";
-  setAdminToken(trimmed);
-  return trimmed;
+function savePendingQueue() {
+  localStorage.setItem(PENDING_STORAGE_KEY, JSON.stringify(pendingQueue));
 }
 
-function hideElement(target) {
-  if (target) {
-    target.style.display = "none";
-  }
-}
-
-function applyAccessUi() {
-  if (!IS_ADMIN_MODE) {
-    hideElement(document.querySelector(".review-head"));
-    hideElement(document.querySelector(".review-actions"));
-    hideElement(pendingList);
-    hideElement(exportBtn);
-    hideElement(importBtn);
-    hideElement(resetBtn);
-    hideElement(approveAllBtn);
-    hideElement(rejectAllBtn);
-    hideElement(clearEvaluationBtn);
-  } else {
-    modeLabel.textContent = `${modeLabel.textContent}（后台模式）`;
-    if (!getAdminToken()) {
-      promptAdminToken("进入后台模式，请输入管理员令牌：");
-    }
-  }
-}
-
-async function apiRequest(path, options = {}) {
-  const {
-    method = "GET",
-    body,
-    admin = false,
-    retryOnAuth = true
-  } = options;
-
-  const headers = {};
-  if (body !== undefined) {
-    headers["Content-Type"] = "application/json";
-  }
-  if (admin) {
-    const token = getAdminToken();
-    if (token) {
-      headers["x-admin-token"] = token;
-    }
-  }
-
-  let response;
+function loadEvaluations() {
   try {
-    response = await fetch(`${API_BASE}${path}`, {
-      method,
-      headers,
-      body: body !== undefined ? JSON.stringify(body) : undefined
-    });
+    const raw = localStorage.getItem(EVALUATION_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
   } catch (error) {
-    const runningFromFile = window.location.protocol === "file:";
-    const runningOnGithubPages = window.location.hostname.endsWith("github.io");
-    const relativeApiBase = API_BASE.startsWith("/");
-    const hint = runningFromFile
-      ? "检测到你正在用 file:// 直接打开页面。请先在项目目录运行 npm start，然后通过 http://127.0.0.1:8080 打开。"
-      : runningOnGithubPages && relativeApiBase
-        ? "当前在 GitHub Pages 上运行，但 API_BASE_URL 仍是相对路径。请在 config.js 中把 API_BASE_URL 改为你的线上后端地址（例如 https://your-backend.example.com/api）。"
-        : "后端接口不可达。请确认后端服务已启动且 API_BASE_URL 配置正确。";
-    throw new Error(`无法连接后端接口 ${API_BASE}${path}。${hint}`);
+    return [];
   }
+}
 
-  const raw = await response.text();
-  let data = {};
-  if (raw) {
-    try {
-      data = JSON.parse(raw);
-    } catch (error) {
-      data = { message: raw };
-    }
-  }
-
-  if (admin && response.status === 401 && retryOnAuth && IS_ADMIN_MODE) {
-    const token = promptAdminToken("管理员令牌无效，请重新输入：");
-    if (token) {
-      return apiRequest(path, {
-        method,
-        body,
-        admin,
-        retryOnAuth: false
-      });
-    }
-  }
-
-  if (!response.ok) {
-    throw new Error(data.message || `请求失败：${response.status}`);
-  }
-
-  return data;
+function saveEvaluations() {
+  localStorage.setItem(EVALUATION_STORAGE_KEY, JSON.stringify(evaluations));
 }
 
 function getDialectProfile() {
@@ -345,14 +464,6 @@ function getDialectProfile() {
 
 function getSceneProfile() {
   return SCENE_PROFILES[selectedScene] || SCENE_PROFILES.daily;
-}
-
-function createReverseMap(source) {
-  const result = {};
-  Object.entries(source).forEach(([mandarin, hunan]) => {
-    result[hunan] = mandarin;
-  });
-  return result;
 }
 
 function getActiveForwardLexicon() {
@@ -373,6 +484,92 @@ function getActiveReverseLexicon() {
   };
 }
 
+function enqueueReview(action) {
+  pendingQueue.push({
+    id: `${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
+    createdAt: new Date().toISOString(),
+    ...action
+  });
+  savePendingQueue();
+  renderPendingQueue();
+}
+
+function applyAction(action) {
+  if (action.type === "upsert") {
+    lexicon[action.mandarin] = action.hunan;
+  } else if (action.type === "delete") {
+    delete lexicon[action.mandarin];
+  }
+}
+
+function approveAction(actionId) {
+  const action = pendingQueue.find((item) => item.id === actionId);
+  if (!action) return;
+  applyAction(action);
+  pendingQueue = pendingQueue.filter((item) => item.id !== actionId);
+  savePendingQueue();
+  saveLexicon();
+  renderPendingQueue();
+  renderEntries();
+  convert();
+}
+
+function rejectAction(actionId) {
+  pendingQueue = pendingQueue.filter((item) => item.id !== actionId);
+  savePendingQueue();
+  renderPendingQueue();
+}
+
+function approveAllActions() {
+  pendingQueue.forEach((action) => applyAction(action));
+  pendingQueue = [];
+  savePendingQueue();
+  saveLexicon();
+  renderPendingQueue();
+  renderEntries();
+  convert();
+}
+
+function rejectAllActions() {
+  pendingQueue = [];
+  savePendingQueue();
+  renderPendingQueue();
+}
+
+function renderPendingQueue() {
+  if (!pendingList || !pendingCountInfo) return;
+  pendingCountInfo.textContent = `待审核：${pendingQueue.length}`;
+
+  if (!pendingQueue.length) {
+    pendingList.innerHTML = `<div class="pending-empty">暂无待审核变更。</div>`;
+    return;
+  }
+
+  pendingList.innerHTML = pendingQueue
+    .map((item) => {
+      const tag = item.type === "delete" ? "删除" : "新增/修改";
+      const rightText = item.type === "delete" ? "-" : item.hunan;
+      return `
+        <div class="pending-row">
+          <span class="pending-tag">${tag}</span>
+          <span>${escapeHtml(item.mandarin)}</span>
+          <span>${escapeHtml(rightText)}</span>
+          <button class="pending-approve" type="button" data-action="approve" data-id="${item.id}">通过</button>
+          <button class="pending-reject" type="button" data-action="reject" data-id="${item.id}">驳回</button>
+        </div>
+      `;
+    })
+    .join("");
+}
+
+function createReverseMap(source) {
+  const result = {};
+  Object.entries(source).forEach(([mandarin, hunan]) => {
+    result[hunan] = mandarin;
+  });
+  return result;
+}
+
 function isChineseText(text) {
   return /[\u4e00-\u9fff]/.test(text);
 }
@@ -387,7 +584,6 @@ function getPinyinNormalized(text) {
     type: "array",
     nonZh: "consecutive"
   });
-
   const normalized = array
     .join(" ")
     .toLowerCase()
@@ -445,10 +641,8 @@ function isPinyinNear(aPinyin, bPinyin) {
     const aSyl = normalizeSyllable(aList[i]);
     const bSyl = normalizeSyllable(bList[i]);
     if (aSyl === bSyl) continue;
-
     const dist = levenshteinDistance(aSyl, bSyl);
     if (dist > 1) return false;
-
     diffCount += 1;
     if (diffCount > 1) return false;
   }
@@ -470,7 +664,6 @@ function buildEntries(dictionary) {
 function applyRulesWithTrace(text, rules) {
   let output = text;
   const traces = [];
-
   rules.forEach((rule) => {
     let hitCount = 0;
     output = output.replace(rule.pattern, (...args) => {
@@ -479,12 +672,10 @@ function applyRulesWithTrace(text, rules) {
         ? rule.replacement(...args)
         : rule.replacement;
     });
-
     if (hitCount > 0) {
       traces.push(`${rule.name}×${hitCount}`);
     }
   });
-
   return {
     text: output,
     traces
@@ -568,9 +759,11 @@ function buildCandidateResults(source) {
       { usePinyin: false }
     );
     const baseRuleResult = applyRulesWithTrace(source, commonRules);
-    const base = replaceByDictionaryWithPinyinFallbackDetailed(baseRuleResult.text, lexicon, {
-      usePinyin: true
-    });
+    const base = replaceByDictionaryWithPinyinFallbackDetailed(
+      baseRuleResult.text,
+      lexicon,
+      { usePinyin: true }
+    );
 
     return {
       primary: primary.text,
@@ -603,9 +796,11 @@ function buildCandidateResults(source) {
     { usePinyin: false }
   );
   const baseRuleResult = applyRulesWithTrace(source, commonRules);
-  const base = replaceByDictionaryWithPinyinFallbackDetailed(baseRuleResult.text, baseReverseLexicon, {
-    usePinyin: true
-  });
+  const base = replaceByDictionaryWithPinyinFallbackDetailed(
+    baseRuleResult.text,
+    baseReverseLexicon,
+    { usePinyin: true }
+  );
 
   return {
     primary: primary.text,
@@ -675,14 +870,13 @@ function convert() {
 function syncLabels() {
   const dialectName = getDialectProfile().name;
   const scene = getSceneProfile();
-
   if (mode === "m2h") {
-    modeLabel.textContent = `普通话 → ${dialectName}${IS_ADMIN_MODE ? "（后台模式）" : ""}`;
+    modeLabel.textContent = `普通话 → ${dialectName}`;
     inputLabel.textContent = "输入（普通话）";
     outputLabel.textContent = `输出（${dialectName}）`;
     inputText.placeholder = scene.sampleM2H;
   } else {
-    modeLabel.textContent = `${dialectName} → 普通话${IS_ADMIN_MODE ? "（后台模式）" : ""}`;
+    modeLabel.textContent = `${dialectName} → 普通话`;
     inputLabel.textContent = `输入（${dialectName}）`;
     outputLabel.textContent = "输出（普通话）";
     inputText.placeholder = scene.sampleH2M;
@@ -694,7 +888,7 @@ function syncContextState() {
   if (dialectSelect) dialectSelect.value = selectedDialect;
   if (sceneSelect) sceneSelect.value = selectedScene;
   if (sceneTip) {
-    sceneTip.textContent = `当前场景：${scene.name}。${scene.tip} 词条新增与删除会提交到后端审核。`;
+    sceneTip.textContent = `当前场景：${scene.name}。${scene.tip}`;
   }
 }
 
@@ -715,58 +909,148 @@ function renderEntries() {
   }
 
   entryList.innerHTML = entries
-    .map(([mandarin, hunan]) => {
-      const deleteButton = IS_ADMIN_MODE
-        ? `<button class="entry-delete" type="button" data-key="${encodeURIComponent(mandarin)}">提交删除审核</button>`
-        : "";
-      return `
-        <div class="entry-row">
-          <span>${escapeHtml(mandarin)}</span>
-          <span>${escapeHtml(hunan)}</span>
-          ${deleteButton}
-        </div>
-      `;
-    })
+    .map(([mandarin, hunan]) => `
+      <div class="entry-row">
+        <span>${escapeHtml(mandarin)}</span>
+        <span>${escapeHtml(hunan)}</span>
+        <button class="entry-delete" type="button" data-key="${encodeURIComponent(mandarin)}">删除</button>
+      </div>
+    `)
     .join("");
 }
 
-function renderPendingQueue() {
-  if (!pendingList || !pendingCountInfo) return;
+function addOrUpdateEntry(event) {
+  event.preventDefault();
+  const mandarin = mandarinInput.value.trim();
+  const hunan = hunanInput.value.trim();
+  if (!mandarin || !hunan) return;
 
-  if (!IS_ADMIN_MODE) {
-    pendingCountInfo.textContent = "待审核：仅后台可见";
-    pendingList.innerHTML = "";
-    return;
-  }
+  enqueueReview({
+    type: "upsert",
+    mandarin,
+    hunan
+  });
 
-  pendingCountInfo.textContent = `待审核：${pendingQueue.length}`;
+  mandarinInput.value = "";
+  hunanInput.value = "";
+  mandarinInput.focus();
+}
 
-  if (!pendingQueue.length) {
-    pendingList.innerHTML = `<div class="pending-empty">暂无待审核变更。</div>`;
-    return;
-  }
+function removeEntry(event) {
+  const button = event.target.closest(".entry-delete");
+  if (!button) return;
+  const key = decodeURIComponent(button.dataset.key || "");
+  if (!key || !lexicon[key]) return;
 
-  pendingList.innerHTML = pendingQueue
-    .map((item) => {
-      const tag = item.type === "delete" ? "删除" : "新增/修改";
-      const rightText = item.type === "delete" ? "-" : item.hunan;
-      return `
-        <div class="pending-row">
-          <span class="pending-tag">${tag}</span>
-          <span>${escapeHtml(item.mandarin)}</span>
-          <span>${escapeHtml(rightText)}</span>
-          <button class="pending-approve" type="button" data-action="approve" data-id="${item.id}">通过</button>
-          <button class="pending-reject" type="button" data-action="reject" data-id="${item.id}">驳回</button>
-        </div>
-      `;
-    })
-    .join("");
+  enqueueReview({
+    type: "delete",
+    mandarin: key
+  });
+}
+
+function downloadJson(payload, filename) {
+  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
+}
+
+function exportLexicon() {
+  downloadJson(lexicon, "hunan-lexicon.json");
+}
+
+function importLexiconFromFile(file) {
+  const reader = new FileReader();
+  reader.onload = () => {
+    try {
+      const data = JSON.parse(String(reader.result));
+      if (!data || typeof data !== "object" || Array.isArray(data)) {
+        alert("导入失败：JSON 结构不正确。");
+        return;
+      }
+
+      const cleaned = {};
+      Object.entries(data).forEach(([k, v]) => {
+        const key = String(k).trim();
+        const value = String(v).trim();
+        if (key && value) cleaned[key] = value;
+      });
+
+      if (!Object.keys(cleaned).length) {
+        alert("导入失败：词库为空。");
+        return;
+      }
+
+      lexicon = cleaned;
+      pendingQueue = [];
+      savePendingQueue();
+      saveLexicon();
+      renderPendingQueue();
+      renderEntries();
+      convert();
+      alert("词库导入成功。");
+    } catch (error) {
+      alert("导入失败：请检查 JSON 文件。");
+    } finally {
+      importFile.value = "";
+    }
+  };
+  reader.readAsText(file, "utf-8");
+}
+
+function resetLexicon() {
+  lexicon = { ...defaultLexicon };
+  pendingQueue = [];
+  savePendingQueue();
+  saveLexicon();
+  renderPendingQueue();
+  renderEntries();
+  convert();
 }
 
 function clampScore(value) {
   const parsed = Number(value);
   if (!Number.isFinite(parsed)) return 3;
   return Math.min(5, Math.max(1, Math.round(parsed)));
+}
+
+function saveEvaluation(event) {
+  event.preventDefault();
+  const source = inputText.value.trim();
+  const output = outputText.value.trim();
+
+  if (!source || !output) {
+    alert("请先输入并完成一次转换，再保存评测。");
+    return;
+  }
+
+  const record = {
+    id: `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+    createdAt: new Date().toISOString(),
+    mode,
+    dialect: selectedDialect,
+    scene: selectedScene,
+    source,
+    output,
+    accuracy: clampScore(scoreAccuracy.value),
+    naturalness: clampScore(scoreNaturalness.value),
+    understandability: clampScore(scoreUnderstandability.value),
+    comment: evaluationComment.value.trim()
+  };
+
+  evaluations.unshift(record);
+  if (evaluations.length > 200) {
+    evaluations = evaluations.slice(0, 200);
+  }
+  saveEvaluations();
+  renderEvaluationStats();
+  renderEvaluationList();
+  evaluationComment.value = "";
 }
 
 function formatTime(isoString) {
@@ -779,22 +1063,18 @@ function formatTime(isoString) {
 
 function renderEvaluationStats() {
   if (!evaluationStats) return;
-
   if (!evaluations.length) {
     evaluationStats.textContent = "暂无评测记录";
     return;
   }
 
   const total = evaluations.length;
-  const sum = evaluations.reduce(
-    (acc, item) => {
-      acc.accuracy += Number(item.accuracy || 0);
-      acc.naturalness += Number(item.naturalness || 0);
-      acc.understandability += Number(item.understandability || 0);
-      return acc;
-    },
-    { accuracy: 0, naturalness: 0, understandability: 0 }
-  );
+  const sum = evaluations.reduce((acc, item) => {
+    acc.accuracy += item.accuracy || 0;
+    acc.naturalness += item.naturalness || 0;
+    acc.understandability += item.understandability || 0;
+    return acc;
+  }, { accuracy: 0, naturalness: 0, understandability: 0 });
 
   evaluationStats.textContent =
     `共${total}条评测｜准确性 ${(sum.accuracy / total).toFixed(2)}｜自然度 ${(sum.naturalness / total).toFixed(2)}｜可理解性 ${(sum.understandability / total).toFixed(2)}`;
@@ -802,7 +1082,6 @@ function renderEvaluationStats() {
 
 function renderEvaluationList() {
   if (!evaluationList) return;
-
   if (!evaluations.length) {
     evaluationList.innerHTML = `<div class="entry-empty">暂无历史评测。</div>`;
     return;
@@ -829,221 +1108,16 @@ function renderEvaluationList() {
     .join("");
 }
 
-function downloadJson(payload, filename) {
-  const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = filename;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  URL.revokeObjectURL(url);
-}
-
-async function refreshLexicon() {
-  const data = await apiRequest("/lexicon");
-  lexicon = data.lexicon && typeof data.lexicon === "object" ? data.lexicon : {};
-  renderEntries();
-  convert();
-}
-
-async function refreshPendingQueue() {
-  if (!IS_ADMIN_MODE) {
-    pendingQueue = [];
-    renderPendingQueue();
-    return;
-  }
-
-  const data = await apiRequest("/admin/change-requests?status=pending", { admin: true });
-  pendingQueue = Array.isArray(data.records) ? data.records : [];
-  renderPendingQueue();
-}
-
-async function refreshEvaluations() {
-  const data = await apiRequest("/evaluations?limit=200");
-  evaluations = Array.isArray(data.records) ? data.records : [];
-  renderEvaluationStats();
-  renderEvaluationList();
-}
-
-async function addOrUpdateEntry(event) {
-  event.preventDefault();
-
-  const mandarin = mandarinInput.value.trim();
-  const hunan = hunanInput.value.trim();
-  if (!mandarin || !hunan) return;
-
-  await apiRequest("/change-requests", {
-    method: "POST",
-    body: {
-      type: "upsert",
-      mandarin,
-      hunan
-    }
-  });
-
-  mandarinInput.value = "";
-  hunanInput.value = "";
-  mandarinInput.focus();
-
-  if (IS_ADMIN_MODE) {
-    await refreshPendingQueue();
-  }
-
-  alert("已提交到后端审核队列。审核通过后会自动生效。");
-}
-
-async function removeEntry(event) {
-  const button = event.target.closest(".entry-delete");
-  if (!button) return;
-
-  const key = decodeURIComponent(button.dataset.key || "");
-  if (!key || !lexicon[key]) return;
-
-  await apiRequest("/change-requests", {
-    method: "POST",
-    body: {
-      type: "delete",
-      mandarin: key
-    }
-  });
-
-  await refreshPendingQueue();
-  alert("删除申请已提交到后端审核队列。");
-}
-
-async function approveAction(actionId) {
-  if (!actionId) return;
-  await apiRequest(`/admin/change-requests/${encodeURIComponent(actionId)}/approve`, {
-    method: "POST",
-    admin: true
-  });
-  await Promise.all([refreshPendingQueue(), refreshLexicon()]);
-}
-
-async function rejectAction(actionId) {
-  if (!actionId) return;
-  await apiRequest(`/admin/change-requests/${encodeURIComponent(actionId)}/reject`, {
-    method: "POST",
-    admin: true
-  });
-  await refreshPendingQueue();
-}
-
-async function approveAllActions() {
-  await apiRequest("/admin/change-requests/approve-all", {
-    method: "POST",
-    admin: true
-  });
-  await Promise.all([refreshPendingQueue(), refreshLexicon()]);
-}
-
-async function rejectAllActions() {
-  await apiRequest("/admin/change-requests/reject-all", {
-    method: "POST",
-    admin: true
-  });
-  await refreshPendingQueue();
-}
-
-async function exportLexicon() {
-  const data = await apiRequest("/admin/export", { admin: true });
-  const exported = data.lexicon && typeof data.lexicon === "object" ? data.lexicon : {};
-  downloadJson(exported, "hunan-lexicon.json");
-}
-
-async function importLexiconFromFile(file) {
-  const reader = new FileReader();
-  reader.onload = async () => {
-    try {
-      const parsed = JSON.parse(String(reader.result));
-      const data = parsed.lexicon && typeof parsed.lexicon === "object" ? parsed.lexicon : parsed;
-      if (!data || typeof data !== "object" || Array.isArray(data)) {
-        throw new Error("JSON 结构不正确");
-      }
-
-      await apiRequest("/admin/import", {
-        method: "POST",
-        admin: true,
-        body: {
-          lexicon: data,
-          clearPending: true
-        }
-      });
-
-      await Promise.all([refreshLexicon(), refreshPendingQueue()]);
-      alert("后端词库导入成功。");
-    } catch (error) {
-      alert(`导入失败：${error.message}`);
-    } finally {
-      importFile.value = "";
-    }
-  };
-  reader.readAsText(file, "utf-8");
-}
-
-async function resetLexicon() {
-  const ok = window.confirm("确定恢复后端默认词库吗？这会清空待审核队列。");
-  if (!ok) return;
-
-  await apiRequest("/admin/reset-lexicon", {
-    method: "POST",
-    admin: true
-  });
-  await Promise.all([refreshLexicon(), refreshPendingQueue()]);
-}
-
-async function saveEvaluation(event) {
-  event.preventDefault();
-
-  const source = inputText.value.trim();
-  const output = outputText.value.trim();
-
-  if (!source || !output) {
-    alert("请先输入并完成一次转换，再保存评测。");
-    return;
-  }
-
-  await apiRequest("/evaluations", {
-    method: "POST",
-    body: {
-      mode,
-      dialect: selectedDialect,
-      scene: selectedScene,
-      source,
-      output,
-      accuracy: clampScore(scoreAccuracy.value),
-      naturalness: clampScore(scoreNaturalness.value),
-      understandability: clampScore(scoreUnderstandability.value),
-      comment: evaluationComment.value.trim()
-    }
-  });
-
-  evaluationComment.value = "";
-  await refreshEvaluations();
-}
-
 function exportEvaluations() {
   downloadJson(evaluations, "hunan-evaluation-records.json");
 }
 
-async function clearEvaluations() {
-  if (!IS_ADMIN_MODE) return;
-
-  const ok = window.confirm("确定清空全部评测记录吗？此操作不可撤销。");
-  if (!ok) return;
-
-  await apiRequest("/admin/evaluations", {
-    method: "DELETE",
-    admin: true
-  });
-  await refreshEvaluations();
-}
-
-function onAsyncError(error) {
-  const message = error && error.message ? error.message : String(error);
-  alert(`操作失败：${message}`);
+function clearEvaluations() {
+  if (!confirm("确定清空全部评测记录吗？此操作不可撤销。")) return;
+  evaluations = [];
+  saveEvaluations();
+  renderEvaluationStats();
+  renderEvaluationList();
 }
 
 swapBtn.addEventListener("click", () => {
@@ -1065,56 +1139,26 @@ sampleBtns.forEach((btn) => {
   });
 });
 
-addForm.addEventListener("submit", (event) => {
-  addOrUpdateEntry(event).catch(onAsyncError);
-});
-
-entryList.addEventListener("click", (event) => {
-  removeEntry(event).catch(onAsyncError);
-});
-
+addForm.addEventListener("submit", addOrUpdateEntry);
+entryList.addEventListener("click", removeEntry);
 pendingList.addEventListener("click", (event) => {
   const button = event.target.closest("button");
   if (!button) return;
-
   const action = button.dataset.action;
   const actionId = button.dataset.id;
-
-  if (action === "approve") {
-    approveAction(actionId).catch(onAsyncError);
-  }
-
-  if (action === "reject") {
-    rejectAction(actionId).catch(onAsyncError);
-  }
+  if (action === "approve") approveAction(actionId);
+  if (action === "reject") rejectAction(actionId);
 });
-
 searchInput.addEventListener("input", renderEntries);
-
-exportBtn.addEventListener("click", () => {
-  exportLexicon().catch(onAsyncError);
-});
-
+exportBtn.addEventListener("click", exportLexicon);
 importBtn.addEventListener("click", () => importFile.click());
-
 importFile.addEventListener("change", () => {
   const file = importFile.files && importFile.files[0];
-  if (file) {
-    importLexiconFromFile(file).catch(onAsyncError);
-  }
+  if (file) importLexiconFromFile(file);
 });
-
-resetBtn.addEventListener("click", () => {
-  resetLexicon().catch(onAsyncError);
-});
-
-approveAllBtn.addEventListener("click", () => {
-  approveAllActions().catch(onAsyncError);
-});
-
-rejectAllBtn.addEventListener("click", () => {
-  rejectAllActions().catch(onAsyncError);
-});
+resetBtn.addEventListener("click", resetLexicon);
+approveAllBtn.addEventListener("click", approveAllActions);
+rejectAllBtn.addEventListener("click", rejectAllActions);
 
 if (dialectSelect) {
   dialectSelect.addEventListener("change", () => {
@@ -1147,43 +1191,19 @@ if (candidateList) {
 }
 
 if (evaluationForm) {
-  evaluationForm.addEventListener("submit", (event) => {
-    saveEvaluation(event).catch(onAsyncError);
-  });
+  evaluationForm.addEventListener("submit", saveEvaluation);
 }
-
 if (exportEvaluationBtn) {
   exportEvaluationBtn.addEventListener("click", exportEvaluations);
 }
-
 if (clearEvaluationBtn) {
-  clearEvaluationBtn.addEventListener("click", () => {
-    clearEvaluations().catch(onAsyncError);
-  });
+  clearEvaluationBtn.addEventListener("click", clearEvaluations);
 }
 
-async function bootstrap() {
-  if (window.location.protocol === "file:") {
-    alert("当前是 file:// 打开方式，无法连接后端 API。请先运行 npm start，然后访问 http://127.0.0.1:8080 。");
-    return;
-  }
-
-  applyAccessUi();
-  syncLabels();
-  syncContextState();
-  renderPendingQueue();
-  renderEntries();
-  renderEvaluationStats();
-  renderEvaluationList();
-  renderCandidateList([]);
-
-  await refreshLexicon();
-  await refreshEvaluations();
-  if (IS_ADMIN_MODE) {
-    await refreshPendingQueue();
-  }
-}
-
-bootstrap().catch((error) => {
-  onAsyncError(error);
-});
+syncLabels();
+syncContextState();
+renderPendingQueue();
+renderEntries();
+renderEvaluationStats();
+renderEvaluationList();
+renderCandidateList([]);
