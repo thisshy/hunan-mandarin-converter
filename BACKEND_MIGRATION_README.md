@@ -22,6 +22,7 @@ npm start
 - `HOST`：监听地址（默认 0.0.0.0）
 - `ADMIN_TOKEN`：后台审核令牌（默认 `change-me-admin-token`）
 - `CORS_ORIGINS`：允许跨域访问的来源（逗号分隔），例如 `https://thisshy.github.io,http://127.0.0.1:8080`
+- `DATA_DIR`：后端数据目录（默认 `./server/data`，生产环境建议挂载持久化目录）
 
 Windows PowerShell 示例：
 

@@ -8,6 +8,7 @@ const { randomUUID } = require("crypto");
 const HOST = process.env.HOST || "0.0.0.0";
 const PORT = Number(process.env.PORT || 8080);
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || "change-me-admin-token";
+const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, "server", "data");
 const CORS_ORIGINS = String(process.env.CORS_ORIGINS || "")
   .split(",")
   .map((item) => item.trim())
@@ -15,7 +16,7 @@ const CORS_ORIGINS = String(process.env.CORS_ORIGINS || "")
 const CORS_ALLOW_ALL = CORS_ORIGINS.includes("*");
 
 const ROOT_DIR = __dirname;
-const DATA_DIR = path.join(ROOT_DIR, "server", "data");
+const BUNDLED_DEFAULT_LEXICON_FILE = path.join(ROOT_DIR, "server", "data", "default-lexicon.json");
 const DEFAULT_LEXICON_FILE = path.join(DATA_DIR, "default-lexicon.json");
 const DB_FILE = path.join(DATA_DIR, "db.json");
 
@@ -199,14 +200,23 @@ function ensureDataReady() {
   fs.mkdirSync(DATA_DIR, { recursive: true });
 
   if (!fs.existsSync(DEFAULT_LEXICON_FILE)) {
-    fs.writeFileSync(DEFAULT_LEXICON_FILE, "{}\n", "utf8");
+    if (fs.existsSync(BUNDLED_DEFAULT_LEXICON_FILE)) {
+      fs.copyFileSync(BUNDLED_DEFAULT_LEXICON_FILE, DEFAULT_LEXICON_FILE);
+    } else {
+      fs.writeFileSync(DEFAULT_LEXICON_FILE, "{}\n", "utf8");
+    }
   }
 
   try {
     const rawDefault = fs.readFileSync(DEFAULT_LEXICON_FILE, "utf8");
     defaultLexicon = cleanLexiconObject(parseJsonText(rawDefault));
   } catch (error) {
-    defaultLexicon = {};
+    try {
+      const rawBundled = fs.readFileSync(BUNDLED_DEFAULT_LEXICON_FILE, "utf8");
+      defaultLexicon = cleanLexiconObject(parseJsonText(rawBundled));
+    } catch (innerError) {
+      defaultLexicon = {};
+    }
   }
 
   if (!fs.existsSync(DB_FILE)) {
