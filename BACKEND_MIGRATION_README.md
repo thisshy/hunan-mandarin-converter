@@ -23,6 +23,7 @@ npm start
 - `ADMIN_TOKEN`：后台审核令牌（默认 `change-me-admin-token`）
 - `CORS_ORIGINS`：允许跨域访问的来源（逗号分隔），例如 `https://thisshy.github.io,http://127.0.0.1:8080`
 - `DATA_DIR`：后端数据目录（默认 `./server/data`，生产环境建议挂载持久化目录）
+- `DATABASE_URL`：PostgreSQL 连接串（配置后自动切换到 Postgres 存储，推荐生产使用 Neon）
 
 Windows PowerShell 示例：
 
@@ -46,12 +47,14 @@ npm start
 
 ## 3. 数据说明
 
-`server/data/db.json` 结构：
+当未配置 `DATABASE_URL` 时，使用文件存储 `server/data/db.json`，结构如下：
 
 - `lexicon`: 生效词库（审核通过后才会更新）
 - `pending`: 待审核申请
 - `evaluations`: 评测记录
 - `metadata`: 更新时间
+
+当配置 `DATABASE_URL` 时，服务自动切换到 Postgres（Neon）存储，文件 `db.json` 仅用于本地开发回退。
 
 ## 4. API 概览
 

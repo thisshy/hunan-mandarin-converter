@@ -5,9 +5,18 @@ const fs = require("fs");
 const path = require("path");
 const { randomUUID } = require("crypto");
 
+let PgPool = null;
+try {
+  ({ Pool: PgPool } = require("pg"));
+} catch (error) {
+  PgPool = null;
+}
+
 const HOST = process.env.HOST || "0.0.0.0";
 const PORT = Number(process.env.PORT || 8080);
 const ADMIN_TOKEN = process.env.ADMIN_TOKEN || "change-me-admin-token";
+const DATABASE_URL = String(process.env.DATABASE_URL || "").trim();
+const STORAGE_MODE = DATABASE_URL ? "postgres" : "file";
 const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, "server", "data");
 const CORS_ORIGINS = String(process.env.CORS_ORIGINS || "")
   .split(",")
@@ -36,6 +45,7 @@ const CONTENT_TYPE = {
 };
 
 let defaultLexicon = {};
+let pool = null;
 let db = {
   lexicon: {},
   pending: [],
@@ -71,16 +81,29 @@ function parseJsonText(raw) {
   return JSON.parse(normalized);
 }
 
+function getPostgresPool() {
+  if (!DATABASE_URL) {
+    throw new Error("DATABASE_URL is not configured");
+  }
+  if (!PgPool) {
+    throw new Error("pg dependency is missing. Run npm install (or ensure Render installs dependencies).");
+  }
+  if (!pool) {
+    pool = new PgPool({
+      connectionString: DATABASE_URL,
+      ssl: { rejectUnauthorized: false }
+    });
+  }
+  return pool;
+}
+
 function applyCorsHeaders(req, res) {
   const origin = req.headers.origin;
   if (!origin) {
     return { ok: true, origin: "" };
   }
 
-  const allowed =
-    CORS_ALLOW_ALL ||
-    CORS_ORIGINS.includes(origin);
-
+  const allowed = CORS_ALLOW_ALL || CORS_ORIGINS.includes(origin);
   if (!allowed) {
     return { ok: false, origin };
   }
@@ -178,8 +201,7 @@ function parseRequestBody(req) {
         return;
       }
       try {
-        const parsed = JSON.parse(raw);
-        resolve(parsed);
+        resolve(JSON.parse(raw));
       } catch (error) {
         reject(new Error("Invalid JSON payload"));
       }
@@ -189,16 +211,8 @@ function parseRequestBody(req) {
   });
 }
 
-function persistDb() {
-  db.metadata.updatedAt = new Date().toISOString();
-  const tempFile = `${DB_FILE}.tmp`;
-  fs.writeFileSync(tempFile, JSON.stringify(db, null, 2), "utf8");
-  fs.renameSync(tempFile, DB_FILE);
-}
-
-function ensureDataReady() {
+function ensureDefaultLexiconFile() {
   fs.mkdirSync(DATA_DIR, { recursive: true });
-
   if (!fs.existsSync(DEFAULT_LEXICON_FILE)) {
     if (fs.existsSync(BUNDLED_DEFAULT_LEXICON_FILE)) {
       fs.copyFileSync(BUNDLED_DEFAULT_LEXICON_FILE, DEFAULT_LEXICON_FILE);
@@ -206,24 +220,46 @@ function ensureDataReady() {
       fs.writeFileSync(DEFAULT_LEXICON_FILE, "{}\n", "utf8");
     }
   }
+}
+
+function loadDefaultLexicon() {
+  ensureDefaultLexiconFile();
 
   try {
     const rawDefault = fs.readFileSync(DEFAULT_LEXICON_FILE, "utf8");
     defaultLexicon = cleanLexiconObject(parseJsonText(rawDefault));
+    return;
   } catch (error) {
-    try {
-      const rawBundled = fs.readFileSync(BUNDLED_DEFAULT_LEXICON_FILE, "utf8");
-      defaultLexicon = cleanLexiconObject(parseJsonText(rawBundled));
-    } catch (innerError) {
-      defaultLexicon = {};
-    }
+    // fallback to bundled
   }
+
+  try {
+    const rawBundled = fs.readFileSync(BUNDLED_DEFAULT_LEXICON_FILE, "utf8");
+    defaultLexicon = cleanLexiconObject(parseJsonText(rawBundled));
+  } catch (error) {
+    defaultLexicon = {};
+  }
+}
+
+function persistDbToFile() {
+  db.metadata.updatedAt = new Date().toISOString();
+  const tempFile = `${DB_FILE}.tmp`;
+  fs.writeFileSync(tempFile, JSON.stringify(db, null, 2), "utf8");
+  fs.renameSync(tempFile, DB_FILE);
+}
+
+function initFileStorage() {
+  fs.mkdirSync(DATA_DIR, { recursive: true });
 
   if (!fs.existsSync(DB_FILE)) {
     db.lexicon = { ...defaultLexicon };
     db.pending = [];
     db.evaluations = [];
-    persistDb();
+    db.metadata = {
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    persistDbToFile();
     return;
   }
 
@@ -251,7 +287,205 @@ function ensureDataReady() {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
     };
-    persistDb();
+    persistDbToFile();
+  }
+}
+
+async function ensurePostgresSchema() {
+  const postgres = getPostgresPool();
+  await postgres.query(`
+    CREATE TABLE IF NOT EXISTS lexicon_entries (
+      mandarin TEXT PRIMARY KEY,
+      hunan TEXT NOT NULL,
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+  `);
+  await postgres.query(`
+    CREATE TABLE IF NOT EXISTS change_requests (
+      id TEXT PRIMARY KEY,
+      type TEXT NOT NULL,
+      mandarin TEXT NOT NULL,
+      hunan TEXT NOT NULL DEFAULT '',
+      status TEXT NOT NULL DEFAULT 'pending',
+      created_at TIMESTAMPTZ NOT NULL
+    );
+  `);
+  await postgres.query(`
+    CREATE TABLE IF NOT EXISTS evaluations (
+      id TEXT PRIMARY KEY,
+      created_at TIMESTAMPTZ NOT NULL,
+      mode TEXT NOT NULL,
+      dialect TEXT NOT NULL,
+      scene TEXT NOT NULL,
+      source TEXT NOT NULL,
+      output TEXT NOT NULL,
+      accuracy INT NOT NULL,
+      naturalness INT NOT NULL,
+      understandability INT NOT NULL,
+      comment TEXT NOT NULL DEFAULT ''
+    );
+  `);
+  await postgres.query(`
+    CREATE TABLE IF NOT EXISTS app_meta (
+      key TEXT PRIMARY KEY,
+      value JSONB NOT NULL,
+      updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+  `);
+}
+
+async function readDbFromPostgres() {
+  const postgres = getPostgresPool();
+  const [lexiconRows, pendingRows, evaluationRows, metaRows] = await Promise.all([
+    postgres.query("SELECT mandarin, hunan FROM lexicon_entries"),
+    postgres.query("SELECT id, type, mandarin, hunan, status, created_at FROM change_requests ORDER BY created_at DESC"),
+    postgres.query("SELECT id, created_at, mode, dialect, scene, source, output, accuracy, naturalness, understandability, comment FROM evaluations ORDER BY created_at DESC"),
+    postgres.query("SELECT value FROM app_meta WHERE key = 'metadata' LIMIT 1")
+  ]);
+
+  const lexicon = {};
+  lexiconRows.rows.forEach((row) => {
+    lexicon[row.mandarin] = row.hunan;
+  });
+
+  const pending = pendingRows.rows.map((row) => ({
+    id: row.id,
+    type: row.type,
+    mandarin: row.mandarin,
+    hunan: row.hunan,
+    status: row.status,
+    createdAt: new Date(row.created_at).toISOString()
+  }));
+
+  const evaluations = evaluationRows.rows.map((row) => ({
+    id: row.id,
+    createdAt: new Date(row.created_at).toISOString(),
+    mode: row.mode,
+    dialect: row.dialect,
+    scene: row.scene,
+    source: row.source,
+    output: row.output,
+    accuracy: Number(row.accuracy),
+    naturalness: Number(row.naturalness),
+    understandability: Number(row.understandability),
+    comment: row.comment || ""
+  }));
+
+  let metadata = {
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  };
+
+  if (metaRows.rows.length) {
+    const value = metaRows.rows[0].value;
+    metadata = {
+      createdAt: value && value.createdAt ? String(value.createdAt) : metadata.createdAt,
+      updatedAt: value && value.updatedAt ? String(value.updatedAt) : metadata.updatedAt
+    };
+  }
+
+  return {
+    lexicon,
+    pending,
+    evaluations,
+    metadata
+  };
+}
+
+async function persistDbToPostgres() {
+  db.metadata.updatedAt = new Date().toISOString();
+
+  const postgres = getPostgresPool();
+  const client = await postgres.connect();
+  try {
+    await client.query("BEGIN");
+
+    await client.query("DELETE FROM lexicon_entries");
+    for (const [mandarin, hunan] of Object.entries(db.lexicon)) {
+      await client.query(
+        "INSERT INTO lexicon_entries (mandarin, hunan, updated_at) VALUES ($1, $2, NOW())",
+        [mandarin, hunan]
+      );
+    }
+
+    await client.query("DELETE FROM change_requests");
+    for (const item of db.pending) {
+      await client.query(
+        "INSERT INTO change_requests (id, type, mandarin, hunan, status, created_at) VALUES ($1, $2, $3, $4, $5, $6)",
+        [item.id, item.type, item.mandarin, item.hunan || "", item.status || "pending", item.createdAt]
+      );
+    }
+
+    await client.query("DELETE FROM evaluations");
+    for (const item of db.evaluations) {
+      await client.query(
+        "INSERT INTO evaluations (id, created_at, mode, dialect, scene, source, output, accuracy, naturalness, understandability, comment) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)",
+        [
+          item.id,
+          item.createdAt,
+          item.mode,
+          item.dialect,
+          item.scene,
+          item.source,
+          item.output,
+          clampScore(item.accuracy),
+          clampScore(item.naturalness),
+          clampScore(item.understandability),
+          item.comment || ""
+        ]
+      );
+    }
+
+    await client.query(
+      "INSERT INTO app_meta (key, value, updated_at) VALUES ('metadata', $1::jsonb, NOW()) ON CONFLICT (key) DO UPDATE SET value = EXCLUDED.value, updated_at = NOW()",
+      [JSON.stringify(db.metadata)]
+    );
+
+    await client.query("COMMIT");
+  } catch (error) {
+    await client.query("ROLLBACK");
+    throw error;
+  } finally {
+    client.release();
+  }
+}
+
+async function persistDb() {
+  if (STORAGE_MODE === "postgres") {
+    await persistDbToPostgres();
+  } else {
+    persistDbToFile();
+  }
+}
+
+async function initPostgresStorage() {
+  await ensurePostgresSchema();
+
+  const postgres = getPostgresPool();
+  const lexiconCount = await postgres.query("SELECT COUNT(*)::int AS count FROM lexicon_entries");
+
+  if (!Number(lexiconCount.rows[0].count)) {
+    db = {
+      lexicon: { ...defaultLexicon },
+      pending: [],
+      evaluations: [],
+      metadata: {
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      }
+    };
+    await persistDbToPostgres();
+  }
+
+  db = await readDbFromPostgres();
+}
+
+async function initStorage() {
+  loadDefaultLexicon();
+  if (STORAGE_MODE === "postgres") {
+    await initPostgresStorage();
+  } else {
+    initFileStorage();
   }
 }
 
@@ -326,6 +560,7 @@ async function handleApi(req, res, pathname, urlObj) {
   if (pathname === "/api/health" && req.method === "GET") {
     sendJson(res, 200, {
       ok: true,
+      storageMode: STORAGE_MODE,
       now: new Date().toISOString(),
       lexiconCount: Object.keys(db.lexicon).length,
       pendingCount: db.pending.length,
@@ -347,7 +582,7 @@ async function handleApi(req, res, pathname, urlObj) {
       const payload = await parseRequestBody(req);
       const record = buildChangeRequest(payload);
       db.pending.unshift(record);
-      persistDb();
+      await persistDb();
       sendJson(res, 201, {
         message: "Submitted for review",
         pendingCount: db.pending.length,
@@ -401,7 +636,7 @@ async function handleApi(req, res, pathname, urlObj) {
       if (db.evaluations.length > 2000) {
         db.evaluations = db.evaluations.slice(0, 2000);
       }
-      persistDb();
+      await persistDb();
 
       sendJson(res, 201, {
         message: "Evaluation saved",
@@ -424,7 +659,9 @@ async function handleApi(req, res, pathname, urlObj) {
 
     if (pathname === "/api/admin/change-requests" && req.method === "GET") {
       const status = urlObj.searchParams.get("status") || "pending";
-      const records = status === "all" ? sortByNewest(db.pending) : sortByNewest(db.pending.filter((r) => r.status === "pending"));
+      const records = status === "all"
+        ? sortByNewest(db.pending)
+        : sortByNewest(db.pending.filter((r) => r.status === "pending"));
       sendJson(res, 200, {
         records,
         pendingCount: db.pending.filter((r) => r.status === "pending").length
@@ -436,7 +673,7 @@ async function handleApi(req, res, pathname, urlObj) {
       const toApprove = db.pending.filter((item) => item.status === "pending");
       toApprove.forEach(applyPendingAction);
       db.pending = [];
-      persistDb();
+      await persistDb();
       sendJson(res, 200, {
         message: `Approved ${toApprove.length} request(s)`,
         applied: toApprove.length,
@@ -448,7 +685,7 @@ async function handleApi(req, res, pathname, urlObj) {
     if (pathname === "/api/admin/change-requests/reject-all" && req.method === "POST") {
       const count = db.pending.filter((item) => item.status === "pending").length;
       db.pending = [];
-      persistDb();
+      await persistDb();
       sendJson(res, 200, {
         message: `Rejected ${count} request(s)`,
         rejected: count
@@ -469,7 +706,7 @@ async function handleApi(req, res, pathname, urlObj) {
       }
       applyPendingAction(record);
       db.pending = db.pending.filter((item) => item.id !== requestId);
-      persistDb();
+      await persistDb();
       sendJson(res, 200, {
         message: "Approved",
         lexiconCount: Object.keys(db.lexicon).length,
@@ -490,7 +727,7 @@ async function handleApi(req, res, pathname, urlObj) {
         return;
       }
       db.pending = db.pending.filter((item) => item.id !== requestId);
-      persistDb();
+      await persistDb();
       sendJson(res, 200, {
         message: "Rejected",
         pendingCount: db.pending.length
@@ -509,7 +746,7 @@ async function handleApi(req, res, pathname, urlObj) {
         if (payload.clearPending !== false) {
           db.pending = [];
         }
-        persistDb();
+        await persistDb();
         sendJson(res, 200, {
           message: "Lexicon imported",
           lexiconCount: Object.keys(db.lexicon).length,
@@ -527,7 +764,7 @@ async function handleApi(req, res, pathname, urlObj) {
     if (pathname === "/api/admin/reset-lexicon" && req.method === "POST") {
       db.lexicon = { ...defaultLexicon };
       db.pending = [];
-      persistDb();
+      await persistDb();
       sendJson(res, 200, {
         message: "Lexicon reset to defaults",
         lexiconCount: Object.keys(db.lexicon).length
@@ -537,7 +774,7 @@ async function handleApi(req, res, pathname, urlObj) {
 
     if (pathname === "/api/admin/evaluations" && req.method === "DELETE") {
       db.evaluations = [];
-      persistDb();
+      await persistDb();
       sendJson(res, 200, {
         message: "All evaluations cleared"
       });
@@ -568,30 +805,13 @@ async function handleApi(req, res, pathname, urlObj) {
   });
 }
 
-ensureDataReady();
+function createAppServer() {
+  return http.createServer(async (req, res) => {
+    const urlObj = new URL(req.url, `http://${req.headers.host || "localhost"}`);
+    const pathname = urlObj.pathname;
+    const cors = applyCorsHeaders(req, res);
 
-const server = http.createServer(async (req, res) => {
-  const urlObj = new URL(req.url, `http://${req.headers.host || "localhost"}`);
-  const pathname = urlObj.pathname;
-  const cors = applyCorsHeaders(req, res);
-
-  if (req.method === "OPTIONS") {
-    if (!cors.ok) {
-      sendJson(res, 403, {
-        error: "CORS_FORBIDDEN",
-        message: `Origin not allowed: ${cors.origin}`
-      });
-      return;
-    }
-    res.writeHead(204, {
-      Allow: "GET,POST,DELETE,OPTIONS"
-    });
-    res.end();
-    return;
-  }
-
-  try {
-    if (pathname.startsWith("/api/")) {
+    if (req.method === "OPTIONS") {
       if (!cors.ok) {
         sendJson(res, 403, {
           error: "CORS_FORBIDDEN",
@@ -599,25 +819,53 @@ const server = http.createServer(async (req, res) => {
         });
         return;
       }
-      await handleApi(req, res, pathname, urlObj);
+      res.writeHead(204, {
+        Allow: "GET,POST,DELETE,OPTIONS"
+      });
+      res.end();
       return;
     }
 
-    handleStatic(pathname, res);
-  } catch (error) {
-    sendJson(res, 500, {
-      error: "INTERNAL_SERVER_ERROR",
-      message: error.message
-    });
-  }
-});
+    try {
+      if (pathname.startsWith("/api/")) {
+        if (!cors.ok) {
+          sendJson(res, 403, {
+            error: "CORS_FORBIDDEN",
+            message: `Origin not allowed: ${cors.origin}`
+          });
+          return;
+        }
+        await handleApi(req, res, pathname, urlObj);
+        return;
+      }
 
-server.listen(PORT, HOST, () => {
-  console.log(`Server running at http://${HOST}:${PORT}`);
-  console.log(`Admin token: ${ADMIN_TOKEN}`);
-  console.log(
-    `CORS origins: ${
-      CORS_ALLOW_ALL ? "*" : CORS_ORIGINS.length ? CORS_ORIGINS.join(", ") : "(same-origin only)"
-    }`
-  );
+      handleStatic(pathname, res);
+    } catch (error) {
+      sendJson(res, 500, {
+        error: "INTERNAL_SERVER_ERROR",
+        message: error.message
+      });
+    }
+  });
+}
+
+async function start() {
+  await initStorage();
+
+  const server = createAppServer();
+  server.listen(PORT, HOST, () => {
+    console.log(`Server running at http://${HOST}:${PORT}`);
+    console.log(`Storage mode: ${STORAGE_MODE}`);
+    console.log(`Admin token: ${ADMIN_TOKEN}`);
+    console.log(
+      `CORS origins: ${
+        CORS_ALLOW_ALL ? "*" : CORS_ORIGINS.length ? CORS_ORIGINS.join(", ") : "(same-origin only)"
+      }`
+    );
+  });
+}
+
+start().catch((error) => {
+  console.error("Failed to start server:", error);
+  process.exit(1);
 });
