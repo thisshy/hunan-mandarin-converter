@@ -105,3 +105,11 @@ window.APP_CONFIG = {
   API_BASE_URL: "https://your-backend.example.com/api"
 };
 ```
+
+## 7. 仅 GitHub Pages（无后端）模式
+
+如果暂时只有 GitHub Pages，也可以先运行“演示模式”：
+
+1. 保持 `config.js` 中 `API_BASE_URL: "/api"`（不配置后端也可）。
+2. 页面会自动降级到演示模式：支持在线转换、评测本地保存（浏览器本地）。
+3. 审核、后台审批、词库导入导出等需要后端的功能会自动禁用并提示。

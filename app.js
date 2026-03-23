@@ -47,6 +47,8 @@ const clearEvaluationBtn = document.getElementById("clearEvaluationBtn");
 const DIALECT_STORAGE_KEY = "hunan_dialect_mode_v1";
 const SCENE_STORAGE_KEY = "hunan_scene_mode_v1";
 const ADMIN_TOKEN_STORAGE_KEY = "hunan_admin_token_v1";
+const EVALUATION_DEMO_STORAGE_KEY = "hunan_eval_demo_records_v1";
+const DEMO_LEXICON_URL = (window.APP_CONFIG && window.APP_CONFIG.DEMO_LEXICON_URL) || "./server/data/default-lexicon.json";
 
 const DIALECT_PROFILES = {
   changsha: {
@@ -192,6 +194,7 @@ let selectedDialect = loadPreference(DIALECT_STORAGE_KEY, "changsha");
 let selectedScene = loadPreference(SCENE_STORAGE_KEY, "daily");
 let currentCandidates = [];
 const pinyinCache = new Map();
+let backendAvailable = true;
 
 if (!DIALECT_PROFILES[selectedDialect]) {
   selectedDialect = "changsha";
@@ -253,22 +256,91 @@ function hideElement(target) {
   }
 }
 
-function applyAccessUi() {
+function hideAdminControls() {
+  hideElement(document.querySelector(".review-head"));
+  hideElement(document.querySelector(".review-actions"));
+  hideElement(pendingList);
+  hideElement(exportBtn);
+  hideElement(importBtn);
+  hideElement(resetBtn);
+  hideElement(approveAllBtn);
+  hideElement(rejectAllBtn);
+  hideElement(clearEvaluationBtn);
+}
+
+function applyAccessUi(options = {}) {
+  const { skipAdminPrompt = false } = options;
   if (!IS_ADMIN_MODE) {
-    hideElement(document.querySelector(".review-head"));
-    hideElement(document.querySelector(".review-actions"));
-    hideElement(pendingList);
-    hideElement(exportBtn);
-    hideElement(importBtn);
-    hideElement(resetBtn);
-    hideElement(approveAllBtn);
-    hideElement(rejectAllBtn);
-    hideElement(clearEvaluationBtn);
-  } else {
+    hideAdminControls();
+  } else if (backendAvailable) {
     modeLabel.textContent = `${modeLabel.textContent}（后台模式）`;
-    if (!getAdminToken()) {
+    if (!skipAdminPrompt && !getAdminToken()) {
       promptAdminToken("进入后台模式，请输入管理员令牌：");
     }
+  } else {
+    hideAdminControls();
+  }
+}
+
+function showBackendRequiredTip(actionName) {
+  alert(`当前仅运行 GitHub Pages 演示模式，无法执行“${actionName}”。如需审核/持久化，请先部署后端。`);
+}
+
+function loadDemoEvaluations() {
+  try {
+    const raw = localStorage.getItem(EVALUATION_DEMO_STORAGE_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch (error) {
+    return [];
+  }
+}
+
+function saveDemoEvaluations() {
+  try {
+    localStorage.setItem(EVALUATION_DEMO_STORAGE_KEY, JSON.stringify(evaluations));
+  } catch (error) {
+    // ignore quota errors in demo mode
+  }
+}
+
+async function loadDemoLexicon() {
+  const response = await fetch(DEMO_LEXICON_URL, { cache: "no-store" });
+  if (!response.ok) {
+    throw new Error(`演示词库加载失败：${response.status}`);
+  }
+  const data = await response.json();
+  if (!data || typeof data !== "object" || Array.isArray(data)) {
+    throw new Error("演示词库格式不正确");
+  }
+  lexicon = data;
+}
+
+async function enableDemoMode(causeError) {
+  backendAvailable = false;
+  hideAdminControls();
+  pendingQueue = [];
+  renderPendingQueue();
+
+  try {
+    await loadDemoLexicon();
+  } catch (error) {
+    lexicon = {};
+    console.error("Failed to load demo lexicon:", error);
+  }
+  evaluations = loadDemoEvaluations();
+  renderEntries();
+  renderEvaluationStats();
+  renderEvaluationList();
+  convert();
+
+  const reason = causeError && causeError.message ? causeError.message : "未连接到后端";
+  if (sceneTip) {
+    sceneTip.textContent = `当前为演示模式（无后端）：可进行转换与本地评测；审核、导入导出和后台管理不可用。原因：${reason}`;
+  }
+  if (IS_ADMIN_MODE) {
+    alert("当前未连接后端，已切换为演示模式。管理员审核功能暂不可用。");
   }
 }
 
@@ -842,6 +914,11 @@ function downloadJson(payload, filename) {
 }
 
 async function refreshLexicon() {
+  if (!backendAvailable) {
+    renderEntries();
+    convert();
+    return;
+  }
   const data = await apiRequest("/lexicon");
   lexicon = data.lexicon && typeof data.lexicon === "object" ? data.lexicon : {};
   renderEntries();
@@ -849,7 +926,7 @@ async function refreshLexicon() {
 }
 
 async function refreshPendingQueue() {
-  if (!IS_ADMIN_MODE) {
+  if (!IS_ADMIN_MODE || !backendAvailable) {
     pendingQueue = [];
     renderPendingQueue();
     return;
@@ -861,6 +938,12 @@ async function refreshPendingQueue() {
 }
 
 async function refreshEvaluations() {
+  if (!backendAvailable) {
+    evaluations = loadDemoEvaluations();
+    renderEvaluationStats();
+    renderEvaluationList();
+    return;
+  }
   const data = await apiRequest("/evaluations?limit=200");
   evaluations = Array.isArray(data.records) ? data.records : [];
   renderEvaluationStats();
@@ -869,6 +952,10 @@ async function refreshEvaluations() {
 
 async function addOrUpdateEntry(event) {
   event.preventDefault();
+  if (!backendAvailable) {
+    showBackendRequiredTip("提交审核");
+    return;
+  }
 
   const mandarin = mandarinInput.value.trim();
   const hunan = hunanInput.value.trim();
@@ -895,6 +982,10 @@ async function addOrUpdateEntry(event) {
 }
 
 async function removeEntry(event) {
+  if (!backendAvailable) {
+    showBackendRequiredTip("删除审核");
+    return;
+  }
   const button = event.target.closest(".entry-delete");
   if (!button) return;
 
@@ -914,6 +1005,10 @@ async function removeEntry(event) {
 }
 
 async function approveAction(actionId) {
+  if (!backendAvailable) {
+    showBackendRequiredTip("审核通过");
+    return;
+  }
   if (!actionId) return;
   await apiRequest(`/admin/change-requests/${encodeURIComponent(actionId)}/approve`, {
     method: "POST",
@@ -923,6 +1018,10 @@ async function approveAction(actionId) {
 }
 
 async function rejectAction(actionId) {
+  if (!backendAvailable) {
+    showBackendRequiredTip("审核驳回");
+    return;
+  }
   if (!actionId) return;
   await apiRequest(`/admin/change-requests/${encodeURIComponent(actionId)}/reject`, {
     method: "POST",
@@ -932,6 +1031,10 @@ async function rejectAction(actionId) {
 }
 
 async function approveAllActions() {
+  if (!backendAvailable) {
+    showBackendRequiredTip("全部通过");
+    return;
+  }
   await apiRequest("/admin/change-requests/approve-all", {
     method: "POST",
     admin: true
@@ -940,6 +1043,10 @@ async function approveAllActions() {
 }
 
 async function rejectAllActions() {
+  if (!backendAvailable) {
+    showBackendRequiredTip("全部驳回");
+    return;
+  }
   await apiRequest("/admin/change-requests/reject-all", {
     method: "POST",
     admin: true
@@ -948,12 +1055,20 @@ async function rejectAllActions() {
 }
 
 async function exportLexicon() {
+  if (!backendAvailable) {
+    downloadJson(lexicon, "hunan-lexicon-demo.json");
+    return;
+  }
   const data = await apiRequest("/admin/export", { admin: true });
   const exported = data.lexicon && typeof data.lexicon === "object" ? data.lexicon : {};
   downloadJson(exported, "hunan-lexicon.json");
 }
 
 async function importLexiconFromFile(file) {
+  if (!backendAvailable) {
+    showBackendRequiredTip("导入词库");
+    return;
+  }
   const reader = new FileReader();
   reader.onload = async () => {
     try {
@@ -984,6 +1099,10 @@ async function importLexiconFromFile(file) {
 }
 
 async function resetLexicon() {
+  if (!backendAvailable) {
+    showBackendRequiredTip("重置词库");
+    return;
+  }
   const ok = window.confirm("确定恢复后端默认词库吗？这会清空待审核队列。");
   if (!ok) return;
 
@@ -1002,6 +1121,31 @@ async function saveEvaluation(event) {
 
   if (!source || !output) {
     alert("请先输入并完成一次转换，再保存评测。");
+    return;
+  }
+
+  if (!backendAvailable) {
+    const record = {
+      id: `${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+      createdAt: new Date().toISOString(),
+      mode,
+      dialect: selectedDialect,
+      scene: selectedScene,
+      source,
+      output,
+      accuracy: clampScore(scoreAccuracy.value),
+      naturalness: clampScore(scoreNaturalness.value),
+      understandability: clampScore(scoreUnderstandability.value),
+      comment: evaluationComment.value.trim()
+    };
+    evaluations.unshift(record);
+    if (evaluations.length > 2000) {
+      evaluations = evaluations.slice(0, 2000);
+    }
+    saveDemoEvaluations();
+    evaluationComment.value = "";
+    renderEvaluationStats();
+    renderEvaluationList();
     return;
   }
 
@@ -1033,6 +1177,14 @@ async function clearEvaluations() {
 
   const ok = window.confirm("确定清空全部评测记录吗？此操作不可撤销。");
   if (!ok) return;
+
+  if (!backendAvailable) {
+    evaluations = [];
+    saveDemoEvaluations();
+    renderEvaluationStats();
+    renderEvaluationList();
+    return;
+  }
 
   await apiRequest("/admin/evaluations", {
     method: "DELETE",
@@ -1168,7 +1320,7 @@ async function bootstrap() {
     return;
   }
 
-  applyAccessUi();
+  applyAccessUi({ skipAdminPrompt: true });
   syncLabels();
   syncContextState();
   renderPendingQueue();
@@ -1177,10 +1329,17 @@ async function bootstrap() {
   renderEvaluationList();
   renderCandidateList([]);
 
-  await refreshLexicon();
-  await refreshEvaluations();
-  if (IS_ADMIN_MODE) {
-    await refreshPendingQueue();
+  try {
+    await refreshLexicon();
+    await refreshEvaluations();
+    if (IS_ADMIN_MODE) {
+      if (!getAdminToken()) {
+        promptAdminToken("进入后台模式，请输入管理员令牌：");
+      }
+      await refreshPendingQueue();
+    }
+  } catch (error) {
+    await enableDemoMode(error);
   }
 }
 
