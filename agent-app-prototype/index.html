@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>湘语通 Agent App Prototype</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <div class="ambient ambient-a"></div>
+  <div class="ambient ambient-b"></div>
+
+  <main class="shell">
+    <section class="intro-panel">
+      <p class="eyebrow">HUNAN DIALECT APP / MULTI-AGENT PROTOTYPE</p>
+      <h1>湘语通</h1>
+      <p class="lead">
+        基于你现有的“湖南方言转换 + 词库审核 + 效果评测”网页原型，重构为一个更像 App 的移动端产品。
+        核心能力由四个 Agent 协同完成：翻译、纠错、词库审核、评测分析。
+      </p>
+
+      <div class="feature-strip">
+        <div>
+          <span>场景驱动</span>
+          <strong>日常 / 校园 / 文旅 / 短视频</strong>
+        </div>
+        <div>
+          <span>多方言</span>
+          <strong>长沙 / 湘潭 / 株洲</strong>
+        </div>
+        <div>
+          <span>闭环能力</span>
+          <strong>转换 + 审核 + 评测</strong>
+        </div>
+      </div>
+
+      <section class="orchestration">
+        <div class="section-head">
+          <h2>多 Agent 编排</h2>
+          <p>把现有网页功能拆成更适合 App 的协作链路。</p>
+        </div>
+
+        <div class="agent-list" id="agentList"></div>
+
+        <div class="flow-card">
+          <div class="flow-header">
+            <span class="kicker">任务流</span>
+            <strong>用户输入一句话后，系统如何协同完成</strong>
+          </div>
+          <ol id="flowList" class="flow-list"></ol>
+        </div>
+      </section>
+    </section>
+
+    <section class="device-stage">
+      <div class="device-meta">
+        <span class="status-dot"></span>
+        <span>Prototype Preview</span>
+        <span class="meta-divider"></span>
+        <span id="screenTitle">智能转译</span>
+      </div>
+
+      <div class="phone">
+        <div class="phone-top">
+          <span>9:41</span>
+          <div class="phone-icons">
+            <span></span>
+            <span></span>
+            <span class="battery"></span>
+          </div>
+        </div>
+
+        <section class="screen screen-translate active" data-screen="translate">
+          <div class="screen-header">
+            <div>
+              <p class="screen-kicker">主工作台</p>
+              <h2>智能转译</h2>
+            </div>
+            <button class="ghost-btn" type="button">切换方向</button>
+          </div>
+
+          <div class="context-row">
+            <label>
+              <span>方言</span>
+              <select id="dialectSelect">
+                <option value="changsha">长沙口语</option>
+                <option value="xiangtan">湘潭口语</option>
+                <option value="zhuzhou">株洲口语</option>
+              </select>
+            </label>
+            <label>
+              <span>场景</span>
+              <select id="sceneSelect">
+                <option value="daily">日常交流</option>
+                <option value="campus">校园沟通</option>
+                <option value="travel">文旅问路</option>
+                <option value="video">短视频文案</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="tip-banner" id="sceneTip"></div>
+
+          <label class="input-block">
+            <span>输入一句普通话</span>
+            <textarea id="sourceInput">你今天去哪里，吃饭了吗？</textarea>
+          </label>
+
+          <button id="convertBtn" class="primary-btn" type="button">开始协同转译</button>
+
+          <div class="result-card">
+            <div class="result-head">
+              <span>主结果</span>
+              <strong id="mainResult">你今朝克哪凯，恰饭了啵？</strong>
+            </div>
+            <div class="explain-grid">
+              <div>
+                <span>翻译 Agent</span>
+                <strong id="agentSummaryTranslate">词条命中 4 次</strong>
+              </div>
+              <div>
+                <span>纠错 Agent</span>
+                <strong id="agentSummaryFuzzy">容错补偿 1 次</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="candidate-panel">
+            <div class="panel-title">
+              <h3>候选表达</h3>
+              <span>点击即可替换主结果</span>
+            </div>
+            <div id="candidateList" class="candidate-list"></div>
+          </div>
+        </section>
+
+        <section class="screen screen-lexicon" data-screen="lexicon">
+          <div class="screen-header">
+            <div>
+              <p class="screen-kicker">词库工作台</p>
+              <h2>词库实验室</h2>
+            </div>
+            <button class="ghost-btn" type="button">提交审核</button>
+          </div>
+
+          <div class="metric-row">
+            <article>
+              <span>在线词条</span>
+              <strong>168</strong>
+            </article>
+            <article>
+              <span>待审核</span>
+              <strong>12</strong>
+            </article>
+            <article>
+              <span>今日通过</span>
+              <strong>7</strong>
+            </article>
+          </div>
+
+          <div class="list-card">
+            <div class="panel-title">
+              <h3>热门新增建议</h3>
+              <span>来自用户使用与审核队列</span>
+            </div>
+            <div class="term-list" id="termList"></div>
+          </div>
+        </section>
+
+        <section class="screen screen-review" data-screen="review">
+          <div class="screen-header">
+            <div>
+              <p class="screen-kicker">审核中心</p>
+              <h2>人工复核</h2>
+            </div>
+            <button class="ghost-btn" type="button">批量通过</button>
+          </div>
+
+          <div class="review-stack" id="reviewList"></div>
+        </section>
+
+        <section class="screen screen-insights" data-screen="insights">
+          <div class="screen-header">
+            <div>
+              <p class="screen-kicker">效果监测</p>
+              <h2>评测洞察</h2>
+            </div>
+            <button class="ghost-btn" type="button">导出报告</button>
+          </div>
+
+          <div class="insight-hero">
+            <span>近 7 日平均</span>
+            <strong>4.63 / 5</strong>
+            <p>准确性、自然度、可理解性三项综合提升 12%。</p>
+          </div>
+
+          <div class="chart-card">
+            <div class="chart-bars">
+              <div><span>准确性</span><b style="height: 88%"></b><strong>4.8</strong></div>
+              <div><span>自然度</span><b style="height: 79%"></b><strong>4.3</strong></div>
+              <div><span>可理解性</span><b style="height: 84%"></b><strong>4.5</strong></div>
+            </div>
+          </div>
+
+          <div class="list-card compact">
+            <div class="panel-title">
+              <h3>最近评测记录</h3>
+              <span>按时间倒序展示</span>
+            </div>
+            <div class="eval-list" id="evalList"></div>
+          </div>
+        </section>
+
+        <nav class="bottom-nav">
+          <button class="nav-item active" data-target="translate" type="button">转译</button>
+          <button class="nav-item" data-target="lexicon" type="button">词库</button>
+          <button class="nav-item" data-target="review" type="button">审核</button>
+          <button class="nav-item" data-target="insights" type="button">洞察</button>
+        </nav>
+      </div>
+    </section>
+  </main>
+
+  <script src="./app.js"></script>
+</body>
+</html>

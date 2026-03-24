@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>湘言通 App Prototype</title>
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div class="ambient ambient-a"></div>
+  <div class="ambient ambient-b"></div>
+  <div class="grain"></div>
+
+  <main class="studio">
+    <section class="brief-panel">
+      <p class="eyebrow">APP PROTOTYPE / 湘言通</p>
+      <h1>把网页原型收拢成一个真正可操作的湖南方言工具 APP</h1>
+      <p class="lede">
+        基于你现有项目里的普通话/方言互转、场景词包、词库审核和效果评测，
+        重构成一个移动优先的语言工作台。
+      </p>
+
+      <div class="brief-stats" id="briefStats"></div>
+
+      <div class="brief-block">
+        <span class="block-label">设计目标</span>
+        <p id="designGoal">
+          保留原项目的专业能力，同时把操作路径改成更像手机端产品的节奏：
+          先转译，再切场景，再回到词库与评测闭环。
+        </p>
+      </div>
+
+      <div class="brief-block">
+        <span class="block-label">核心流程</span>
+        <div class="flow-list" id="flowList"></div>
+      </div>
+
+      <div class="brief-block">
+        <span class="block-label">模块编排</span>
+        <div class="module-strip" id="moduleStrip"></div>
+      </div>
+    </section>
+
+    <section class="device-stage">
+      <div class="device-glow"></div>
+      <div class="device-shell">
+        <div class="notch"></div>
+        <div class="screen-header">
+          <div>
+            <p class="screen-brand">湘言通</p>
+            <h2>湖南方言实验工作台</h2>
+          </div>
+          <div class="status-cluster">
+            <span class="status-pill" id="statusPill">离线词库</span>
+            <span class="time-pill" id="timePill">09:41</span>
+          </div>
+        </div>
+
+        <div class="screen-body">
+          <section class="screen is-active" data-screen="translate">
+            <div class="surface surface-hero">
+              <div>
+                <p class="surface-kicker">实时互转</p>
+                <h3 id="modeHeadline">普通话 → 长沙话</h3>
+                <p id="modeDescription">把网页里的转换能力压缩成移动端一键工作流。</p>
+              </div>
+              <button class="ghost-btn" id="swapBtn" type="button">切换方向</button>
+            </div>
+
+            <div class="control-row">
+              <label class="control">
+                <span>方言区域</span>
+                <select id="dialectSelect"></select>
+              </label>
+              <label class="control">
+                <span>场景包</span>
+                <select id="sceneSelect"></select>
+              </label>
+            </div>
+
+            <div class="surface editor-surface">
+              <label for="sourceInput">输入文本</label>
+              <textarea id="sourceInput" placeholder="例如：你今天去哪里，吃饭了吗？"></textarea>
+              <div class="quick-phrases" id="quickPhrases"></div>
+            </div>
+
+            <div class="action-row">
+              <button class="primary-btn" id="convertBtn" type="button">立即转译</button>
+              <p class="mini-note" id="sceneTip">优先使用当前场景的表达习惯与局部词包。</p>
+            </div>
+
+            <div class="surface result-surface">
+              <div class="result-head">
+                <div>
+                  <span class="block-label">推荐结果</span>
+                  <p class="mini-note" id="resultMeta">融合词库、区域词和场景表达。</p>
+                </div>
+                <button class="ghost-btn small" id="applyCandidateBtn" type="button">应用首选</button>
+              </div>
+              <div class="result-output" id="resultOutput">点击“立即转译”后在这里显示结果。</div>
+              <div class="candidate-list" id="candidateList"></div>
+            </div>
+          </section>
+
+          <section class="screen" data-screen="scene">
+            <div class="surface section-head">
+              <div>
+                <p class="surface-kicker">场景与区域</p>
+                <h3>让转换不只是一张静态词表</h3>
+              </div>
+            </div>
+            <div class="feature-scene" id="featureScene"></div>
+            <div class="scene-grid" id="sceneGrid"></div>
+            <div class="region-list" id="regionList"></div>
+          </section>
+
+          <section class="screen" data-screen="lexicon">
+            <div class="surface section-head">
+              <div>
+                <p class="surface-kicker">词库实验室</p>
+                <h3>把审核队列和可编辑词库改造成移动端列表流</h3>
+              </div>
+            </div>
+
+            <div class="search-row">
+              <input id="lexiconSearch" type="text" placeholder="搜索普通话或方言词条">
+              <span class="inline-stat" id="lexiconCount">词条 0</span>
+            </div>
+
+            <div class="surface queue-surface">
+              <div class="section-inline-head">
+                <span class="block-label">待审核</span>
+                <span class="inline-stat" id="pendingCount">0 条</span>
+              </div>
+              <div class="queue-list" id="queueList"></div>
+            </div>
+
+            <div class="surface lexicon-surface">
+              <div class="section-inline-head">
+                <span class="block-label">词库快照</span>
+                <span class="inline-stat">移动端优先展示高频词</span>
+              </div>
+              <div class="lexicon-list" id="lexiconList"></div>
+            </div>
+          </section>
+
+          <section class="screen" data-screen="insights">
+            <div class="surface section-head">
+              <div>
+                <p class="surface-kicker">评测与趋势</p>
+                <h3>把原网页里的评测记录做成运营视图</h3>
+              </div>
+            </div>
+
+            <div class="insight-stats" id="insightStats"></div>
+
+            <div class="surface chart-surface">
+              <div class="section-inline-head">
+                <span class="block-label">近阶段趋势</span>
+                <span class="inline-stat" id="trendCaption">按周模拟</span>
+              </div>
+              <div class="trend-chart" id="trendChart"></div>
+            </div>
+
+            <div class="surface records-surface">
+              <div class="section-inline-head">
+                <span class="block-label">最近评测</span>
+                <span class="inline-stat">转换结果人工回看</span>
+              </div>
+              <div class="record-list" id="recordList"></div>
+            </div>
+          </section>
+        </div>
+
+        <nav class="bottom-nav" id="bottomNav"></nav>
+      </div>
+    </section>
+  </main>
+
+  <script src="./data/app-data.js"></script>
+  <script src="./data/default-lexicon.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

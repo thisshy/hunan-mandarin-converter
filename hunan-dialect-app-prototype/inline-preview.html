@@ -1,0 +1,2281 @@
+﻿<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>婀樿█閫?App Prototype</title>
+  <style>
+:root {
+  --bg: #102a28;
+  --bg-deep: #0b1718;
+  --canvas: #f5efe3;
+  --panel: rgba(249, 243, 233, 0.84);
+  --panel-strong: rgba(255, 250, 242, 0.96);
+  --line: rgba(53, 67, 58, 0.16);
+  --text: #192321;
+  --muted: #61706a;
+  --accent: #bf5b2c;
+  --accent-soft: rgba(191, 91, 44, 0.14);
+  --accent-strong: #7f3210;
+  --green-soft: rgba(24, 79, 73, 0.1);
+  --green: #184f49;
+  --shadow: 0 28px 80px rgba(7, 12, 12, 0.38);
+  --phone-shadow: 0 30px 80px rgba(7, 12, 12, 0.5);
+  --radius-xl: 32px;
+  --radius-lg: 24px;
+  --radius-md: 18px;
+  --radius-sm: 14px;
+  --ease: 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+}
+
+body {
+  position: relative;
+  overflow-x: hidden;
+  color: var(--text);
+  font-family: "Source Han Sans SC", "Noto Sans SC", "Microsoft YaHei UI", sans-serif;
+  background:
+    radial-gradient(70vw 80vh at 10% 10%, rgba(224, 163, 103, 0.2), transparent 72%),
+    radial-gradient(50vw 50vh at 85% 20%, rgba(191, 91, 44, 0.26), transparent 78%),
+    linear-gradient(145deg, #0b1718 0%, #113330 38%, #305d55 100%);
+}
+
+.ambient,
+.grain {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+}
+
+.ambient-a {
+  background: radial-gradient(circle at 20% 20%, rgba(255, 184, 117, 0.25), transparent 36%);
+  filter: blur(20px);
+}
+
+.ambient-b {
+  background: radial-gradient(circle at 80% 75%, rgba(51, 126, 116, 0.35), transparent 40%);
+  filter: blur(18px);
+}
+
+.grain {
+  opacity: 0.18;
+  mix-blend-mode: soft-light;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.25) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.22) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: radial-gradient(circle at center, black 45%, transparent 100%);
+}
+
+.studio {
+  position: relative;
+  z-index: 1;
+  width: min(1280px, calc(100vw - 40px));
+  min-height: 100vh;
+  margin: 0 auto;
+  padding: 40px 0;
+  display: grid;
+  grid-template-columns: minmax(320px, 1fr) minmax(360px, 470px);
+  gap: 28px;
+  align-items: center;
+}
+
+.brief-panel {
+  padding: 34px;
+  border-radius: var(--radius-xl);
+  background: rgba(244, 236, 223, 0.12);
+  border: 1px solid rgba(255, 235, 213, 0.12);
+  backdrop-filter: blur(18px);
+  box-shadow: var(--shadow);
+  animation: panel-rise 760ms var(--ease) both;
+}
+
+.eyebrow,
+.block-label,
+.surface-kicker,
+.screen-brand {
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.eyebrow {
+  margin: 0 0 12px;
+  font-size: 12px;
+  color: rgba(253, 240, 220, 0.82);
+}
+
+.brief-panel h1 {
+  margin: 0;
+  max-width: 11ch;
+  font-family: "Source Han Serif SC", "Songti SC", "STSong", serif;
+  font-size: clamp(38px, 6vw, 72px);
+  line-height: 0.98;
+  color: #fff7ea;
+}
+
+.lede {
+  margin: 18px 0 0;
+  max-width: 560px;
+  font-size: 16px;
+  line-height: 1.75;
+  color: rgba(255, 245, 232, 0.82);
+}
+
+.brief-stats {
+  margin-top: 24px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.stat-chip,
+.module-card,
+.insight-chip {
+  border: 1px solid rgba(255, 239, 220, 0.14);
+  background: rgba(255, 249, 240, 0.08);
+}
+
+.stat-chip {
+  padding: 14px 16px;
+  border-radius: 18px;
+}
+
+.stat-chip strong {
+  display: block;
+  font-size: 24px;
+  color: #fff4e3;
+}
+
+.stat-chip span {
+  display: block;
+  margin-top: 6px;
+  font-size: 13px;
+  color: rgba(255, 239, 220, 0.75);
+}
+
+.brief-block {
+  margin-top: 22px;
+  padding-top: 20px;
+  border-top: 1px solid rgba(255, 236, 212, 0.16);
+}
+
+.block-label {
+  font-size: 11px;
+  color: rgba(255, 239, 220, 0.68);
+}
+
+#designGoal,
+.flow-step,
+.module-card p {
+  margin: 12px 0 0;
+  font-size: 14px;
+  line-height: 1.72;
+  color: rgba(255, 245, 233, 0.84);
+}
+
+.flow-list,
+.module-strip {
+  margin-top: 14px;
+  display: grid;
+  gap: 12px;
+}
+
+.flow-step {
+  position: relative;
+  padding-left: 26px;
+}
+
+.flow-step::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 9px;
+  width: 12px;
+  height: 12px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ffd0aa, #bf5b2c);
+  box-shadow: 0 0 0 5px rgba(191, 91, 44, 0.12);
+}
+
+.module-strip {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.module-card {
+  padding: 16px;
+  border-radius: 20px;
+}
+
+.module-card strong {
+  font-size: 16px;
+  color: #fff7ea;
+}
+
+.device-stage {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  animation: panel-rise 880ms 120ms var(--ease) both;
+}
+
+.device-glow {
+  position: absolute;
+  inset: 6% 10% auto;
+  height: 82%;
+  border-radius: 40px;
+  background: radial-gradient(circle, rgba(255, 173, 111, 0.26), transparent 70%);
+  filter: blur(16px);
+}
+
+.device-shell {
+  position: relative;
+  width: min(100%, 430px);
+  min-height: 820px;
+  padding: 22px 16px 18px;
+  border-radius: 42px;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(244, 236, 223, 0.96)),
+    linear-gradient(180deg, #ece1d3, #f7f1e7);
+  border: 1px solid rgba(255, 251, 246, 0.72);
+  box-shadow: var(--phone-shadow);
+  overflow: hidden;
+}
+
+.device-shell::before {
+  content: "";
+  position: absolute;
+  inset: 10px;
+  border-radius: 32px;
+  border: 1px solid rgba(34, 51, 45, 0.08);
+  pointer-events: none;
+}
+
+.notch {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  width: 136px;
+  height: 24px;
+  transform: translateX(-50%);
+  border-radius: 0 0 18px 18px;
+  background: #121717;
+}
+
+.screen-header {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: flex-start;
+  padding: 24px 12px 14px;
+}
+
+.screen-brand {
+  margin: 0;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.screen-header h2 {
+  margin: 6px 0 0;
+  font-family: "Source Han Serif SC", "Songti SC", serif;
+  font-size: 28px;
+  line-height: 1.14;
+}
+
+.status-cluster {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.status-pill,
+.time-pill,
+.inline-stat,
+.mini-note,
+.candidate-tag {
+  font-size: 12px;
+}
+
+.status-pill,
+.time-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.status-pill {
+  color: var(--green);
+  background: rgba(24, 79, 73, 0.08);
+}
+
+.time-pill {
+  color: var(--accent-strong);
+  background: rgba(191, 91, 44, 0.08);
+}
+
+.screen-body {
+  position: relative;
+  height: 670px;
+  padding: 0 12px;
+}
+
+.screen {
+  position: absolute;
+  inset: 0 12px 0;
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  padding-bottom: 14px;
+  opacity: 0;
+  transform: translateY(14px) scale(0.985);
+  pointer-events: none;
+  transition:
+    opacity var(--ease),
+    transform var(--ease);
+  overflow-y: auto;
+  scrollbar-width: none;
+}
+
+.screen::-webkit-scrollbar {
+  display: none;
+}
+
+.screen.is-active {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: auto;
+}
+
+.surface,
+.feature-scene {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  backdrop-filter: blur(18px);
+}
+
+.surface {
+  padding: 16px;
+}
+
+.surface-hero,
+.section-head,
+.result-head,
+.section-inline-head,
+.search-row,
+.action-row,
+.control-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+}
+
+.surface-hero {
+  padding: 18px;
+  align-items: flex-start;
+  background:
+    radial-gradient(circle at top left, rgba(255, 201, 159, 0.42), transparent 50%),
+    linear-gradient(145deg, rgba(255, 250, 243, 0.95), rgba(242, 233, 220, 0.84));
+}
+
+.surface-kicker {
+  margin: 0 0 8px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.surface h3,
+.feature-scene h4 {
+  margin: 0;
+  font-size: 22px;
+  line-height: 1.18;
+}
+
+#modeDescription,
+.feature-scene p,
+.scene-card p,
+.region-card p,
+.queue-item p,
+.record-card p,
+.record-card small,
+.candidate-copy,
+.mini-note {
+  margin: 8px 0 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.ghost-btn,
+.primary-btn,
+.nav-btn,
+.phrase-btn,
+.candidate-btn {
+  font: inherit;
+  border: none;
+  cursor: pointer;
+  transition:
+    transform var(--ease),
+    background-color var(--ease),
+    color var(--ease),
+    box-shadow var(--ease);
+}
+
+.ghost-btn,
+.candidate-btn,
+.phrase-btn,
+.nav-btn {
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.ghost-btn {
+  padding: 12px 14px;
+  border-radius: 16px;
+  color: var(--accent-strong);
+  box-shadow: inset 0 0 0 1px rgba(191, 91, 44, 0.12);
+}
+
+.ghost-btn.small {
+  padding: 9px 12px;
+  border-radius: 12px;
+  font-size: 13px;
+}
+
+.primary-btn {
+  padding: 14px 18px;
+  border-radius: 16px;
+  color: #fff8f1;
+  background: linear-gradient(135deg, #cd6939, #a34117);
+  box-shadow: 0 16px 30px rgba(163, 65, 23, 0.26);
+}
+
+.ghost-btn:hover,
+.primary-btn:hover,
+.nav-btn:hover,
+.phrase-btn:hover,
+.candidate-btn:hover {
+  transform: translateY(-1px);
+}
+
+.control-row {
+  align-items: stretch;
+}
+
+.control {
+  flex: 1;
+  display: grid;
+  gap: 8px;
+}
+
+.control span,
+.editor-surface label,
+.section-inline-head,
+.result-surface .block-label {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+select,
+textarea,
+input[type="text"] {
+  width: 100%;
+  border: 1px solid rgba(35, 50, 43, 0.12);
+  outline: none;
+  background: rgba(255, 251, 245, 0.94);
+  color: var(--text);
+  border-radius: 16px;
+  font: inherit;
+}
+
+select,
+input[type="text"] {
+  height: 48px;
+  padding: 0 14px;
+}
+
+textarea {
+  min-height: 148px;
+  padding: 14px;
+  resize: none;
+  line-height: 1.7;
+}
+
+select:focus,
+textarea:focus,
+input[type="text"]:focus {
+  border-color: rgba(191, 91, 44, 0.4);
+  box-shadow: 0 0 0 4px rgba(191, 91, 44, 0.08);
+}
+
+.editor-surface,
+.result-surface,
+.queue-surface,
+.lexicon-surface,
+.chart-surface,
+.records-surface {
+  background: var(--panel-strong);
+}
+
+.quick-phrases {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.phrase-btn {
+  padding: 9px 12px;
+  border-radius: 999px;
+  color: var(--green);
+  box-shadow: inset 0 0 0 1px rgba(24, 79, 73, 0.1);
+}
+
+.action-row {
+  align-items: center;
+}
+
+.mini-note {
+  font-size: 12px;
+}
+
+.result-head {
+  align-items: flex-start;
+}
+
+.result-output {
+  margin-top: 14px;
+  min-height: 90px;
+  padding: 16px;
+  border-radius: 18px;
+  background: linear-gradient(145deg, rgba(236, 245, 243, 0.9), rgba(255, 251, 245, 0.96));
+  border: 1px solid rgba(24, 79, 73, 0.08);
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+.candidate-list,
+.scene-grid,
+.region-list,
+.queue-list,
+.lexicon-list,
+.record-list,
+.insight-stats,
+.trend-chart {
+  display: grid;
+  gap: 10px;
+}
+
+.candidate-list {
+  margin-top: 12px;
+}
+
+.candidate-card,
+.scene-card,
+.region-card,
+.queue-item,
+.lexicon-item,
+.record-card,
+.insight-chip {
+  border-radius: 18px;
+  border: 1px solid rgba(35, 50, 43, 0.08);
+  background: rgba(255, 252, 248, 0.88);
+}
+
+.candidate-card,
+.queue-item,
+.lexicon-item,
+.record-card {
+  padding: 14px;
+}
+
+.candidate-card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 12px;
+  align-items: center;
+  opacity: 0;
+  transform: translateY(8px);
+  animation: list-rise 380ms var(--ease) forwards;
+}
+
+.candidate-tag {
+  padding: 6px 8px;
+  border-radius: 999px;
+  color: var(--green);
+  background: var(--green-soft);
+}
+
+.candidate-copy {
+  margin: 0;
+  font-size: 13px;
+}
+
+.candidate-copy strong {
+  display: block;
+  margin-bottom: 3px;
+  color: var(--text);
+}
+
+.candidate-btn {
+  padding: 9px 11px;
+  border-radius: 12px;
+  color: var(--accent-strong);
+}
+
+.feature-scene {
+  min-height: 180px;
+  padding: 18px;
+  background:
+    radial-gradient(circle at 80% 18%, rgba(255, 201, 156, 0.36), transparent 36%),
+    linear-gradient(145deg, rgba(23, 66, 60, 0.9), rgba(33, 90, 80, 0.82));
+  color: #fef7ee;
+}
+
+.feature-scene .block-label,
+.feature-scene p {
+  color: rgba(255, 243, 226, 0.82);
+}
+
+.feature-scene .accent-line {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px solid rgba(255, 238, 214, 0.18);
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.scene-grid,
+.region-list,
+.insight-stats {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.scene-card,
+.region-card,
+.insight-chip {
+  padding: 14px;
+}
+
+.scene-card strong,
+.region-card strong,
+.insight-chip strong,
+.queue-item strong,
+.lexicon-item strong,
+.record-card strong {
+  display: block;
+  font-size: 15px;
+}
+
+.scene-card .small-pill,
+.region-card .small-pill {
+  display: inline-flex;
+  margin-top: 10px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  color: var(--accent-strong);
+  background: var(--accent-soft);
+}
+
+.queue-item,
+.lexicon-item,
+.record-card {
+  display: grid;
+  gap: 6px;
+}
+
+.queue-item .meta-row,
+.record-card .meta-row,
+.lexicon-item .meta-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: center;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.queue-item .queue-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: rgba(24, 79, 73, 0.08);
+  color: var(--green);
+}
+
+.lexicon-item .pair {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  align-items: baseline;
+}
+
+.lexicon-item .pair span:last-child {
+  color: var(--accent-strong);
+}
+
+.insight-chip strong {
+  font-size: 24px;
+}
+
+.insight-chip span {
+  display: block;
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.trend-chart {
+  margin-top: 14px;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  align-items: end;
+  min-height: 180px;
+}
+
+.bar-col {
+  display: grid;
+  gap: 8px;
+  align-items: end;
+  justify-items: center;
+}
+
+.bar {
+  width: 100%;
+  min-height: 30px;
+  border-radius: 999px 999px 14px 14px;
+  background: linear-gradient(180deg, rgba(191, 91, 44, 0.9), rgba(24, 79, 73, 0.78));
+  box-shadow: inset 0 -1px 0 rgba(255, 255, 255, 0.18);
+}
+
+.bar-label,
+.bar-value {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.bottom-nav {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+  padding: 12px 4px 0;
+}
+
+.nav-btn {
+  padding: 12px 10px;
+  border-radius: 16px;
+  color: var(--muted);
+  display: grid;
+  gap: 2px;
+  justify-items: center;
+}
+
+.nav-btn strong {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.nav-btn span {
+  font-size: 11px;
+}
+
+.nav-btn.is-active {
+  background: linear-gradient(145deg, rgba(191, 91, 44, 0.16), rgba(24, 79, 73, 0.12));
+  color: var(--text);
+  box-shadow: inset 0 0 0 1px rgba(191, 91, 44, 0.12);
+}
+
+@keyframes panel-rise {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes list-rise {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 1080px) {
+  .studio {
+    width: min(980px, calc(100vw - 28px));
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .brief-panel {
+    width: min(720px, 100%);
+  }
+
+  .device-stage {
+    width: 100%;
+  }
+}
+
+@media (max-width: 640px) {
+  .studio {
+    width: calc(100vw - 18px);
+    padding: 18px 0 24px;
+    gap: 16px;
+  }
+
+  .brief-panel {
+    padding: 24px 20px;
+  }
+
+  .brief-panel h1 {
+    max-width: 100%;
+    font-size: 42px;
+  }
+
+  .brief-stats,
+  .module-strip,
+  .scene-grid,
+  .region-list,
+  .insight-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .device-shell {
+    width: 100%;
+    min-height: 780px;
+    border-radius: 34px;
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .screen-header h2 {
+    font-size: 24px;
+  }
+
+  .screen-body {
+    height: 640px;
+  }
+
+  .control-row,
+  .search-row,
+  .action-row,
+  .result-head {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .trend-chart {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+</style>
+</head>
+<body>
+  <div class="ambient ambient-a"></div>
+  <div class="ambient ambient-b"></div>
+  <div class="grain"></div>
+
+  <main class="studio">
+    <section class="brief-panel">
+      <p class="eyebrow">APP PROTOTYPE / 婀樿█閫?/p>
+      <h1>鎶婄綉椤靛師鍨嬫敹鎷㈡垚涓€涓湡姝ｅ彲鎿嶄綔鐨勬箹鍗楁柟瑷€宸ュ叿 APP</h1>
+      <p class="lede">
+        鍩轰簬浣犵幇鏈夐」鐩噷鐨勬櫘閫氳瘽/鏂硅█浜掕浆銆佸満鏅瘝鍖呫€佽瘝搴撳鏍稿拰鏁堟灉璇勬祴锛?        閲嶆瀯鎴愪竴涓Щ鍔ㄤ紭鍏堢殑璇█宸ヤ綔鍙般€?      </p>
+
+      <div class="brief-stats" id="briefStats"></div>
+
+      <div class="brief-block">
+        <span class="block-label">璁捐鐩爣</span>
+        <p id="designGoal">
+          淇濈暀鍘熼」鐩殑涓撲笟鑳藉姏锛屽悓鏃舵妸鎿嶄綔璺緞鏀规垚鏇村儚鎵嬫満绔骇鍝佺殑鑺傚锛?          鍏堣浆璇戯紝鍐嶅垏鍦烘櫙锛屽啀鍥炲埌璇嶅簱涓庤瘎娴嬮棴鐜€?        </p>
+      </div>
+
+      <div class="brief-block">
+        <span class="block-label">鏍稿績娴佺▼</span>
+        <div class="flow-list" id="flowList"></div>
+      </div>
+
+      <div class="brief-block">
+        <span class="block-label">妯″潡缂栨帓</span>
+        <div class="module-strip" id="moduleStrip"></div>
+      </div>
+    </section>
+
+    <section class="device-stage">
+      <div class="device-glow"></div>
+      <div class="device-shell">
+        <div class="notch"></div>
+        <div class="screen-header">
+          <div>
+            <p class="screen-brand">婀樿█閫?/p>
+            <h2>婀栧崡鏂硅█瀹為獙宸ヤ綔鍙?/h2>
+          </div>
+          <div class="status-cluster">
+            <span class="status-pill" id="statusPill">绂荤嚎璇嶅簱</span>
+            <span class="time-pill" id="timePill">09:41</span>
+          </div>
+        </div>
+
+        <div class="screen-body">
+          <section class="screen is-active" data-screen="translate">
+            <div class="surface surface-hero">
+              <div>
+                <p class="surface-kicker">瀹炴椂浜掕浆</p>
+                <h3 id="modeHeadline">鏅€氳瘽 鈫?闀挎矙璇?/h3>
+                <p id="modeDescription">鎶婄綉椤甸噷鐨勮浆鎹㈣兘鍔涘帇缂╂垚绉诲姩绔竴閿伐浣滄祦銆?/p>
+              </div>
+              <button class="ghost-btn" id="swapBtn" type="button">鍒囨崲鏂瑰悜</button>
+            </div>
+
+            <div class="control-row">
+              <label class="control">
+                <span>鏂硅█鍖哄煙</span>
+                <select id="dialectSelect"></select>
+              </label>
+              <label class="control">
+                <span>鍦烘櫙鍖?/span>
+                <select id="sceneSelect"></select>
+              </label>
+            </div>
+
+            <div class="surface editor-surface">
+              <label for="sourceInput">杈撳叆鏂囨湰</label>
+              <textarea id="sourceInput" placeholder="渚嬪锛氫綘浠婂ぉ鍘诲摢閲岋紝鍚冮キ浜嗗悧锛?></textarea>
+              <div class="quick-phrases" id="quickPhrases"></div>
+            </div>
+
+            <div class="action-row">
+              <button class="primary-btn" id="convertBtn" type="button">绔嬪嵆杞瘧</button>
+              <p class="mini-note" id="sceneTip">浼樺厛浣跨敤褰撳墠鍦烘櫙鐨勮〃杈句範鎯笌灞€閮ㄨ瘝鍖呫€?/p>
+            </div>
+
+            <div class="surface result-surface">
+              <div class="result-head">
+                <div>
+                  <span class="block-label">鎺ㄨ崘缁撴灉</span>
+                  <p class="mini-note" id="resultMeta">铻嶅悎璇嶅簱銆佸尯鍩熻瘝鍜屽満鏅〃杈俱€?/p>
+                </div>
+                <button class="ghost-btn small" id="applyCandidateBtn" type="button">搴旂敤棣栭€?/button>
+              </div>
+              <div class="result-output" id="resultOutput">鐐瑰嚮鈥滅珛鍗宠浆璇戔€濆悗鍦ㄨ繖閲屾樉绀虹粨鏋溿€?/div>
+              <div class="candidate-list" id="candidateList"></div>
+            </div>
+          </section>
+
+          <section class="screen" data-screen="scene">
+            <div class="surface section-head">
+              <div>
+                <p class="surface-kicker">鍦烘櫙涓庡尯鍩?/p>
+                <h3>璁╄浆鎹笉鍙槸涓€寮犻潤鎬佽瘝琛?/h3>
+              </div>
+            </div>
+            <div class="feature-scene" id="featureScene"></div>
+            <div class="scene-grid" id="sceneGrid"></div>
+            <div class="region-list" id="regionList"></div>
+          </section>
+
+          <section class="screen" data-screen="lexicon">
+            <div class="surface section-head">
+              <div>
+                <p class="surface-kicker">璇嶅簱瀹為獙瀹?/p>
+                <h3>鎶婂鏍搁槦鍒楀拰鍙紪杈戣瘝搴撴敼閫犳垚绉诲姩绔垪琛ㄦ祦</h3>
+              </div>
+            </div>
+
+            <div class="search-row">
+              <input id="lexiconSearch" type="text" placeholder="鎼滅储鏅€氳瘽鎴栨柟瑷€璇嶆潯">
+              <span class="inline-stat" id="lexiconCount">璇嶆潯 0</span>
+            </div>
+
+            <div class="surface queue-surface">
+              <div class="section-inline-head">
+                <span class="block-label">寰呭鏍?/span>
+                <span class="inline-stat" id="pendingCount">0 鏉?/span>
+              </div>
+              <div class="queue-list" id="queueList"></div>
+            </div>
+
+            <div class="surface lexicon-surface">
+              <div class="section-inline-head">
+                <span class="block-label">璇嶅簱蹇収</span>
+                <span class="inline-stat">绉诲姩绔紭鍏堝睍绀洪珮棰戣瘝</span>
+              </div>
+              <div class="lexicon-list" id="lexiconList"></div>
+            </div>
+          </section>
+
+          <section class="screen" data-screen="insights">
+            <div class="surface section-head">
+              <div>
+                <p class="surface-kicker">璇勬祴涓庤秼鍔?/p>
+                <h3>鎶婂師缃戦〉閲岀殑璇勬祴璁板綍鍋氭垚杩愯惀瑙嗗浘</h3>
+              </div>
+            </div>
+
+            <div class="insight-stats" id="insightStats"></div>
+
+            <div class="surface chart-surface">
+              <div class="section-inline-head">
+                <span class="block-label">杩戦樁娈佃秼鍔?/span>
+                <span class="inline-stat" id="trendCaption">鎸夊懆妯℃嫙</span>
+              </div>
+              <div class="trend-chart" id="trendChart"></div>
+            </div>
+
+            <div class="surface records-surface">
+              <div class="section-inline-head">
+                <span class="block-label">鏈€杩戣瘎娴?/span>
+                <span class="inline-stat">杞崲缁撴灉浜哄伐鍥炵湅</span>
+              </div>
+              <div class="record-list" id="recordList"></div>
+            </div>
+          </section>
+        </div>
+
+        <nav class="bottom-nav" id="bottomNav"></nav>
+      </div>
+    </section>
+  </main>
+
+  <script>
+(function () {
+  const APP_DATA = {
+    appMeta: {
+      name: "婀樿█閫?,
+      subtitle: "婀栧崡鏂硅█涓庢櫘閫氳瘽浜掕浆宸ヤ綔鍙?,
+      description:
+        "闈㈠悜鏂硅█杞崲銆佽瘝搴撳鏍稿拰鏁堟灉璇勬祴鐨勪竴浣撳寲鍘熷瀷鏁版嵁锛岄€傚悎绉诲姩绔伐浣滃彴灞曠ず銆?,
+      version: "prototype-1.0"
+    },
+
+    navTabs: [
+      {
+        key: "translate",
+        title: "杞瘧",
+        subtitle: "鏅€氳瘽 / 鏂硅█浜掕浆",
+        summary: "鏀寔鍦烘櫙鍖栬浆璇戙€佸€欓€夌粨鏋滃姣斿拰涓€閿簲鐢ㄣ€?,
+        badge: "鏍稿績"
+      },
+      {
+        key: "scene",
+        title: "鍦烘櫙",
+        subtitle: "鏃ュ父 / 鏍″洯 / 鏂囨梾 / 瑙嗛",
+        summary: "鎸変娇鐢ㄥ満鏅粍缁囬珮棰戣瘝鍙ワ紝鎻愬崌璇鍛戒腑鐜囥€?,
+        badge: "鎺ㄨ崘"
+      },
+      {
+        key: "lexicon",
+        title: "璇嶅簱",
+        subtitle: "瀹℃牳 / 瀵煎叆 / 缁存姢",
+        summary: "淇濈暀璇嶆潯瀹℃牳娴侊紝鏂逛究闆嗕腑缁存姢婀栧崡鏂硅█璇嶅簱銆?,
+        badge: "鍚庡彴"
+      },
+      {
+        key: "insights",
+        title: "璇勬祴",
+        subtitle: "鏁堟灉瓒嬪娍 / 璁板綍",
+        summary: "灞曠ず鍑嗙‘鐜囥€佽嚜鐒跺害鍜屽彲鐞嗚В鎬х瓑鏍稿績鎸囨爣銆?,
+        badge: "鍒嗘瀽"
+      }
+    ],
+
+    scenePackages: [
+      {
+        key: "daily",
+        name: "鏃ュ父浜ゆ祦",
+        title: "楂橀鍙ｈ鍖?,
+        description: "瑕嗙洊鑱婂ぉ銆侀棶璺€佹彁閱掋€佸洖搴旂瓑鏃ュ父楂橀琛ㄨ揪锛岄€傚悎蹇€熻浆璇戙€?,
+        tone: "鑷劧銆佺洿鎺ャ€佸彛璇寲",
+        useCases: ["鑱婂ぉ", "鎺ヨ瘽", "鏃ュ父鎻愰啋"],
+        highlight: "浼樺厛鍖归厤鐭彞鍜岄珮棰戣瘝缁?
+      },
+      {
+        key: "campus",
+        name: "鏍″洯娌熼€?,
+        title: "鏍″洯鍦烘櫙鍖?,
+        description: "鍥寸粫涓婅銆侀鍫傘€佷綔涓氥€佽€冭瘯绛夋牎鍥澧冩瀯寤哄彲鐢ㄨ〃杈俱€?,
+        tone: "鏄庣‘銆佽交蹇€侀€傚悎瀛︾敓绔?,
+        useCases: ["涓婅涓嬭", "瀹胯垗浜ゆ祦", "浣滀笟鎻愰啋"],
+        highlight: "鏇撮€傚悎楂橀鍚嶈瘝鍜屽浐瀹氬彞寮?
+      },
+      {
+        key: "travel",
+        name: "鏂囨梾闂矾",
+        title: "鍑鸿鍦烘櫙鍖?,
+        description: "瑕嗙洊鏅尯銆佷氦閫氥€佽矾绾垮拰鏈嶅姟鍜ㄨ锛岄€傚悎娓稿绔拰瀵艰绔€?,
+        tone: "绀艰矊銆佹竻鏅般€佷俊鎭鍚?,
+        useCases: ["闂矾", "涔扮エ", "鎵炬櫙鐐?],
+        highlight: "鍔犲己鍦板悕銆佷氦閫氳瘝涓庨棶鍙ユā鏉?
+      },
+      {
+        key: "video",
+        name: "鐭棰戞枃妗?,
+        title: "浼犳挱鍦烘櫙鍖?,
+        description: "闈㈠悜鏍囬銆佸彛鎾€佸脊骞曞拰璇勮璇锛岀獊鍑鸿妭濂忔劅鍜屾儏缁〃杈俱€?,
+        tone: "鏇存湁浼犳挱鎰燂紝閫傚悎鍐呭鍒涗綔",
+        useCases: ["鏍囬鐢熸垚", "鍙ｆ挱鍙拌瘝", "璇勮浜掑姩"],
+        highlight: "寮哄寲鎯呯华璇嶅拰鐭彞鑺傚"
+      }
+    ],
+
+    dialectRegions: [
+      {
+        key: "changsha",
+        name: "闀挎矙",
+        area: "闀挎矙鍙ｈ",
+        intro: "浣滀负榛樿涓诲尯鍩燂紝閫傚悎鍋氶灞忚浆鎹㈠拰璇嶅簱鍩哄噯鏍锋湰銆?,
+        strengths: ["瑕嗙洊闈㈠箍", "鐢ㄦ埛璇嗗埆搴﹂珮", "閫傚悎浣滀负榛樿璇嶅簱"],
+        sampleStyle: "鏇村亸鏃ュ父鍙ｈ鍜岃〃杈捐妭濂?
+      },
+      {
+        key: "xiangtan",
+        name: "婀樻江",
+        area: "婀樻江鍙ｈ",
+        intro: "閫傚悎灞曠ず杩戦偦鍩庡競鐨勮瘝褰㈠樊寮傚拰鍚屼箟鏇挎崲鑳藉姏銆?,
+        strengths: ["閭昏繎鍦板煙", "璇嶅舰宸紓鏄庢樉", "渚夸簬瀵规瘮灞曠ず"],
+        sampleStyle: "閫傚悎绐佸嚭璇嶆眹鏄犲皠"
+      },
+      {
+        key: "zhuzhou",
+        name: "鏍床",
+        area: "鏍床鍙ｈ",
+        intro: "閫傚悎鎵胯浇鍑鸿銆佸伐涓氬拰鐢熸椿绫昏〃杈撅紝寮鸿皟瀹炵敤鎬с€?,
+        strengths: ["鐢熸椿鍦烘櫙寮?, "鐭彞閫傞厤楂?, "渚夸簬鏁堟灉璇勬祴"],
+        sampleStyle: "鏇撮€傚悎楂橀鐢熸椿璇?
+      }
+    ],
+
+    recommendedPhrases: [
+      "浣犺帿鎬ワ紝鍏堟妸璇濊娓呮銆?,
+      "杩欎釜鎰忔€濊鎬庝箞鐢ㄦ柟瑷€璇达紵",
+      "鍏堢湅鍦烘櫙锛屽啀閫夎瘝搴撶増鏈€?,
+      "杩欏彞杞緱铔嚜鐒讹紝鑳界洿鎺ョ敤銆?,
+      "闂矾銆佸悆楗€佽亰澶╅兘鍙互璇曡瘯銆?,
+      "璇嶅簱宸叉洿鏂帮紝寤鸿閲嶆柊璺戜竴閬嶃€?,
+      "璇勬祴缁撴灉鏄剧ず鑷劧搴︽洿楂樹簡銆?,
+      "杩欐潯琛ㄨ揪鏇撮€傚悎鐭棰戝彛鎾€?
+    ],
+
+    evaluationRecords: [
+      {
+        id: "eval-01",
+        createdAt: "2026-03-20T09:15:00+08:00",
+        mode: "m2h",
+        dialect: "changsha",
+        scene: "daily",
+        source: "浣犱粖澶╁幓鍝噷锛屽悆楗簡鍚楋紵",
+        output: "浣犱粖鏈濆厠鍝嚡锛屾伆楗搾鍐囷紵",
+        accuracy: 4.8,
+        naturalness: 4.6,
+        understandability: 4.7,
+        comment: "鏃ュ父鍙ｈ鍛戒腑绋冲畾锛屾暣浣撹〃杈捐嚜鐒躲€?
+      },
+      {
+        id: "eval-02",
+        createdAt: "2026-03-20T14:40:00+08:00",
+        mode: "m2h",
+        dialect: "xiangtan",
+        scene: "campus",
+        source: "涓嬭浠ュ悗鍘婚鍫傝繕鏄浘涔﹂锛?,
+        output: "涓嬪爞浠ュ悗鍏嬮鍫傝繕鏄浘涔﹂锛?,
+        accuracy: 4.4,
+        naturalness: 4.2,
+        understandability: 4.5,
+        comment: "鏍″洯璇嶆潯姣旇緝闆嗕腑锛岄€傚悎鍋氬満鏅寘妯℃澘銆?
+      },
+      {
+        id: "eval-03",
+        createdAt: "2026-03-21T10:05:00+08:00",
+        mode: "h2m",
+        dialect: "zhuzhou",
+        scene: "travel",
+        source: "浣犲厠鍝嚡锛熷湴閾佺珯鍟蜂釜璧帮紵",
+        output: "浣犲幓鍝噷锛熷湴閾佺珯鎬庝箞璧帮紵",
+        accuracy: 4.7,
+        naturalness: 4.3,
+        understandability: 4.6,
+        comment: "闂矾鍙ュ紡娓呮櫚锛岄€傚悎鏂囨梾鍦烘櫙銆?
+      },
+      {
+        id: "eval-04",
+        createdAt: "2026-03-22T19:30:00+08:00",
+        mode: "m2h",
+        dialect: "changsha",
+        scene: "video",
+        source: "鍏勫紵浠偣涓禐锛岄┈涓婂紑鎾紒",
+        output: "鑰佸紵浠偣涓禐锛岀珛椹紑鎾挴锛?,
+        accuracy: 4.5,
+        naturalness: 4.8,
+        understandability: 4.4,
+        comment: "鐭棰戣姘旀洿寮猴紝閫傚悎鍋氫紶鎾瀷鍐呭銆?
+      }
+    ],
+
+    stats: {
+      totalLexicon: 1286,
+      pendingReview: 38,
+      dailyConversions: 214,
+      evaluationAvgAccuracy: 4.63,
+      evaluationAvgNaturalness: 4.41,
+      evaluationAvgUnderstandability: 4.58,
+      sceneCoverage: 4,
+      dialectCoverage: 3,
+      reviewPassRate: 0.87
+    },
+
+    trendSeries: [
+      { label: "Mon", accuracy: 4.2, naturalness: 4.0, understandability: 4.1 },
+      { label: "Tue", accuracy: 4.3, naturalness: 4.1, understandability: 4.2 },
+      { label: "Wed", accuracy: 4.4, naturalness: 4.2, understandability: 4.4 },
+      { label: "Thu", accuracy: 4.5, naturalness: 4.3, understandability: 4.5 },
+      { label: "Fri", accuracy: 4.6, naturalness: 4.4, understandability: 4.6 },
+      { label: "Sat", accuracy: 4.7, naturalness: 4.5, understandability: 4.7 }
+    ]
+  };
+
+  window.APP_DATA = APP_DATA;
+})();
+
+</script>
+  <script>
+window.DEFAULT_LEXICON = {
+    "你":  "你咯",
+    "你们":  "你哒",
+    "我们":  "我哒",
+    "他们":  "渠哒",
+    "她们":  "渠哒",
+    "大家":  "伙计们",
+    "爷爷":  "嗲嗲",
+    "外公":  "嗲嗲",
+    "奶奶":  "娭毑",
+    "外婆":  "娭毑",
+    "阿姨":  "娭毑",
+    "叔叔":  "满哥",
+    "男生":  "满哥",
+    "年轻男子":  "满哥",
+    "男孩子":  "细伢子",
+    "女孩子":  "妹陀",
+    "小孩子":  "伢子",
+    "孩子":  "崽崽",
+    "朋友":  "老倌",
+    "小伙子":  "伢子",
+    "姐妹":  "姊妹伙",
+    "兄弟":  "老弟",
+    "什么":  "么子",
+    "为什么":  "做么子",
+    "怎么":  "啷个",
+    "怎么会":  "哦得会",
+    "哪里":  "哪凯",
+    "这儿":  "这凯",
+    "那儿":  "那凯",
+    "这里":  "这凯",
+    "那里":  "那凯",
+    "这个":  "咯杂",
+    "那个":  "嘎杂",
+    "哪个":  "哪个杂",
+    "谁":  "哪个",
+    "是不是":  "是啵",
+    "是的":  "嗯咯",
+    "好吧":  "要得咯",
+    "可以":  "要得",
+    "不可以":  "要不得",
+    "不行":  "要不得",
+    "行":  "行得通",
+    "可能":  "怕么",
+    "知道":  "晓得",
+    "不懂":  "搞驼不清",
+    "不明白":  "搞驼不清",
+    "了解":  "门清",
+    "不要":  "莫",
+    "别":  "莫",
+    "没有":  "冒得",
+    "没得":  "冒得",
+    "不是":  "不是咯",
+    "不":  "莫",
+    "不理你":  "不次你",
+    "讨厌":  "不带爱相",
+    "骗子":  "撮巴子",
+    "诈骗犯":  "撮巴子",
+    "诈骗":  "撮汤锅子",
+    "骗":  "撮",
+    "说":  "港",
+    "说话":  "港话",
+    "聊天":  "扯白",
+    "吹牛":  "扯卵筋",
+    "骗人胡扯":  "扯卵谈",
+    "开玩笑":  "打哈哈",
+    "啰嗦":  "七里八里",
+    "啰里啰嗦":  "七里八里",
+    "吵":  "仅叫",
+    "吵死人":  "仅叫的",
+    "吵架":  "呷架",
+    "打架":  "搞架",
+    "吃":  "恰",
+    "吃饭":  "恰饭",
+    "好吃":  "好恰",
+    "难吃":  "不好恰",
+    "嚼":  "qiò",
+    "喝水":  "喝口水先",
+    "辣":  "辣得跳",
+    "甜":  "甜滋滋",
+    "咸":  "咸口",
+    "味道":  "口味",
+    "恶心":  "透人",
+    "去":  "克",
+    "来":  "来咯",
+    "走":  "走起",
+    "回家":  "归屋",
+    "出去":  "出去耍",
+    "过来":  "过来咯",
+    "进来":  "进来咯",
+    "快点":  "搞快点",
+    "慢一点":  "慢点搞",
+    "等一下":  "等哈",
+    "等会儿":  "等哈",
+    "马上":  "立马",
+    "现在":  "而家",
+    "刚刚":  "哈子",
+    "今天":  "今朝",
+    "昨天":  "昨朝",
+    "明天":  "明朝",
+    "早上":  "清早八晨",
+    "中午":  "晌午",
+    "晚上":  "夜里头",
+    "总是":  "时刻子",
+    "经常":  "老是",
+    "偶尔":  "间或",
+    "看":  "瞄",
+    "听":  "听哈",
+    "想":  "想得起",
+    "喜欢":  "稀罕",
+    "爱":  "疼你",
+    "生气":  "冒火",
+    "累":  "lia",
+    "困":  "瞌睡来了",
+    "睡觉":  "困觉",
+    "起床":  "起铺",
+    "舒服":  "了瞥",
+    "爽快":  "了瞥",
+    "吓人":  "黑人",
+    "搞笑":  "斗霸",
+    "滚开":  "弹开",
+    "暗示":  "丢驼",
+    "出错":  "筐瓢",
+    "解决":  "了难",
+    "过于勉强":  "霸蛮",
+    "很厉害":  "霸蛮",
+    "厉害":  "恩杂",
+    "很胖":  "垒壮的",
+    "专心致志":  "昧心昧意",
+    "不收拾":  "冒点检十",
+    "剥":  "蔑",
+    "掉":  "跌",
+    "丢":  "跌",
+    "鼻涕":  "鼻斗龙",
+    "工作":  "做事",
+    "上班":  "做工",
+    "下班":  "散工",
+    "学习":  "搞学习",
+    "上学":  "读书去",
+    "考试":  "赶考",
+    "问题":  "岔子",
+    "办法":  "路数",
+    "事情":  "事体",
+    "消息":  "信儿",
+    "真的":  "港真",
+    "真的吗":  "港真啵",
+    "假的":  "鬼扯",
+    "有点":  "有滴",
+    "一点":  "滴点",
+    "很多":  "蛮多",
+    "非常":  "蛮扎实",
+    "很":  "蛮",
+    "全部":  "一哈子",
+    "便宜":  "划算",
+    "贵":  "贵得很",
+    "排队":  "扎堆等",
+    "堵车":  "塞车",
+    "下雨":  "落雨",
+    "刮风":  "起风",
+    "天气":  "天色",
+    "洗澡":  "冲凉",
+    "洗衣服":  "洗衫",
+    "手机":  "电话机",
+    "电脑":  "机子",
+    "网络":  "网路",
+    "视频":  "片片",
+    "照片":  "相片子",
+    "直播":  "开播",
+    "玩":  "耍",
+    "逛街":  "上街耍",
+    "买东西":  "买家伙",
+    "无所事事到处闲逛":  "打流",
+    "不靠谱":  "冇得屁眼",
+    "干净":  "索索利利",
+    "破烂":  "稀撕挎烂",
+    "倒霉":  "背扎大时",
+    "话痨":  "屎少屁多",
+    "怀疑一下":  "一扎鬼呢",
+    "真离谱":  "太拐哒",
+    "太好了":  "好得板",
+    "别说了":  "莫港哒",
+    "别担心":  "莫急莫慌",
+    "谢谢":  "多谢咯",
+    "没关系":  "冒关系",
+    "再见":  "回见"
+};
+
+
+</script>
+  <script>
+const FALLBACK_DATA = {
+  designGoal:
+    "鎶婂師缃戦〉閲岀殑闀块〉闈㈡媶鎴愮Щ鍔ㄧ鐨勫洓涓ǔ瀹氬叆鍙ｏ紝璁╄浆璇戙€佸満鏅€佽瘝搴撳拰璇勬祴鍚勮嚜褰㈡垚娓呮櫚璺緞銆?,
+  workflow: [
+    "閫夋嫨鏂硅█瀛愬尯鍜屼娇鐢ㄥ満鏅紝鏄庣‘褰撳墠涓婁笅鏂囥€?,
+    "杈撳叆鏅€氳瘽鎴栨柟瑷€鏂囨湰锛屽緱鍒版帹鑽愮粨鏋滀笌鍊欓€夎〃杈俱€?,
+    "鍥炵湅杞崲渚濇嵁锛屽揩閫熷垽鏂姘斻€佸満鏅拰鍖哄煙鏄惁鍖归厤銆?,
+    "杩涘叆璇嶅簱瀹為獙瀹ゅ拰璇勬祴椤碉紝瀹屾垚瀹℃牳涓庢晥鏋滈棴鐜€?
+  ],
+  navTabs: [
+    { id: "translate", label: "杞瘧", hint: "涓诲伐浣滃彴", summary: "鍙屽悜杞崲銆佸€欓€夌粨鏋溿€佸満鏅仈鍔ㄣ€? },
+    { id: "scene", label: "鍦烘櫙", hint: "涓婁笅鏂?, summary: "绠＄悊鍦烘櫙鍖呭拰鍖哄煙宸紓锛屼笉鍐嶅彧鏄竴寮犺瘝琛ㄣ€? },
+    { id: "lexicon", label: "璇嶅簱", hint: "瀹℃牳娴?, summary: "绉诲姩绔紭鍏堝睍绀哄緟瀹℃牳鍜岄珮棰戣瘝鏉°€? },
+    { id: "insights", label: "璇勬祴", hint: "瓒嬪娍", summary: "鎶婂師椤圭洰鐨勮瘎鍒嗚褰曟暣鐞嗘垚杩愯惀瑙嗗浘銆? }
+  ],
+  scenePacks: [
+    {
+      id: "daily",
+      name: "鏃ュ父浜ゆ祦",
+      accent: "楂橀鍙ｈ",
+      description: "浼樺厛鍛戒腑闂€欍€佸悆楗€佸嚭闂ㄥ拰鐔熶汉鑱婂ぉ鐨勮〃杈俱€?,
+      tip: "閫傚悎鑱婂ぉ鍜屽搴矡閫氥€?,
+      boostLexicon: { "鍚冮キ": "鎭伴キ", "蹇偣": "鎼炲揩鐐?, "鍝噷": "鍝嚡", "涓嶈": "鑾? },
+      rulesM2H: [
+        { pattern: "鐪熺殑鍚?, replacement: "娓湡鍟? },
+        { pattern: "娌″叧绯?, replacement: "鍐掑叧绯? }
+      ],
+      rulesH2M: [
+        { pattern: "娓湡鍟?, replacement: "鐪熺殑鍚? },
+        { pattern: "鍐掑叧绯?, replacement: "娌″叧绯? }
+      ],
+      sample: "浣犱粖澶╁幓鍝噷锛屽悆楗簡鍚楋紵"
+    },
+    {
+      id: "campus",
+      name: "鏍″洯娌熼€?,
+      accent: "璇惧爞涓庨鍫?,
+      description: "寮哄寲涓婅銆佷笅璇俱€侀鍫傘€佸浘涔﹂鍜屼綔涓氱浉鍏崇煭璇€?,
+      tip: "閫傚悎鏍″洯鑱婂ぉ銆佽闂存矡閫氬拰瀛︾敓绀剧兢銆?,
+      boostLexicon: { "涓婅": "涓婂爞", "涓嬭": "涓嬪爞", "椋熷爞": "鍫傚瓙", "鑰冭瘯": "璧惰€? },
+      rulesM2H: [
+        { pattern: "鑰佸笀鎮ㄥソ", replacement: "鑰佸笀濂藉挴" },
+        { pattern: "鍘讳笂璇?, replacement: "鍏嬩笂鍫? }
+      ],
+      rulesH2M: [
+        { pattern: "鑰佸笀濂藉挴", replacement: "鑰佸笀鎮ㄥソ" },
+        { pattern: "鍏嬩笂鍫?, replacement: "鍘讳笂璇? }
+      ],
+      sample: "鎴戜滑涓嬭鍚庡幓椋熷爞锛岀劧鍚庡幓鍥句功棣嗐€?
+    },
+    {
+      id: "travel",
+      name: "鏂囨梾闂矾",
+      accent: "鐩殑鍦拌〃杈?,
+      description: "绐佸嚭闂矾銆佷氦閫氥€佹櫙鐐瑰拰璺嚎鍜ㄨ绛夎〃杈炬柟寮忋€?,
+      tip: "閫傚悎娓稿鍜ㄨ銆佹湰鍦板瑙堝拰璺嚎鎸囧紩銆?,
+      boostLexicon: { "鍝噷": "鍝嚡", "鏅尯": "鏅偣", "鍏氦杞?: "鍏氦", "鍘?: "鍏? },
+      rulesM2H: [
+        { pattern: "璇烽棶", replacement: "鍔抽┚闂搱" },
+        { pattern: "鎬庝箞璧?, replacement: "鍟蜂釜璧? }
+      ],
+      rulesH2M: [
+        { pattern: "鍔抽┚闂搱", replacement: "璇烽棶" },
+        { pattern: "鍟蜂釜璧?, replacement: "鎬庝箞璧? }
+      ],
+      sample: "璇烽棶姗樺瓙娲叉€庝箞璧帮紝鍦伴搧鍦ㄥ摢閲屽潗锛?
+    },
+    {
+      id: "video",
+      name: "鐭棰戞枃妗?,
+      accent: "鎯呯华鍙ｈ",
+      description: "閫傞厤鏍囬銆佸紑鍦虹櫧鍜屼簰鍔ㄥ紩瀵硷紝璁╄〃杈炬洿鍙ｈ鍖栥€?,
+      tip: "閫傚悎鐭棰戣剼鏈拰鐩存挱璇濇湳銆?,
+      boostLexicon: { "鐐硅禐": "鐐逛釜璧?, "璇勮": "鐣欒█", "鐩存挱": "寮€鎾?, "椹笂": "绔嬮┈" },
+      rulesM2H: [
+        { pattern: "澶у濂?, replacement: "鍚勪綅鑰侀搧濂藉挴" },
+        { pattern: "鐐硅禐", replacement: "鐐逛釜璧炲挴" }
+      ],
+      rulesH2M: [
+        { pattern: "鍚勪綅鑰侀搧濂藉挴", replacement: "澶у濂? },
+        { pattern: "鐐逛釜璧炲挴", replacement: "鐐硅禐" }
+      ],
+      sample: "澶у濂斤紝椹笂寮€鎾紝璁板緱鐐硅禐璇勮銆?
+    }
+  ],
+  dialectRegions: [
+    {
+      id: "changsha",
+      name: "闀挎矙鍙ｈ",
+      short: "榛樿鍖哄煙",
+      description: "閫傚悎浣滀负璇嶅簱涓昏酱锛屼繚鐣欒緝瀹屾暣鐨勫彛璇〃杈句笌璇皵璇嶃€?,
+      lexicon: { "鏈嬪弸": "鑰佸€?, "浠婂ぉ": "浠婃湞", "璋㈣阿": "澶氳阿鍜? }
+    },
+    {
+      id: "xiangtan",
+      name: "婀樻江鍙ｈ",
+      short: "璇皵鏇存嫝",
+      description: "淇濈暀鏇寸揣鍑戠殑鏃ュ父璇存硶锛岄€傚悎鏍″洯鍜岀啛浜轰氦娴併€?,
+      lexicon: { "浠€涔?: "涔堥噷瀛?, "鏈嬪弸": "浼欒", "蹇偣": "蹇簺鎼? }
+    },
+    {
+      id: "zhuzhou",
+      name: "鏍床鍙ｈ",
+      short: "鐢熸椿鍦烘櫙",
+      description: "鍋忕敓娲昏澧冨拰鍑鸿琛ㄨ揪锛岄€傚悎閫氬嫟鍜岄棶璺€?,
+      lexicon: { "鍚冮キ": "鍛烽キ", "鍝噷": "鍝噷瀛?, "宸ヤ綔": "鍋氫簨" }
+    }
+  ],
+  quickPhrases: [
+    "浣犱粖澶╁幓鍝噷锛屽悆楗簡鍚楋紵",
+    "鎴戜滑涓嬭鍚庡幓椋熷爞锛岀劧鍚庡幓鍥句功棣嗐€?,
+    "璇烽棶姗樺瓙娲叉€庝箞璧帮紝鍦伴搧鍦ㄥ摢閲屽潗锛?,
+    "澶у濂斤紝椹笂寮€鎾紝璁板緱鐐硅禐璇勮銆?,
+    "鍒媴蹇冿紝杩欎釜浜嬫儏鎴戞潵澶勭悊銆?,
+    "璋㈣阿浣狅紝鏄庡ぉ瑙併€?
+  ],
+  reviewQueue: [
+    { type: "upsert", mandarin: "鍥句功棣?, hunan: "鍥句功棣嗗瓙", reason: "鏍″洯鍦烘櫙鏂板", state: "寰呭鏍? },
+    { type: "upsert", mandarin: "瀵艰埅", hunan: "甯﹁矾", reason: "鏂囨梾鍦烘櫙澧炲己", state: "寰呭鏍? },
+    { type: "delete", mandarin: "瑙嗛", hunan: "鐗囩墖", reason: "琛ㄨ揪杩囨棫", state: "寰呭鏍? }
+  ],
+  evaluationRecords: [
+    { scene: "daily", dialect: "changsha", mode: "m2h", accuracy: 4.8, naturalness: 4.6, note: "鐔熶汉鑱婂ぉ鍛戒腑杈冪ǔ瀹?, time: "03-18 14:30" },
+    { scene: "campus", dialect: "xiangtan", mode: "m2h", accuracy: 4.5, naturalness: 4.4, note: "鏍″洯璇嶅寘瀵硅鍫傝〃杈炬洿鏈夋晥", time: "03-19 09:12" },
+    { scene: "travel", dialect: "zhuzhou", mode: "m2h", accuracy: 4.2, naturalness: 4.3, note: "闂矾鍙ュ紡杩樺彲缁х画鍘嬬缉", time: "03-20 19:05" },
+    { scene: "video", dialect: "changsha", mode: "m2h", accuracy: 4.7, naturalness: 4.8, note: "鎯呯华鍙ｈ鍜屼簰鍔ㄥ紩瀵兼洿璐磋繎鐭棰?, time: "03-22 21:14" }
+  ],
+  kpis: {
+    prototype: "绉诲姩浼樺厛",
+    taskPath: "4 娈垫祦",
+    avgScore: "4.6 / 5",
+    approvalLatency: "< 1 澶?
+  },
+  trendSeries: [
+    { label: "绗?鍛?, value: 62 },
+    { label: "绗?鍛?, value: 74 },
+    { label: "绗?鍛?, value: 81 },
+    { label: "绗?鍛?, value: 78 },
+    { label: "绗?鍛?, value: 89 },
+    { label: "绗?鍛?, value: 94 }
+  ],
+  seedLexicon: {
+    "浣?: "浣犲挴",
+    "浣犱滑": "浣犲搾",
+    "鎴戜滑": "鎴戝搾",
+    "鏈嬪弸": "鑰佸€?,
+    "璋㈣阿": "澶氳阿鍜?,
+    "鍝噷": "鍝嚡",
+    "浠婂ぉ": "浠婃湞",
+    "鏄庡ぉ": "鏄庢湞",
+    "鍘?: "鍏?,
+    "鍚冮キ": "鎭伴キ",
+    "蹇偣": "鎼炲揩鐐?,
+    "涓嶈": "鑾?
+  }
+};
+
+const refs = {
+  briefStats: document.getElementById("briefStats"),
+  designGoal: document.getElementById("designGoal"),
+  flowList: document.getElementById("flowList"),
+  moduleStrip: document.getElementById("moduleStrip"),
+  bottomNav: document.getElementById("bottomNav"),
+  dialectSelect: document.getElementById("dialectSelect"),
+  sceneSelect: document.getElementById("sceneSelect"),
+  sourceInput: document.getElementById("sourceInput"),
+  convertBtn: document.getElementById("convertBtn"),
+  swapBtn: document.getElementById("swapBtn"),
+  sceneTip: document.getElementById("sceneTip"),
+  quickPhrases: document.getElementById("quickPhrases"),
+  resultOutput: document.getElementById("resultOutput"),
+  candidateList: document.getElementById("candidateList"),
+  applyCandidateBtn: document.getElementById("applyCandidateBtn"),
+  modeHeadline: document.getElementById("modeHeadline"),
+  modeDescription: document.getElementById("modeDescription"),
+  resultMeta: document.getElementById("resultMeta"),
+  featureScene: document.getElementById("featureScene"),
+  sceneGrid: document.getElementById("sceneGrid"),
+  regionList: document.getElementById("regionList"),
+  lexiconSearch: document.getElementById("lexiconSearch"),
+  lexiconCount: document.getElementById("lexiconCount"),
+  queueList: document.getElementById("queueList"),
+  pendingCount: document.getElementById("pendingCount"),
+  lexiconList: document.getElementById("lexiconList"),
+  insightStats: document.getElementById("insightStats"),
+  trendCaption: document.getElementById("trendCaption"),
+  trendChart: document.getElementById("trendChart"),
+  recordList: document.getElementById("recordList"),
+  statusPill: document.getElementById("statusPill"),
+  timePill: document.getElementById("timePill")
+};
+
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function pickArray(raw, keys, fallback) {
+  for (const key of keys) {
+    if (Array.isArray(raw[key])) {
+      return raw[key];
+    }
+  }
+  return fallback;
+}
+
+function pickObject(raw, keys, fallback) {
+  for (const key of keys) {
+    if (raw[key] && typeof raw[key] === "object" && !Array.isArray(raw[key])) {
+      return raw[key];
+    }
+  }
+  return fallback;
+}
+
+function normalizeData(raw) {
+  const source = raw && typeof raw === "object" ? raw : {};
+  const scenePacks = pickArray(source, ["scenePacks", "scenePackages", "scenes"], FALLBACK_DATA.scenePacks).map(
+    (item, index) => ({
+      id: item.id || item.key || FALLBACK_DATA.scenePacks[index % FALLBACK_DATA.scenePacks.length].id,
+      name: item.name || item.title || `鍦烘櫙 ${index + 1}`,
+      accent: item.accent || item.tone || item.highlight || "鍦烘櫙鍖?,
+      description: item.description || item.tip || item.summary || "",
+      tip: item.tip || item.highlight || item.description || "",
+      boostLexicon: item.boostLexicon || item.lexiconM2H || {},
+      lexiconM2H: item.lexiconM2H || item.boostLexicon || {},
+      lexiconH2M: item.lexiconH2M || item.reverseLexicon || {},
+      rulesM2H: item.rulesM2H || [],
+      rulesH2M: item.rulesH2M || [],
+      sample: item.sample || item.highlight || "",
+      useCases: item.useCases || []
+    })
+  );
+
+  const dialectRegions = pickArray(source, ["dialectRegions", "dialects", "regions"], FALLBACK_DATA.dialectRegions).map(
+    (item, index) => ({
+      id: item.id || item.key || FALLBACK_DATA.dialectRegions[index % FALLBACK_DATA.dialectRegions.length].id,
+      name: item.name || item.area || `鏂硅█ ${index + 1}`,
+      short: item.short || item.area || item.sampleStyle || "鍖哄煙鍙樹綋",
+      description: item.description || item.intro || item.note || item.sampleStyle || "",
+      lexicon: item.lexicon || item.boostLexicon || {},
+      strengths: item.strengths || []
+    })
+  );
+
+  const trendSeries = pickArray(source, ["trendSeries", "trends", "series"], FALLBACK_DATA.trendSeries).map(
+    (item, index) => ({
+      label: item.label || `闃舵 ${index + 1}`,
+      value: Number(item.value || item.accuracy || item.naturalness || item.understandability || 0)
+    })
+  );
+
+  const navTabs = pickArray(source, ["navTabs", "tabs", "modules"], FALLBACK_DATA.navTabs).map((item, index) => ({
+    id: item.id || item.key || FALLBACK_DATA.navTabs[index % FALLBACK_DATA.navTabs.length].id,
+    label: item.label || item.title || `Tab ${index + 1}`,
+    hint: item.hint || item.subtitle || item.badge || "",
+    summary: item.summary || item.description || item.subtitle || ""
+  }));
+
+  const stats = pickObject(source, ["kpis", "metrics", "stats"], {});
+  const normalizedKpis = {
+    prototype:
+      stats.prototype ||
+      (source.appMeta && source.appMeta.version ? String(source.appMeta.version) : FALLBACK_DATA.kpis.prototype),
+    taskPath:
+      stats.taskPath ||
+      `${stats.sceneCoverage || scenePacks.length} 鍦烘櫙 / ${stats.dialectCoverage || dialectRegions.length} 瀛愬尯`,
+    avgScore:
+      stats.avgScore ||
+      (Number.isFinite(Number(stats.evaluationAvgAccuracy))
+        ? `${Number(stats.evaluationAvgAccuracy).toFixed(2)} / 5`
+        : FALLBACK_DATA.kpis.avgScore),
+    approvalLatency:
+      stats.approvalLatency ||
+      (Number.isFinite(Number(stats.pendingReview))
+        ? `${Number(stats.pendingReview)} 寰呭鏍竊
+        : FALLBACK_DATA.kpis.approvalLatency)
+  };
+
+  return {
+    designGoal: source.designGoal || FALLBACK_DATA.designGoal,
+    workflow: pickArray(source, ["workflow", "flow", "coreFlow"], FALLBACK_DATA.workflow),
+    navTabs,
+    scenePacks,
+    dialectRegions,
+    quickPhrases: pickArray(source, ["quickPhrases", "phrases", "recommendedPhrases"], FALLBACK_DATA.quickPhrases),
+    reviewQueue: pickArray(source, ["reviewQueue", "pendingQueue", "reviewItems"], FALLBACK_DATA.reviewQueue),
+    evaluationRecords: pickArray(source, ["evaluationRecords", "records", "evaluationSamples"], FALLBACK_DATA.evaluationRecords),
+    kpis: normalizedKpis,
+    trendSeries,
+    seedLexicon: pickObject(source, ["seedLexicon", "lexiconSeed"], FALLBACK_DATA.seedLexicon)
+  };
+}
+
+const APP_DATA = normalizeData(window.APP_DATA || {});
+
+const state = {
+  activeTab: "translate",
+  mode: "m2h",
+  dialect: APP_DATA.dialectRegions[0].id,
+  scene: APP_DATA.scenePacks[0].id,
+  source: APP_DATA.quickPhrases[0] || "",
+  query: "",
+  lexicon: {},
+  currentCandidates: []
+};
+
+function nowTimeText() {
+  return new Date().toLocaleTimeString("zh-CN", {
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false
+  });
+}
+
+function setClock() {
+  refs.timePill.textContent = nowTimeText();
+}
+
+function createReverseMap(input) {
+  const reversed = {};
+  Object.entries(input || {}).forEach(([key, value]) => {
+    reversed[value] = key;
+  });
+  return reversed;
+}
+
+function getDialect() {
+  return APP_DATA.dialectRegions.find((item) => item.id === state.dialect) || APP_DATA.dialectRegions[0];
+}
+
+function getScene() {
+  return APP_DATA.scenePacks.find((item) => item.id === state.scene) || APP_DATA.scenePacks[0];
+}
+
+function getSortedEntries(dictionary) {
+  return Object.entries(dictionary || {}).sort((a, b) => b[0].length - a[0].length);
+}
+
+function replaceByDictionary(text, dictionary) {
+  let output = String(text || "");
+  getSortedEntries(dictionary).forEach(([key, value]) => {
+    output = output.split(key).join(value);
+  });
+  return output;
+}
+
+function applyRules(text, rules) {
+  let output = String(text || "");
+  (rules || []).forEach((rule) => {
+    const pattern = rule && rule.pattern ? String(rule.pattern) : "";
+    if (!pattern) return;
+    output = output.split(pattern).join(String(rule.replacement || ""));
+  });
+  return output;
+}
+
+function buildForwardLexicon() {
+  return {
+    ...state.lexicon,
+    ...(getDialect().lexicon || getDialect().boostLexicon || {}),
+    ...(getScene().boostLexicon || getScene().lexiconM2H || {})
+  };
+}
+
+function buildReverseLexicon() {
+  const forwardBase = {
+    ...state.lexicon,
+    ...(getDialect().lexicon || getDialect().boostLexicon || {}),
+    ...(getScene().boostLexicon || getScene().lexiconM2H || {})
+  };
+  return {
+    ...createReverseMap(forwardBase),
+    ...(getScene().lexiconH2M || getScene().reverseLexicon || {})
+  };
+}
+
+function buildCandidates(source) {
+  const dialect = getDialect();
+  const scene = getScene();
+  const baseLexicon = state.mode === "m2h" ? state.lexicon : createReverseMap(state.lexicon);
+  const fullLexicon = state.mode === "m2h" ? buildForwardLexicon() : buildReverseLexicon();
+  const rules = state.mode === "m2h" ? scene.rulesM2H : scene.rulesH2M;
+
+  const recommended = replaceByDictionary(applyRules(source, rules), fullLexicon);
+  const literal = replaceByDictionary(source, baseLexicon);
+  const sceneFocused = replaceByDictionary(
+    applyRules(source, rules),
+    state.mode === "m2h"
+      ? (scene.boostLexicon || scene.lexiconM2H || {})
+      : (scene.lexiconH2M || createReverseMap(scene.boostLexicon || scene.lexiconM2H || {}))
+  );
+  const dialectFocused = replaceByDictionary(
+    source,
+    state.mode === "m2h"
+      ? (dialect.lexicon || dialect.boostLexicon || {})
+      : createReverseMap(dialect.lexicon || dialect.boostLexicon || {})
+  );
+
+  const candidates = [
+    {
+      tag: "棣栭€?,
+      title: "鍦烘櫙 + 鍖哄煙铻嶅悎",
+      text: recommended || source
+    },
+    {
+      tag: "鐩磋瘧",
+      title: "鍩虹璇嶅簱鏄犲皠",
+      text: literal || source
+    },
+    {
+      tag: "姘涘洿",
+      title: "璇寮哄寲琛ㄨ揪",
+      text: (sceneFocused && sceneFocused !== source ? sceneFocused : dialectFocused) || source
+    }
+  ];
+
+  const unique = [];
+  const seen = new Set();
+  candidates.forEach((item) => {
+    const key = item.text.trim();
+    if (!key || seen.has(key)) return;
+    seen.add(key);
+    unique.push(item);
+  });
+
+  return unique;
+}
+
+function updateModeCopy() {
+  const dialect = getDialect();
+  const scene = getScene();
+  refs.modeHeadline.textContent =
+    state.mode === "m2h" ? `鏅€氳瘽 鈫?${dialect.name}` : `${dialect.name} 鈫?鏅€氳瘽`;
+  refs.modeDescription.textContent = `${scene.name}鍦烘櫙寮€鍚紝淇濈暀鍊欓€夎〃杈句笌璇皵宸紓銆俙;
+  refs.sceneTip.textContent = scene.tip || scene.description || "浼樺厛浣跨敤褰撳墠鍦烘櫙鐨勮〃杈句範鎯笌灞€閮ㄨ瘝鍖呫€?;
+  refs.resultMeta.textContent =
+    state.mode === "m2h"
+      ? `浼樺厛杈撳嚭 ${dialect.name} 鍦?${scene.name} 涓嬬殑鍙ｈ琛ㄨ揪銆俙
+      : `鎶?${dialect.name} 鐨勮〃杈惧洖璇戜负鏇存爣鍑嗙殑鏅€氳瘽銆俙;
+}
+
+function renderCandidates() {
+  if (!state.currentCandidates.length) {
+    refs.candidateList.innerHTML = `
+      <div class="candidate-card" style="animation-delay:0ms">
+        <span class="candidate-tag">鎻愮ず</span>
+        <div class="candidate-copy">
+          <strong>杩樻病鏈夌粨鏋?/strong>
+          杈撳叆涓€鍙ヨ瘽鍚庣偣鍑烩€滅珛鍗宠浆璇戔€濄€?        </div>
+      </div>
+    `;
+    return;
+  }
+
+  refs.candidateList.innerHTML = state.currentCandidates
+    .map((item, index) => `
+      <div class="candidate-card" style="animation-delay:${index * 70}ms">
+        <span class="candidate-tag">${escapeHtml(item.tag)}</span>
+        <div class="candidate-copy">
+          <strong>${escapeHtml(item.title)}</strong>
+          ${escapeHtml(item.text)}
+        </div>
+        <button class="candidate-btn" type="button" data-index="${index}">浣跨敤</button>
+      </div>
+    `)
+    .join("");
+}
+
+function convertNow() {
+  const source = refs.sourceInput.value.trim();
+  state.source = source;
+
+  if (!source) {
+    refs.resultOutput.textContent = "鐐瑰嚮鈥滅珛鍗宠浆璇戔€濆悗鍦ㄨ繖閲屾樉绀虹粨鏋溿€?;
+    state.currentCandidates = [];
+    renderCandidates();
+    return;
+  }
+
+  state.currentCandidates = buildCandidates(source);
+  refs.resultOutput.textContent = state.currentCandidates[0] ? state.currentCandidates[0].text : source;
+  renderCandidates();
+}
+
+function renderBrief() {
+  const avgFromRecords = APP_DATA.evaluationRecords.length
+    ? (
+        APP_DATA.evaluationRecords.reduce((sum, item) => sum + Number(item.accuracy || 0), 0) /
+        APP_DATA.evaluationRecords.length
+      ).toFixed(1)
+    : APP_DATA.kpis.avgScore;
+
+  refs.designGoal.textContent = APP_DATA.designGoal;
+  refs.briefStats.innerHTML = `
+    <div class="stat-chip">
+      <strong>${Object.keys(state.lexicon).length || 0}</strong>
+      <span>缁ф壙鍘熼」鐩瘝搴?/span>
+    </div>
+    <div class="stat-chip">
+      <strong>${APP_DATA.scenePacks.length}</strong>
+      <span>鍦烘櫙鍖呴噸鏋勪负绉诲姩鍏ュ彛</span>
+    </div>
+    <div class="stat-chip">
+      <strong>${APP_DATA.dialectRegions.length}</strong>
+      <span>鏂硅█瀛愬尯淇濈暀涓哄叧閿笂涓嬫枃</span>
+    </div>
+    <div class="stat-chip">
+      <strong>${avgFromRecords}</strong>
+      <span>璇勬祴骞冲潎鍑嗙‘搴?/span>
+    </div>
+  `;
+
+  refs.flowList.innerHTML = APP_DATA.workflow
+    .map((step) => `<div class="flow-step">${escapeHtml(step)}</div>`)
+    .join("");
+
+  refs.moduleStrip.innerHTML = APP_DATA.navTabs
+    .map((item) => `
+      <div class="module-card">
+        <strong>${escapeHtml(item.label)}</strong>
+        <p>${escapeHtml(item.summary || item.hint || "")}</p>
+      </div>
+    `)
+    .join("");
+}
+
+function renderBottomNav() {
+  refs.bottomNav.innerHTML = APP_DATA.navTabs
+    .map((item) => `
+      <button class="nav-btn ${item.id === state.activeTab ? "is-active" : ""}" type="button" data-tab="${item.id}">
+        <strong>${escapeHtml(item.label)}</strong>
+        <span>${escapeHtml(item.hint || "")}</span>
+      </button>
+    `)
+    .join("");
+}
+
+function renderSelects() {
+  refs.dialectSelect.innerHTML = APP_DATA.dialectRegions
+    .map((item) => `<option value="${escapeHtml(item.id)}">${escapeHtml(item.name)}</option>`)
+    .join("");
+
+  refs.sceneSelect.innerHTML = APP_DATA.scenePacks
+    .map((item) => `<option value="${escapeHtml(item.id)}">${escapeHtml(item.name)}</option>`)
+    .join("");
+
+  refs.dialectSelect.value = state.dialect;
+  refs.sceneSelect.value = state.scene;
+}
+
+function renderQuickPhrases() {
+  refs.quickPhrases.innerHTML = APP_DATA.quickPhrases
+    .map(
+      (item) => `
+        <button class="phrase-btn" type="button" data-phrase="${escapeHtml(item)}">
+          ${escapeHtml(item)}
+        </button>
+      `
+    )
+    .join("");
+  refs.sourceInput.value = state.source;
+}
+
+function renderSceneTab() {
+  const activeScene = getScene();
+  refs.featureScene.innerHTML = `
+    <span class="block-label">褰撳墠涓绘帹鍦烘櫙</span>
+    <h4>${escapeHtml(activeScene.name)}</h4>
+    <p>${escapeHtml(activeScene.description || activeScene.tip || "")}</p>
+    <div class="accent-line">
+      <span>${escapeHtml(activeScene.accent || "琛ㄨ揪寮哄寲")}</span>
+      <span>${escapeHtml(activeScene.sample || "")}</span>
+    </div>
+  `;
+
+  refs.sceneGrid.innerHTML = APP_DATA.scenePacks
+    .map((scene) => `
+      <div class="scene-card">
+        <strong>${escapeHtml(scene.name)}</strong>
+        <p>${escapeHtml(scene.description || scene.tip || "")}</p>
+        <span class="small-pill">${escapeHtml(scene.accent || "鍦烘櫙鍖?)}</span>
+      </div>
+    `)
+    .join("");
+
+  refs.regionList.innerHTML = APP_DATA.dialectRegions
+    .map((region) => `
+      <div class="region-card">
+        <strong>${escapeHtml(region.name)}</strong>
+        <p>${escapeHtml(region.description || region.note || "")}</p>
+        <span class="small-pill">${escapeHtml(region.short || "鍖哄煙鍙樹綋")}</span>
+      </div>
+    `)
+    .join("");
+}
+
+function renderLexiconTab() {
+  const query = state.query.trim();
+  const entries = Object.entries(state.lexicon).filter(([mandarin, hunan]) => {
+    if (!query) return true;
+    return mandarin.includes(query) || hunan.includes(query);
+  });
+
+  refs.lexiconCount.textContent = `璇嶆潯 ${Object.keys(state.lexicon).length}`;
+  refs.pendingCount.textContent = `${APP_DATA.reviewQueue.length} 鏉;
+
+  refs.queueList.innerHTML = APP_DATA.reviewQueue
+    .map((item) => `
+      <div class="queue-item">
+        <div class="meta-row">
+          <span class="queue-badge">${escapeHtml(item.state || "寰呭鏍?)}</span>
+          <span>${escapeHtml(item.type === "delete" ? "鍒犻櫎鐢宠" : "鏂板 / 淇敼")}</span>
+        </div>
+        <strong>${escapeHtml(item.mandarin)}${item.hunan ? ` 鈫?${escapeHtml(item.hunan)}` : ""}</strong>
+        <p>${escapeHtml(item.reason || "绛夊緟绠＄悊鍛樺鏍搞€?)}</p>
+      </div>
+    `)
+    .join("");
+
+  refs.lexiconList.innerHTML = entries
+    .slice(0, 10)
+    .map(([mandarin, hunan]) => `
+      <div class="lexicon-item">
+        <div class="pair">
+          <strong>${escapeHtml(mandarin)}</strong>
+          <span>${escapeHtml(hunan)}</span>
+        </div>
+        <div class="meta-row">
+          <span>${escapeHtml(getScene().name)}</span>
+          <span>楂橀璇嶆潯</span>
+        </div>
+      </div>
+    `)
+    .join("");
+
+  if (!entries.length) {
+    refs.lexiconList.innerHTML = `
+      <div class="lexicon-item">
+        <strong>娌℃湁鍖归厤璇嶆潯</strong>
+        <p>鎹竴涓叧閿瘝璇曡瘯锛屾垨鑰呭洖鍒版棤鎼滅储鐘舵€佹煡鐪嬮珮棰戞潯鐩€?/p>
+      </div>
+    `;
+  }
+}
+
+function renderInsightsTab() {
+  const avgNaturalness = APP_DATA.evaluationRecords.length
+    ? (
+        APP_DATA.evaluationRecords.reduce((sum, item) => sum + Number(item.naturalness || 0), 0) /
+        APP_DATA.evaluationRecords.length
+      ).toFixed(1)
+    : "4.5";
+
+  refs.insightStats.innerHTML = `
+    <div class="insight-chip">
+      <strong>${escapeHtml(APP_DATA.kpis.prototype || "绉诲姩浼樺厛")}</strong>
+      <span>褰撳墠鍘熷瀷瀹氫綅</span>
+    </div>
+    <div class="insight-chip">
+      <strong>${escapeHtml(APP_DATA.kpis.taskPath || "4 娈垫祦")}</strong>
+      <span>涓诲伐浣滆矾寰?/span>
+    </div>
+    <div class="insight-chip">
+      <strong>${escapeHtml(APP_DATA.kpis.approvalLatency || "< 1 澶?)}</strong>
+      <span>瀹℃牳闂幆棰勪及</span>
+    </div>
+    <div class="insight-chip">
+      <strong>${avgNaturalness}</strong>
+      <span>鑷劧搴﹀潎鍊?/span>
+    </div>
+  `;
+
+  refs.trendCaption.textContent = `${APP_DATA.trendSeries.length} 涓椂闂寸偣妯℃嫙`;
+  const maxValue = Math.max(...APP_DATA.trendSeries.map((item) => Number(item.value) || 0), 1);
+  refs.trendChart.innerHTML = APP_DATA.trendSeries
+    .map((item) => {
+      const height = Math.max(36, Math.round((Number(item.value) / maxValue) * 124));
+      return `
+        <div class="bar-col">
+          <span class="bar-value">${escapeHtml(item.value)}</span>
+          <div class="bar" style="height:${height}px"></div>
+          <span class="bar-label">${escapeHtml(item.label)}</span>
+        </div>
+      `;
+    })
+    .join("");
+
+  refs.recordList.innerHTML = APP_DATA.evaluationRecords
+    .map((item) => `
+      <div class="record-card">
+        <div class="meta-row">
+          <span>${escapeHtml(item.time || "鏈€杩?)}</span>
+          <span>${escapeHtml(item.mode === "h2m" ? "鏂硅█ 鈫?鏅€氳瘽" : "鏅€氳瘽 鈫?鏂硅█")}</span>
+        </div>
+        <strong>${escapeHtml(resolveDialectName(item.dialect))} / ${escapeHtml(resolveSceneName(item.scene))}</strong>
+        <p>鍑嗙‘搴?${escapeHtml(item.accuracy)}锛岃嚜鐒跺害 ${escapeHtml(item.naturalness)}銆?{escapeHtml(item.note || "")}</p>
+      </div>
+    `)
+    .join("");
+}
+
+function resolveSceneName(sceneId) {
+  const item = APP_DATA.scenePacks.find((scene) => scene.id === sceneId);
+  return item ? item.name : sceneId;
+}
+
+function resolveDialectName(dialectId) {
+  const item = APP_DATA.dialectRegions.find((dialect) => dialect.id === dialectId);
+  return item ? item.name : dialectId;
+}
+
+function renderActiveScreen() {
+  document.querySelectorAll(".screen").forEach((screen) => {
+    screen.classList.toggle("is-active", screen.dataset.screen === state.activeTab);
+  });
+  renderBottomNav();
+}
+
+function updateStatus() {
+  refs.statusPill.textContent = `绂荤嚎璇嶅簱 ${Object.keys(state.lexicon).length} 鏉;
+}
+
+function bindEvents() {
+  refs.bottomNav.addEventListener("click", (event) => {
+    const button = event.target.closest(".nav-btn");
+    if (!button) return;
+    state.activeTab = button.dataset.tab;
+    renderActiveScreen();
+  });
+
+  refs.swapBtn.addEventListener("click", () => {
+    state.mode = state.mode === "m2h" ? "h2m" : "m2h";
+    updateModeCopy();
+    convertNow();
+  });
+
+  refs.convertBtn.addEventListener("click", convertNow);
+
+  refs.dialectSelect.addEventListener("change", () => {
+    state.dialect = refs.dialectSelect.value;
+    updateModeCopy();
+    renderSceneTab();
+    convertNow();
+  });
+
+  refs.sceneSelect.addEventListener("change", () => {
+    state.scene = refs.sceneSelect.value;
+    updateModeCopy();
+    renderSceneTab();
+    renderLexiconTab();
+    convertNow();
+  });
+
+  refs.sourceInput.addEventListener("input", () => {
+    state.source = refs.sourceInput.value;
+  });
+
+  refs.quickPhrases.addEventListener("click", (event) => {
+    const button = event.target.closest(".phrase-btn");
+    if (!button) return;
+    refs.sourceInput.value = button.dataset.phrase || "";
+    convertNow();
+  });
+
+  refs.candidateList.addEventListener("click", (event) => {
+    const button = event.target.closest(".candidate-btn");
+    if (!button) return;
+    const index = Number(button.dataset.index);
+    const candidate = state.currentCandidates[index];
+    if (!candidate) return;
+    refs.resultOutput.textContent = candidate.text;
+  });
+
+  refs.applyCandidateBtn.addEventListener("click", () => {
+    if (state.currentCandidates[0]) {
+      refs.resultOutput.textContent = state.currentCandidates[0].text;
+    }
+  });
+
+  refs.lexiconSearch.addEventListener("input", () => {
+    state.query = refs.lexiconSearch.value;
+    renderLexiconTab();
+  });
+}
+
+async function loadLexicon() {
+  if (window.DEFAULT_LEXICON && typeof window.DEFAULT_LEXICON === "object") {
+    state.lexicon = window.DEFAULT_LEXICON;
+    return;
+  }
+
+  try {
+    const response = await fetch("./data/default-lexicon.json");
+    if (!response.ok) {
+      throw new Error(`lexicon ${response.status}`);
+    }
+    const payload = await response.json();
+    state.lexicon = payload && typeof payload === "object" ? payload : APP_DATA.seedLexicon;
+  } catch (error) {
+    state.lexicon = { ...APP_DATA.seedLexicon };
+  }
+}
+
+async function bootstrap() {
+  setClock();
+  window.setInterval(setClock, 60000);
+
+  renderSelects();
+  renderQuickPhrases();
+  renderActiveScreen();
+  bindEvents();
+
+  await loadLexicon();
+
+  renderBrief();
+  renderSceneTab();
+  renderLexiconTab();
+  renderInsightsTab();
+  updateModeCopy();
+  updateStatus();
+  convertNow();
+}
+
+bootstrap();
+
+</script>
+</body>
+</html>
+
