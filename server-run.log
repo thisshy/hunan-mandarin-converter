@@ -1,0 +1,4 @@
+Server running at http://0.0.0.0:8080
+Storage mode: file
+Admin token: change-me-admin-token
+CORS origins: (same-origin only)

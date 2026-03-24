@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>湖南方言与普通话转换台</title>
+  <title>湘言通 | 湖南方言开放数据库与普通话互转平台</title>
+  <meta name="description" content="湖南方言开放数据库与普通话互转平台，支持公开上传、专业审核、双向转换与后续 APP 延展。">
   <link rel="stylesheet" href="./style.css">
 </head>
 <body>
@@ -13,20 +14,47 @@
 
   <main class="page">
     <header class="hero">
-      <div class="hero-topline">
-        <span class="brand-chip">CHANGSHA DIALECT LAB</span>
-        <span class="brand-chip ghost">拼音纠偏已启用</span>
+      <div class="hero-bar">
+        <div class="hero-topline">
+          <span class="brand-chip">XIANGYAN OPEN PLATFORM</span>
+          <span id="pageModeLabel" class="brand-chip ghost">公众模式</span>
+        </div>
+        <a id="adminToggleLink" class="hero-link" href="?admin=1">进入管理员视图</a>
       </div>
-      <h1>湖南方言 · 普通话<br>智能互转台</h1>
-      <p class="hero-desc">支持双向转换、同音错字识别、词库在线编辑和 JSON 导入导出。默认词库覆盖长沙常见口语场景，可继续扩展。</p>
+
+      <h1 id="heroTitle">湖南方言开放数据库与普通话互转平台</h1>
+      <p id="heroDesc" class="hero-desc">面向公众开放上传、面向管理员专业审核，把湖南方言资源逐步沉淀成可共享、可持续扩展的开放数据库。</p>
+      <p id="heroSubDesc" class="hero-subdesc">平台当前围绕普通话与方言双向转换展开，优先支持长沙、湘潭、株洲三种方言，后续延展到语音互转与移动端 APP。</p>
+
+      <div class="hero-actions">
+        <a class="btn btn-primary" href="#converterSection">体验即时转换</a>
+        <a id="secondaryAction" class="btn btn-ghost hero-anchor" href="#lexiconSection">上传方言词条</a>
+      </div>
+
       <div class="hero-metrics">
-        <div class="metric"><strong>实时转换</strong><span>输入即翻译</span></div>
-        <div class="metric"><strong>容错识别</strong><span>同音错字可匹配</span></div>
-        <div class="metric"><strong>可持续维护</strong><span>词条可增删改（需审核）</span></div>
+        <div class="metric">
+          <strong data-stat="lexicon">0</strong>
+          <span>开放词条</span>
+        </div>
+        <div class="metric">
+          <strong id="heroMiddleMetricValue">3</strong>
+          <span id="heroMiddleMetricLabel">方言试点</span>
+        </div>
+        <div class="metric">
+          <strong data-stat="evaluations">0</strong>
+          <span>评测记录</span>
+        </div>
       </div>
     </header>
 
-    <section class="card converter-card">
+    <section id="converterSection" class="card converter-card">
+      <div class="section-heading">
+        <div>
+          <h2 id="workspaceTitle">即时转换实验区</h2>
+          <p id="workspaceDesc" class="section-copy">选择方言子区域与使用场景后，即可得到主推荐、候选表达和转换依据，适合日常交流、校园沟通、文旅问路和短视频表达场景。</p>
+        </div>
+      </div>
+
       <div class="toolbar">
         <div class="mode" id="modeLabel">普通话 → 湖南方言</div>
         <div class="toolbar-actions">
@@ -95,7 +123,10 @@
 
     <section class="card evaluation-card">
       <div class="lexicon-head">
-        <h2>转换效果评测记录</h2>
+        <div>
+          <h2 id="qualityTitle">转换效果评测记录</h2>
+          <p id="qualityDesc" class="section-copy">评测记录会帮助平台持续校准转换结果，提升准确性、自然度和可理解性。</p>
+        </div>
         <p id="evaluationStats">暂无评测记录</p>
       </div>
 
@@ -128,9 +159,12 @@
       </div>
     </section>
 
-    <section class="card lexicon-card">
+    <section id="lexiconSection" class="card lexicon-card">
       <div class="lexicon-head">
-        <h2>可编辑词库面板</h2>
+        <div>
+          <h2 id="contributeTitle">开放数据库词库面板</h2>
+          <p id="contributeDesc" class="section-copy">普通用户可在这里提交新词条，管理员在后台审核后入库；开发者、研究者和其他需要的人员可基于公开词库继续共享和使用数据。</p>
+        </div>
         <p id="countInfo">词条数量：0</p>
       </div>
 
@@ -140,21 +174,39 @@
           <input id="mandarinInput" type="text" placeholder="例如：漂亮" required>
         </div>
         <div class="field">
-          <label for="hunanInput">湖南方言词</label>
+          <label for="hunanInput">方言词</label>
           <input id="hunanInput" type="text" placeholder="例如：标致" required>
         </div>
         <button class="btn btn-primary add-btn" type="submit">提交审核</button>
       </form>
 
-      <div class="review-head">
-        <h3>待审核变更</h3>
-        <p id="pendingCountInfo">待审核：0</p>
+      <div class="dataset-note">
+        <div class="dataset-copy">
+          <span>数据库状态</span>
+          <small id="datasetFlowText">公开上传 → 专业审核 → 入库共享</small>
+        </div>
+        <strong id="pendingMetric">专业审核中</strong>
       </div>
-      <div class="review-actions">
-        <button id="approveAllBtn" class="btn btn-ghost" type="button">全部通过</button>
-        <button id="rejectAllBtn" class="btn btn-danger" type="button">全部驳回</button>
+
+      <div class="review-zone" data-admin-only hidden>
+        <div class="review-head">
+          <div>
+            <h3>待审核变更</h3>
+            <p id="reviewMeta" class="section-copy">管理员审核通过后，词条会写入公开数据库并用于后续转换与共享。</p>
+          </div>
+          <p id="pendingCountInfo">待审核：0</p>
+        </div>
+        <div class="review-actions">
+          <button id="approveAllBtn" class="btn btn-ghost" type="button">全部通过</button>
+          <button id="rejectAllBtn" class="btn btn-danger" type="button">全部驳回</button>
+        </div>
+        <div id="pendingList" class="pending-list"></div>
       </div>
-      <div id="pendingList" class="pending-list"></div>
+
+      <div class="tool-header">
+        <h3>已发布词库浏览与维护</h3>
+        <p id="maintenanceMeta" class="section-copy">管理员可导出、导入或恢复词库；公众用户可继续检索和查看公开词条。</p>
+      </div>
 
       <div class="lexicon-toolbar">
         <input id="searchInput" type="text" placeholder="搜索词条（普通话或方言）">

@@ -43,6 +43,34 @@ const evaluationStats = document.getElementById("evaluationStats");
 const evaluationList = document.getElementById("evaluationList");
 const exportEvaluationBtn = document.getElementById("exportEvaluationBtn");
 const clearEvaluationBtn = document.getElementById("clearEvaluationBtn");
+const pageModeLabel = document.getElementById("pageModeLabel");
+const adminToggleLink = document.getElementById("adminToggleLink");
+const secondaryAction = document.getElementById("secondaryAction");
+const heroTitle = document.getElementById("heroTitle");
+const heroDesc = document.getElementById("heroDesc");
+const heroSubDesc = document.getElementById("heroSubDesc");
+const heroMiddleMetricValue = document.getElementById("heroMiddleMetricValue");
+const heroMiddleMetricLabel = document.getElementById("heroMiddleMetricLabel");
+const workspaceTitle = document.getElementById("workspaceTitle");
+const workspaceDesc = document.getElementById("workspaceDesc");
+const workspaceNote = document.getElementById("workspaceNote");
+const contributeTitle = document.getElementById("contributeTitle");
+const contributeDesc = document.getElementById("contributeDesc");
+const contributeNote = document.getElementById("contributeNote");
+const submissionHeading = document.getElementById("submissionHeading");
+const submissionMeta = document.getElementById("submissionMeta");
+const explorerHeading = document.getElementById("explorerHeading");
+const qualityTitle = document.getElementById("qualityTitle");
+const qualityDesc = document.getElementById("qualityDesc");
+const opsTitle = document.getElementById("opsTitle");
+const opsDesc = document.getElementById("opsDesc");
+const pendingMetric = document.getElementById("pendingMetric");
+const datasetFlowText = document.getElementById("datasetFlowText");
+const reviewMeta = document.getElementById("reviewMeta");
+const maintenanceMeta = document.getElementById("maintenanceMeta");
+const adminOnlyBlocks = document.querySelectorAll("[data-admin-only]");
+const lexiconStatTargets = document.querySelectorAll('[data-stat="lexicon"]');
+const evaluationStatTargets = document.querySelectorAll('[data-stat="evaluations"]');
 
 const DIALECT_STORAGE_KEY = "hunan_dialect_mode_v1";
 const SCENE_STORAGE_KEY = "hunan_scene_mode_v1";
@@ -184,6 +212,61 @@ const COMMON_RULES = {
 const query = new URLSearchParams(window.location.search);
 const IS_ADMIN_MODE = query.get("admin") === "1";
 
+const EXPERIENCE_COPY = {
+  public: {
+    pageModeLabel: "公众模式",
+    toggleHref: "?admin=1",
+    toggleText: "进入管理员视图",
+    heroTitle: "湖南方言开放数据库与普通话互转平台",
+    heroDesc: "面向公众开放上传、面向管理员专业审核，把湖南方言资源逐步沉淀成可共享、可持续扩展的开放数据库。",
+    heroSubDesc: "平台当前围绕普通话与方言双向转换展开，优先支持长沙、湘潭、株洲三种方言，后续延展到语音互转与移动端 APP。",
+    secondaryAction: "上传方言词条",
+    secondaryActionHref: "#lexiconSection",
+    workspaceTitle: "即时转换实验区",
+    workspaceDesc: "选择方言子区域与使用场景后，即可得到主推荐、候选表达和转换依据，适合日常交流、校园沟通、文旅问路和短视频表达场景。",
+    workspaceNote: "当前优先支持三种方言试点，并按日常交流、校园沟通、文旅问路和短视频文案组织词条与句式。",
+    contributeTitle: "开放数据库入口与词库面板",
+    contributeDesc: "普通用户可在这里提交新词条，管理员在后台审核后入库；开发者、研究者和其他需要的人员可基于公开词库继续共享和使用数据。",
+    contributeNote: "管理员模式下，这里会展开审核队列、导入导出和词库维护能力，方便把数据工作流真正做起来。",
+    submissionHeading: "词条上传入口",
+    submissionMeta: "每次提交都会进入审核流程。",
+    explorerHeading: "开放数据库浏览",
+    qualityTitle: "转换效果评测记录",
+    qualityDesc: "评测记录会帮助平台持续校准转换结果，提升准确性、自然度和可理解性。",
+    datasetFlowText: "公开上传 → 专业审核 → 入库共享",
+    reviewMeta: "管理员审核通过后，词条会写入公开数据库并用于后续转换与共享。",
+    maintenanceMeta: "管理员可导出、导入或恢复词库；公众用户可继续检索和查看公开词条。",
+    opsTitle: "把数据工作流真正做成长期资产",
+    opsDesc: "公开用户带来真实表达，管理员负责校准与发布，评测结果又会反过来帮助规则优化，三者共同推动平台质量不断提升。"
+  },
+  admin: {
+    pageModeLabel: "后台审核模式",
+    toggleHref: "./",
+    toggleText: "切换到公众视图",
+    heroTitle: "湖南方言后台审核与词库工作台",
+    heroDesc: "在这里审核公众提交词条、维护开放词库、回看转换质量，让公开数据库保持可用、可共享、可持续更新。",
+    heroSubDesc: "当前后台工作重点集中在审核队列、词库维护和评测数据回看三部分。",
+    secondaryAction: "查看审核队列",
+    secondaryActionHref: "#pendingList",
+    workspaceTitle: "转换规则校验区",
+    workspaceDesc: "管理员可在这里检查场景词条、候选推荐和拼音容错是否合理，用同一个入口回看转换效果。",
+    workspaceNote: "当前后台管理围绕三种方言试点展开，并统一处理上传、审核、发布与评测回看。",
+    contributeTitle: "审核队列与开放词库维护",
+    contributeDesc: "本区是后台审核与发布入口，负责处理公众上传、发布词条和维护公开数据库。",
+    contributeNote: "管理员模式优先突出数据处理与审核流，而不是单纯的公开展示。",
+    submissionHeading: "快速录入或补充词条",
+    submissionMeta: "录入内容同样走审核流程，便于保留发布轨迹。",
+    explorerHeading: "已发布词库浏览与维护",
+    qualityTitle: "质量回看与评测数据",
+    qualityDesc: "这里展示的是后台用于观察整体转换质量的数据，而不只是普通用户的单次反馈。",
+    datasetFlowText: "审核通过后自动发布到公开词库",
+    reviewMeta: "这里优先处理待审核上传内容，审核通过后将即时写入公开数据库。",
+    maintenanceMeta: "本区下方用于词库级维护操作，包括导入、导出和恢复默认词库。",
+    opsTitle: "后台把开放平台的可信度维护起来",
+    opsDesc: "管理员负责审核、发布和回看质量，使公开数据库既保持开放，也保持可用与可共享。"
+  }
+};
+
 let lexicon = {};
 let mode = "m2h";
 let pendingQueue = [];
@@ -249,15 +332,89 @@ function promptAdminToken(message) {
 
 function hideElement(target) {
   if (target) {
-    target.style.display = "none";
+    target.hidden = true;
+  }
+}
+
+function showElement(target) {
+  if (target) {
+    target.hidden = false;
+  }
+}
+
+function setText(target, value) {
+  if (target) {
+    target.textContent = value;
+  }
+}
+
+function setGroupText(targets, value) {
+  targets.forEach((target) => {
+    target.textContent = value;
+  });
+}
+
+function applyModeCopy() {
+  const copy = IS_ADMIN_MODE ? EXPERIENCE_COPY.admin : EXPERIENCE_COPY.public;
+  setText(pageModeLabel, copy.pageModeLabel);
+  setText(heroTitle, copy.heroTitle);
+  setText(heroDesc, copy.heroDesc);
+  setText(heroSubDesc, copy.heroSubDesc);
+  setText(workspaceTitle, copy.workspaceTitle);
+  setText(workspaceDesc, copy.workspaceDesc);
+  setText(workspaceNote, copy.workspaceNote);
+  setText(contributeTitle, copy.contributeTitle);
+  setText(contributeDesc, copy.contributeDesc);
+  setText(contributeNote, copy.contributeNote);
+  setText(submissionHeading, copy.submissionHeading);
+  setText(submissionMeta, copy.submissionMeta);
+  setText(explorerHeading, copy.explorerHeading);
+  setText(qualityTitle, copy.qualityTitle);
+  setText(qualityDesc, copy.qualityDesc);
+  setText(opsTitle, copy.opsTitle);
+  setText(opsDesc, copy.opsDesc);
+  setText(datasetFlowText, copy.datasetFlowText);
+  setText(reviewMeta, copy.reviewMeta);
+  setText(maintenanceMeta, copy.maintenanceMeta);
+
+  if (adminToggleLink) {
+    adminToggleLink.href = copy.toggleHref;
+    adminToggleLink.textContent = copy.toggleText;
+  }
+
+  if (secondaryAction) {
+    secondaryAction.textContent = copy.secondaryAction;
+    secondaryAction.setAttribute("href", copy.secondaryActionHref || "#lexiconSection");
+  }
+}
+
+function renderPlatformMetrics() {
+  const lexiconTotal = Object.keys(lexicon).length;
+  const evaluationTotal = evaluations.length;
+  setGroupText(lexiconStatTargets, String(lexiconTotal));
+  setGroupText(evaluationStatTargets, String(evaluationTotal));
+  if (IS_ADMIN_MODE) {
+    setText(heroMiddleMetricValue, String(pendingQueue.length));
+    setText(heroMiddleMetricLabel, "待审核词条");
+    setText(pendingMetric, `待审核 ${pendingQueue.length} 条`);
+  } else {
+    setText(heroMiddleMetricValue, "3");
+    setText(heroMiddleMetricLabel, "方言试点");
+    setText(pendingMetric, "专业审核中");
   }
 }
 
 function applyAccessUi() {
+  document.body.classList.toggle("is-admin", IS_ADMIN_MODE);
+  adminOnlyBlocks.forEach((block) => {
+    if (IS_ADMIN_MODE) {
+      showElement(block);
+    } else {
+      hideElement(block);
+    }
+  });
+
   if (!IS_ADMIN_MODE) {
-    hideElement(document.querySelector(".review-head"));
-    hideElement(document.querySelector(".review-actions"));
-    hideElement(pendingList);
     hideElement(exportBtn);
     hideElement(importBtn);
     hideElement(resetBtn);
@@ -265,11 +422,19 @@ function applyAccessUi() {
     hideElement(rejectAllBtn);
     hideElement(clearEvaluationBtn);
   } else {
-    modeLabel.textContent = `${modeLabel.textContent}（后台模式）`;
+    showElement(exportBtn);
+    showElement(importBtn);
+    showElement(resetBtn);
+    showElement(approveAllBtn);
+    showElement(rejectAllBtn);
+    showElement(clearEvaluationBtn);
     if (!getAdminToken()) {
       promptAdminToken("进入后台模式，请输入管理员令牌：");
     }
   }
+
+  applyModeCopy();
+  renderPlatformMetrics();
 }
 
 async function apiRequest(path, options = {}) {
@@ -677,12 +842,12 @@ function syncLabels() {
   const scene = getSceneProfile();
 
   if (mode === "m2h") {
-    modeLabel.textContent = `普通话 → ${dialectName}${IS_ADMIN_MODE ? "（后台模式）" : ""}`;
+    modeLabel.textContent = `普通话 → ${dialectName}`;
     inputLabel.textContent = "输入（普通话）";
     outputLabel.textContent = `输出（${dialectName}）`;
     inputText.placeholder = scene.sampleM2H;
   } else {
-    modeLabel.textContent = `${dialectName} → 普通话${IS_ADMIN_MODE ? "（后台模式）" : ""}`;
+    modeLabel.textContent = `${dialectName} → 普通话`;
     inputLabel.textContent = `输入（${dialectName}）`;
     outputLabel.textContent = "输出（普通话）";
     inputText.placeholder = scene.sampleH2M;
@@ -694,7 +859,7 @@ function syncContextState() {
   if (dialectSelect) dialectSelect.value = selectedDialect;
   if (sceneSelect) sceneSelect.value = selectedScene;
   if (sceneTip) {
-    sceneTip.textContent = `当前场景：${scene.name}。${scene.tip} 词条新增与删除会提交到后端审核。`;
+    sceneTip.textContent = `当前场景：${scene.name}。${scene.tip} 新增词条会先进入审核流程，再写入公开数据库。`;
   }
 }
 
@@ -710,7 +875,7 @@ function renderEntries() {
   countInfo.textContent = `词条数量：${Object.keys(lexicon).length}`;
 
   if (!entries.length) {
-    entryList.innerHTML = `<div class="entry-empty">没有匹配词条，可新增一条。</div>`;
+    entryList.innerHTML = `<div class="entry-empty">没有匹配词条。你可以继续搜索，或在左侧提交一条新表达。</div>`;
     return;
   }
 
@@ -736,10 +901,12 @@ function renderPendingQueue() {
   if (!IS_ADMIN_MODE) {
     pendingCountInfo.textContent = "待审核：仅后台可见";
     pendingList.innerHTML = "";
+    renderPlatformMetrics();
     return;
   }
 
   pendingCountInfo.textContent = `待审核：${pendingQueue.length}`;
+  renderPlatformMetrics();
 
   if (!pendingQueue.length) {
     pendingList.innerHTML = `<div class="pending-empty">暂无待审核变更。</div>`;
@@ -782,6 +949,7 @@ function renderEvaluationStats() {
 
   if (!evaluations.length) {
     evaluationStats.textContent = "暂无评测记录";
+    renderPlatformMetrics();
     return;
   }
 
@@ -798,6 +966,7 @@ function renderEvaluationStats() {
 
   evaluationStats.textContent =
     `共${total}条评测｜准确性 ${(sum.accuracy / total).toFixed(2)}｜自然度 ${(sum.naturalness / total).toFixed(2)}｜可理解性 ${(sum.understandability / total).toFixed(2)}`;
+  renderPlatformMetrics();
 }
 
 function renderEvaluationList() {
@@ -845,6 +1014,7 @@ async function refreshLexicon() {
   const data = await apiRequest("/lexicon");
   lexicon = data.lexicon && typeof data.lexicon === "object" ? data.lexicon : {};
   renderEntries();
+  renderPlatformMetrics();
   convert();
 }
 
@@ -852,12 +1022,14 @@ async function refreshPendingQueue() {
   if (!IS_ADMIN_MODE) {
     pendingQueue = [];
     renderPendingQueue();
+    renderPlatformMetrics();
     return;
   }
 
   const data = await apiRequest("/admin/change-requests?status=pending", { admin: true });
   pendingQueue = Array.isArray(data.records) ? data.records : [];
   renderPendingQueue();
+  renderPlatformMetrics();
 }
 
 async function refreshEvaluations() {
@@ -865,6 +1037,7 @@ async function refreshEvaluations() {
   evaluations = Array.isArray(data.records) ? data.records : [];
   renderEvaluationStats();
   renderEvaluationList();
+  renderPlatformMetrics();
 }
 
 async function addOrUpdateEntry(event) {
@@ -891,7 +1064,7 @@ async function addOrUpdateEntry(event) {
     await refreshPendingQueue();
   }
 
-  alert("已提交到后端审核队列。审核通过后会自动生效。");
+  alert("已提交到开放数据库审核队列。审核通过后会自动生效。");
 }
 
 async function removeEntry(event) {
@@ -910,7 +1083,7 @@ async function removeEntry(event) {
   });
 
   await refreshPendingQueue();
-  alert("删除申请已提交到后端审核队列。");
+  alert("删除申请已提交到审核队列。");
 }
 
 async function approveAction(actionId) {
@@ -1176,6 +1349,7 @@ async function bootstrap() {
   renderEvaluationStats();
   renderEvaluationList();
   renderCandidateList([]);
+  renderPlatformMetrics();
 
   await refreshLexicon();
   await refreshEvaluations();
