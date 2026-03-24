@@ -216,7 +216,7 @@ const EXPERIENCE_COPY = {
   public: {
     pageModeLabel: "公众模式",
     toggleHref: "?admin=1",
-    toggleText: "进入管理员视图",
+    toggleText: "进入后台审核",
     heroTitle: "湖南方言开放数据库与普通话互转平台",
     heroDesc: "面向公众开放上传、面向管理员专业审核，把湖南方言资源逐步沉淀成可共享、可持续扩展的开放数据库。",
     heroSubDesc: "平台当前围绕普通话与方言双向转换展开，优先支持长沙、湘潭、株洲三种方言，后续延展到语音互转与移动端 APP。",
@@ -242,7 +242,7 @@ const EXPERIENCE_COPY = {
   admin: {
     pageModeLabel: "后台审核模式",
     toggleHref: "./",
-    toggleText: "切换到公众视图",
+    toggleText: "返回公众视图",
     heroTitle: "湖南方言后台审核与词库工作台",
     heroDesc: "在这里审核公众提交词条、维护开放词库、回看转换质量，让公开数据库保持可用、可共享、可持续更新。",
     heroSubDesc: "当前后台工作重点集中在审核队列、词库维护和评测数据回看三部分。",
