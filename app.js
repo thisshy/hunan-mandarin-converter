@@ -217,25 +217,25 @@ const EXPERIENCE_COPY = {
     pageModeLabel: "公众模式",
     toggleHref: "?admin=1",
     toggleText: "进入后台审核",
-    heroTitle: "湖南方言开放数据库与普通话互转平台",
-    heroDesc: "面向公众开放上传、面向管理员专业审核，把湖南方言资源逐步沉淀成可共享、可持续扩展的开放数据库。",
-    heroSubDesc: "平台当前围绕普通话与方言双向转换展开，优先支持长沙、湘潭、株洲三种方言，后续延展到语音互转与移动端 APP。",
+    heroTitle: "湘言通",
+    heroDesc: "湖南方言开放数据库与普通话互转平台",
+    heroSubDesc: "",
     secondaryAction: "上传方言词条",
     secondaryActionHref: "#lexiconSection",
     workspaceTitle: "即时转换实验区",
-    workspaceDesc: "选择方言子区域与使用场景后，即可得到主推荐、候选表达和转换依据，适合日常交流、校园沟通、文旅问路和短视频表达场景。",
+    workspaceDesc: "",
     workspaceNote: "当前优先支持三种方言试点，并按日常交流、校园沟通、文旅问路和短视频文案组织词条与句式。",
     contributeTitle: "开放数据库入口与词库面板",
-    contributeDesc: "普通用户可在这里提交新词条，管理员在后台审核后入库；开发者、研究者和其他需要的人员可基于公开词库继续共享和使用数据。",
+    contributeDesc: "",
     contributeNote: "管理员模式下，这里会展开审核队列、导入导出和词库维护能力，方便把数据工作流真正做起来。",
     submissionHeading: "词条上传入口",
     submissionMeta: "每次提交都会进入审核流程。",
     explorerHeading: "开放数据库浏览",
     qualityTitle: "转换效果评测记录",
-    qualityDesc: "评测记录会帮助平台持续校准转换结果，提升准确性、自然度和可理解性。",
-    datasetFlowText: "公开上传 → 专业审核 → 入库共享",
+    qualityDesc: "",
+    datasetFlowText: "",
     reviewMeta: "管理员审核通过后，词条会写入公开数据库并用于后续转换与共享。",
-    maintenanceMeta: "管理员可导出、导入或恢复词库；公众用户可继续检索和查看公开词条。",
+    maintenanceMeta: "",
     opsTitle: "把数据工作流真正做成长期资产",
     opsDesc: "公开用户带来真实表达，管理员负责校准与发布，评测结果又会反过来帮助规则优化，三者共同推动平台质量不断提升。"
   },
@@ -243,25 +243,25 @@ const EXPERIENCE_COPY = {
     pageModeLabel: "后台审核模式",
     toggleHref: "./",
     toggleText: "返回公众视图",
-    heroTitle: "湖南方言后台审核与词库工作台",
-    heroDesc: "在这里审核公众提交词条、维护开放词库、回看转换质量，让公开数据库保持可用、可共享、可持续更新。",
-    heroSubDesc: "当前后台工作重点集中在审核队列、词库维护和评测数据回看三部分。",
+    heroTitle: "湘言通",
+    heroDesc: "后台审核与词库工作台",
+    heroSubDesc: "",
     secondaryAction: "查看审核队列",
     secondaryActionHref: "#pendingList",
     workspaceTitle: "转换规则校验区",
-    workspaceDesc: "管理员可在这里检查场景词条、候选推荐和拼音容错是否合理，用同一个入口回看转换效果。",
+    workspaceDesc: "",
     workspaceNote: "当前后台管理围绕三种方言试点展开，并统一处理上传、审核、发布与评测回看。",
     contributeTitle: "审核队列与开放词库维护",
-    contributeDesc: "本区是后台审核与发布入口，负责处理公众上传、发布词条和维护公开数据库。",
+    contributeDesc: "",
     contributeNote: "管理员模式优先突出数据处理与审核流，而不是单纯的公开展示。",
     submissionHeading: "快速录入或补充词条",
     submissionMeta: "录入内容同样走审核流程，便于保留发布轨迹。",
     explorerHeading: "已发布词库浏览与维护",
     qualityTitle: "质量回看与评测数据",
-    qualityDesc: "这里展示的是后台用于观察整体转换质量的数据，而不只是普通用户的单次反馈。",
-    datasetFlowText: "审核通过后自动发布到公开词库",
+    qualityDesc: "",
+    datasetFlowText: "",
     reviewMeta: "这里优先处理待审核上传内容，审核通过后将即时写入公开数据库。",
-    maintenanceMeta: "本区下方用于词库级维护操作，包括导入、导出和恢复默认词库。",
+    maintenanceMeta: "",
     opsTitle: "后台把开放平台的可信度维护起来",
     opsDesc: "管理员负责审核、发布和回看质量，使公开数据库既保持开放，也保持可用与可共享。"
   }
@@ -343,9 +343,10 @@ function showElement(target) {
 }
 
 function setText(target, value) {
-  if (target) {
-    target.textContent = value;
-  }
+  if (!target) return;
+  const next = typeof value === "string" ? value : "";
+  target.textContent = next;
+  target.hidden = next.trim().length === 0;
 }
 
 function setGroupText(targets, value) {
@@ -826,7 +827,7 @@ function convert() {
     outputText.value = "";
     renderCandidateList([]);
     if (explainBox) {
-      explainBox.textContent = "将展示匹配词条数量、拼音容错命中数和规则命中情况。";
+      explainBox.textContent = "输入后显示转换依据。";
     }
     return;
   }
@@ -859,7 +860,7 @@ function syncContextState() {
   if (dialectSelect) dialectSelect.value = selectedDialect;
   if (sceneSelect) sceneSelect.value = selectedScene;
   if (sceneTip) {
-    sceneTip.textContent = `当前场景：${scene.name}。${scene.tip} 新增词条会先进入审核流程，再写入公开数据库。`;
+    sceneTip.textContent = `当前场景：${scene.name}`;
   }
 }
 
