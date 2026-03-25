@@ -2,10 +2,10 @@
   const APP_DATA = {
     appMeta: {
       name: "湘言通",
-      subtitle: "湖南方言与普通话互转工作台",
+      subtitle: "湖南方言与普通话互转 App",
       description:
-        "面向方言转换、词库审核和效果评测的一体化原型数据，适合移动端工作台展示。",
-      version: "prototype-1.0"
+        "面向日常交流、校园沟通、文旅服务与内容表达的湖南方言互转应用。",
+      version: "showcase-1.0"
     },
 
     navTabs: [
@@ -13,28 +13,28 @@
         key: "translate",
         title: "转译",
         subtitle: "普通话 / 方言互转",
-        summary: "支持场景化转译、候选结果对比和一键应用。",
+        summary: "支持双向转换、候选对比与一键应用。",
         badge: "核心"
       },
       {
         key: "scene",
         title: "场景",
         subtitle: "日常 / 校园 / 文旅 / 视频",
-        summary: "按使用场景组织高频词句，提升语境命中率。",
+        summary: "按使用场景组织常用表达与推荐内容。",
         badge: "推荐"
       },
       {
         key: "lexicon",
         title: "词库",
         subtitle: "审核 / 导入 / 维护",
-        summary: "保留词条审核流，方便集中维护湖南方言词库。",
+        summary: "支持词条审核、词库维护与高频词浏览。",
         badge: "后台"
       },
       {
         key: "insights",
         title: "评测",
         subtitle: "效果趋势 / 记录",
-        summary: "展示准确率、自然度和可理解性等核心指标。",
+        summary: "展示准确率、自然度与使用反馈等指标。",
         badge: "分析"
       }
     ],
@@ -44,7 +44,7 @@
         key: "daily",
         name: "日常交流",
         title: "高频口语包",
-        description: "覆盖聊天、问路、提醒、回应等日常高频表达，适合快速转译。",
+        description: "覆盖聊天、提醒、回应等高频日常表达。",
         tone: "自然、直接、口语化",
         useCases: ["聊天", "接话", "日常提醒"],
         highlight: "优先匹配短句和高频词组"
@@ -53,16 +53,16 @@
         key: "campus",
         name: "校园沟通",
         title: "校园场景包",
-        description: "围绕上课、食堂、作业、考试等校园语境构建可用表达。",
+        description: "围绕上课、食堂、作业、考试等校园语境组织表达。",
         tone: "明确、轻快、适合学生端",
         useCases: ["上课下课", "宿舍交流", "作业提醒"],
-        highlight: "更适合高频名词和固定句式"
+        highlight: "强化校园高频名词和固定句式"
       },
       {
         key: "travel",
         name: "文旅问路",
         title: "出行场景包",
-        description: "覆盖景区、交通、路线和服务咨询，适合游客端和导览端。",
+        description: "覆盖景区、交通、路线和服务咨询等常见场景。",
         tone: "礼貌、清晰、信息导向",
         useCases: ["问路", "买票", "找景点"],
         highlight: "加强地名、交通词与问句模板"
@@ -71,8 +71,8 @@
         key: "video",
         name: "短视频文案",
         title: "传播场景包",
-        description: "面向标题、口播、弹幕和评论语境，突出节奏感和情绪表达。",
-        tone: "更有传播感，适合内容创作",
+        description: "面向标题、口播、评论等内容表达场景。",
+        tone: "有传播感，适合内容创作",
         useCases: ["标题生成", "口播台词", "评论互动"],
         highlight: "强化情绪词和短句节奏"
       }
@@ -83,24 +83,24 @@
         key: "changsha",
         name: "长沙",
         area: "长沙口语",
-        intro: "作为默认主区域，适合做首屏转换和词库基准样本。",
-        strengths: ["覆盖面广", "用户识别度高", "适合作为默认词库"],
-        sampleStyle: "更偏日常口语和表达节奏"
+        intro: "覆盖面广，适合作为默认展示区域。",
+        strengths: ["覆盖面广", "识别度高", "表达自然"],
+        sampleStyle: "偏日常口语和表达节奏"
       },
       {
         key: "xiangtan",
         name: "湘潭",
         area: "湘潭口语",
-        intro: "适合展示近邻城市的词形差异和同义替换能力。",
-        strengths: ["邻近地域", "词形差异明显", "便于对比展示"],
+        intro: "词形差异清晰，适合呈现区域表达变化。",
+        strengths: ["区域差异明显", "适合对比", "词汇映射清晰"],
         sampleStyle: "适合突出词汇映射"
       },
       {
         key: "zhuzhou",
         name: "株洲",
         area: "株洲口语",
-        intro: "适合承载出行、工业和生活类表达，强调实用性。",
-        strengths: ["生活场景强", "短句适配高", "便于效果评测"],
+        intro: "生活场景丰富，适合展示实用表达能力。",
+        strengths: ["生活场景强", "短句适配高", "表达实用"],
         sampleStyle: "更适合高频生活词"
       }
     ],
@@ -172,6 +172,9 @@
     ],
 
     stats: {
+      prototype: "专家展示版",
+      taskPath: "4 类场景",
+      approvalLatency: "38 条待审核",
       totalLexicon: 1286,
       pendingReview: 38,
       dailyConversions: 214,

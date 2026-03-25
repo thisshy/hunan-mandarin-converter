@@ -77,15 +77,16 @@ body {
   margin: 0 auto;
   padding: 40px 0;
   display: grid;
-  grid-template-columns: minmax(320px, 1fr) minmax(360px, 470px);
-  gap: 28px;
-  align-items: center;
+  grid-template-columns: minmax(240px, 300px) minmax(400px, 500px);
+  gap: 22px;
+  align-items: start;
+  justify-content: center;
 }
 
 .brief-panel {
-  padding: 34px;
+  padding: 28px 24px;
   border-radius: var(--radius-xl);
-  background: rgba(244, 236, 223, 0.12);
+  background: rgba(244, 236, 223, 0.1);
   border: 1px solid rgba(255, 235, 213, 0.12);
   backdrop-filter: blur(18px);
   box-shadow: var(--shadow);
@@ -108,23 +109,23 @@ body {
 
 .brief-panel h1 {
   margin: 0;
-  max-width: 11ch;
+  max-width: none;
   font-family: "Source Han Serif SC", "Songti SC", "STSong", serif;
-  font-size: clamp(38px, 6vw, 72px);
-  line-height: 0.98;
+  font-size: clamp(42px, 6vw, 78px);
+  line-height: 0.94;
   color: #fff7ea;
 }
 
 .lede {
-  margin: 18px 0 0;
-  max-width: 560px;
-  font-size: 16px;
-  line-height: 1.75;
-  color: rgba(255, 245, 232, 0.82);
+  margin: 12px 0 0;
+  max-width: 22ch;
+  font-size: 14px;
+  line-height: 1.65;
+  color: rgba(255, 245, 232, 0.8);
 }
 
 .brief-stats {
-  margin-top: 24px;
+  margin-top: 18px;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 12px;
@@ -138,13 +139,13 @@ body {
 }
 
 .stat-chip {
-  padding: 14px 16px;
+  padding: 13px 14px;
   border-radius: 18px;
 }
 
 .stat-chip strong {
   display: block;
-  font-size: 24px;
+  font-size: 22px;
   color: #fff4e3;
 }
 
@@ -217,6 +218,7 @@ body {
   position: relative;
   display: flex;
   justify-content: center;
+  width: 100%;
   animation: panel-rise 880ms 120ms var(--ease) both;
 }
 

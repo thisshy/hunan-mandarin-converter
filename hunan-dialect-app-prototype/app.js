@@ -1,17 +1,17 @@
 const FALLBACK_DATA = {
   designGoal:
-    "把原网页里的长页面拆成移动端的四个稳定入口，让转译、场景、词库和评测各自形成清晰路径。",
+    "面向日常交流、校园沟通、文旅服务与内容表达的湖南方言互转应用。",
   workflow: [
-    "选择方言子区和使用场景，明确当前上下文。",
-    "输入普通话或方言文本，得到推荐结果与候选表达。",
-    "回看转换依据，快速判断语气、场景和区域是否匹配。",
-    "进入词库实验室和评测页，完成审核与效果闭环。"
+    "选择方言区域与使用场景。",
+    "输入文本并生成推荐表达。",
+    "查看候选结果与转换依据。",
+    "进入词库与评测页面继续维护。"
   ],
   navTabs: [
-    { id: "translate", label: "转译", hint: "主工作台", summary: "双向转换、候选结果、场景联动。" },
-    { id: "scene", label: "场景", hint: "上下文", summary: "管理场景包和区域差异，不再只是一张词表。" },
-    { id: "lexicon", label: "词库", hint: "审核流", summary: "移动端优先展示待审核和高频词条。" },
-    { id: "insights", label: "评测", hint: "趋势", summary: "把原项目的评分记录整理成运营视图。" }
+    { id: "translate", label: "转译", hint: "双向互转", summary: "普通话与方言双向转换。" },
+    { id: "scene", label: "场景", hint: "场景包", summary: "按场景组织常用表达。" },
+    { id: "lexicon", label: "词库", hint: "审核", summary: "词条审核与词库维护。" },
+    { id: "insights", label: "评测", hint: "反馈", summary: "查看质量评测与趋势。" }
   ],
   scenePacks: [
     {
@@ -126,10 +126,10 @@ const FALLBACK_DATA = {
     { scene: "video", dialect: "changsha", mode: "m2h", accuracy: 4.7, naturalness: 4.8, note: "情绪口语和互动引导更贴近短视频", time: "03-22 21:14" }
   ],
   kpis: {
-    prototype: "移动优先",
-    taskPath: "4 段流",
+    prototype: "App 展示版",
+    taskPath: "4 类场景",
     avgScore: "4.6 / 5",
-    approvalLatency: "< 1 天"
+    approvalLatency: "待审核"
   },
   trendSeries: [
     { label: "第1周", value: 62 },
@@ -436,12 +436,12 @@ function updateModeCopy() {
   const scene = getScene();
   refs.modeHeadline.textContent =
     state.mode === "m2h" ? `普通话 → ${dialect.name}` : `${dialect.name} → 普通话`;
-  refs.modeDescription.textContent = `${scene.name}场景开启，保留候选表达与语气差异。`;
-  refs.sceneTip.textContent = scene.tip || scene.description || "优先使用当前场景的表达习惯与局部词包。";
+  refs.modeDescription.textContent = `${scene.name}场景`;
+  refs.sceneTip.textContent = `${scene.name}已启用`;
   refs.resultMeta.textContent =
     state.mode === "m2h"
-      ? `优先输出 ${dialect.name} 在 ${scene.name} 下的口语表达。`
-      : `把 ${dialect.name} 的表达回译为更标准的普通话。`;
+      ? `${dialect.name} · ${scene.name}`
+      : `普通话回译 · ${dialect.name}`;
 }
 
 function renderCandidates() {
@@ -496,38 +496,45 @@ function renderBrief() {
       ).toFixed(1)
     : APP_DATA.kpis.avgScore;
 
-  refs.designGoal.textContent = APP_DATA.designGoal;
+  if (refs.designGoal) {
+    refs.designGoal.textContent = APP_DATA.designGoal;
+  }
+
   refs.briefStats.innerHTML = `
     <div class="stat-chip">
       <strong>${Object.keys(state.lexicon).length || 0}</strong>
-      <span>继承原项目词库</span>
+      <span>开放词条</span>
     </div>
     <div class="stat-chip">
       <strong>${APP_DATA.scenePacks.length}</strong>
-      <span>场景包重构为移动入口</span>
+      <span>核心场景</span>
     </div>
     <div class="stat-chip">
       <strong>${APP_DATA.dialectRegions.length}</strong>
-      <span>方言子区保留为关键上下文</span>
+      <span>区域口语</span>
     </div>
     <div class="stat-chip">
       <strong>${avgFromRecords}</strong>
-      <span>评测平均准确度</span>
+      <span>平均准确度</span>
     </div>
   `;
 
-  refs.flowList.innerHTML = APP_DATA.workflow
-    .map((step) => `<div class="flow-step">${escapeHtml(step)}</div>`)
-    .join("");
+  if (refs.flowList) {
+    refs.flowList.innerHTML = APP_DATA.workflow
+      .map((step) => `<div class="flow-step">${escapeHtml(step)}</div>`)
+      .join("");
+  }
 
-  refs.moduleStrip.innerHTML = APP_DATA.navTabs
-    .map((item) => `
-      <div class="module-card">
-        <strong>${escapeHtml(item.label)}</strong>
-        <p>${escapeHtml(item.summary || item.hint || "")}</p>
-      </div>
-    `)
-    .join("");
+  if (refs.moduleStrip) {
+    refs.moduleStrip.innerHTML = APP_DATA.navTabs
+      .map((item) => `
+        <div class="module-card">
+          <strong>${escapeHtml(item.label)}</strong>
+          <p>${escapeHtml(item.summary || item.hint || "")}</p>
+        </div>
+      `)
+      .join("");
+  }
 }
 
 function renderBottomNav() {
@@ -574,7 +581,7 @@ function renderSceneTab() {
     <h4>${escapeHtml(activeScene.name)}</h4>
     <p>${escapeHtml(activeScene.description || activeScene.tip || "")}</p>
     <div class="accent-line">
-      <span>${escapeHtml(activeScene.accent || "表达强化")}</span>
+      <span>${escapeHtml(activeScene.accent || "常用表达")}</span>
       <span>${escapeHtml(activeScene.sample || "")}</span>
     </div>
   `;
@@ -643,7 +650,7 @@ function renderLexiconTab() {
     refs.lexiconList.innerHTML = `
       <div class="lexicon-item">
         <strong>没有匹配词条</strong>
-        <p>换一个关键词试试，或者回到无搜索状态查看高频条目。</p>
+        <p>换一个关键词试试。</p>
       </div>
     `;
   }
@@ -659,16 +666,16 @@ function renderInsightsTab() {
 
   refs.insightStats.innerHTML = `
     <div class="insight-chip">
-      <strong>${escapeHtml(APP_DATA.kpis.prototype || "移动优先")}</strong>
-      <span>当前原型定位</span>
+      <strong>${escapeHtml(APP_DATA.kpis.prototype || "App 原型")}</strong>
+      <span>版本状态</span>
     </div>
     <div class="insight-chip">
-      <strong>${escapeHtml(APP_DATA.kpis.taskPath || "4 段流")}</strong>
-      <span>主工作路径</span>
+      <strong>${escapeHtml(APP_DATA.kpis.taskPath || "4 类场景")}</strong>
+      <span>覆盖范围</span>
     </div>
     <div class="insight-chip">
       <strong>${escapeHtml(APP_DATA.kpis.approvalLatency || "< 1 天")}</strong>
-      <span>审核闭环预估</span>
+      <span>待审核状态</span>
     </div>
     <div class="insight-chip">
       <strong>${avgNaturalness}</strong>
@@ -676,7 +683,7 @@ function renderInsightsTab() {
     </div>
   `;
 
-  refs.trendCaption.textContent = `${APP_DATA.trendSeries.length} 个时间点模拟`;
+  refs.trendCaption.textContent = `${APP_DATA.trendSeries.length} 个时间点`;
   const maxValue = Math.max(...APP_DATA.trendSeries.map((item) => Number(item.value) || 0), 1);
   refs.trendChart.innerHTML = APP_DATA.trendSeries
     .map((item) => {
@@ -723,7 +730,7 @@ function renderActiveScreen() {
 }
 
 function updateStatus() {
-  refs.statusPill.textContent = `离线词库 ${Object.keys(state.lexicon).length} 条`;
+  refs.statusPill.textContent = `词库 ${Object.keys(state.lexicon).length} 条`;
 }
 
 function bindEvents() {
