@@ -72,19 +72,19 @@ body {
 .studio {
   position: relative;
   z-index: 1;
-  width: min(1280px, calc(100vw - 40px));
+  width: min(1480px, calc(100vw - 56px));
   min-height: 100vh;
   margin: 0 auto;
-  padding: 40px 0;
+  padding: 44px 0;
   display: grid;
-  grid-template-columns: minmax(240px, 300px) minmax(400px, 500px);
-  gap: 22px;
+  grid-template-columns: minmax(420px, 560px) minmax(420px, 470px);
+  gap: clamp(28px, 4vw, 52px);
   align-items: start;
   justify-content: center;
 }
 
 .brief-panel {
-  padding: 28px 24px;
+  padding: 30px 28px;
   border-radius: var(--radius-xl);
   background: rgba(244, 236, 223, 0.1);
   border: 1px solid rgba(255, 235, 213, 0.12);
@@ -118,17 +118,17 @@ body {
 
 .lede {
   margin: 12px 0 0;
-  max-width: 22ch;
+  max-width: 34ch;
   font-size: 14px;
   line-height: 1.65;
   color: rgba(255, 245, 232, 0.8);
 }
 
 .brief-stats {
-  margin-top: 18px;
+  margin-top: 22px;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
 }
 
 .stat-chip,
@@ -139,26 +139,27 @@ body {
 }
 
 .stat-chip {
-  padding: 13px 14px;
+  padding: 12px 12px 13px;
   border-radius: 18px;
 }
 
 .stat-chip strong {
   display: block;
-  font-size: 22px;
+  font-size: 24px;
   color: #fff4e3;
 }
 
 .stat-chip span {
   display: block;
   margin-top: 6px;
-  font-size: 13px;
+  font-size: 12px;
+  line-height: 1.45;
   color: rgba(255, 239, 220, 0.75);
 }
 
 .brief-block {
-  margin-top: 22px;
-  padding-top: 20px;
+  margin-top: 18px;
+  padding-top: 18px;
   border-top: 1px solid rgba(255, 236, 212, 0.16);
 }
 
@@ -180,19 +181,25 @@ body {
 .module-strip {
   margin-top: 14px;
   display: grid;
-  gap: 12px;
+  gap: 14px;
+}
+
+.flow-list {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
 }
 
 .flow-step {
+  margin-top: 0;
   position: relative;
-  padding-left: 26px;
+  padding-left: 24px;
 }
 
 .flow-step::before {
   content: "";
   position: absolute;
   left: 0;
-  top: 9px;
+  top: 8px;
   width: 12px;
   height: 12px;
   border-radius: 999px;
@@ -205,7 +212,7 @@ body {
 }
 
 .module-card {
-  padding: 16px;
+  padding: 15px;
   border-radius: 20px;
 }
 
@@ -233,7 +240,7 @@ body {
 
 .device-shell {
   position: relative;
-  width: min(100%, 430px);
+  width: min(100%, 438px);
   min-height: 820px;
   padding: 22px 16px 18px;
   border-radius: 42px;
@@ -844,6 +851,7 @@ input[type="text"]:focus {
   }
 
   .brief-stats,
+  .flow-list,
   .module-strip,
   .scene-grid,
   .region-list,

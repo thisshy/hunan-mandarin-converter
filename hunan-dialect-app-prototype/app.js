@@ -1,17 +1,17 @@
 const FALLBACK_DATA = {
   designGoal:
-    "面向日常交流、校园沟通、文旅服务与内容表达的湖南方言互转应用。",
+    "面向高频口语场景，形成集双向转换、场景表达、词库维护与质量反馈于一体的湖南方言互转应用。",
   workflow: [
-    "选择方言区域与使用场景。",
-    "输入文本并生成推荐表达。",
-    "查看候选结果与转换依据。",
-    "进入词库与评测页面继续维护。"
+    "选择方言区域与使用场景，建立当前语境。",
+    "输入普通话或方言文本，生成推荐结果与候选表达。",
+    "结合转换依据完成结果判断与一键应用。",
+    "在词库与评测页面完成持续维护与反馈闭环。"
   ],
   navTabs: [
-    { id: "translate", label: "转译", hint: "双向互转", summary: "普通话与方言双向转换。" },
-    { id: "scene", label: "场景", hint: "场景包", summary: "按场景组织常用表达。" },
-    { id: "lexicon", label: "词库", hint: "审核", summary: "词条审核与词库维护。" },
-    { id: "insights", label: "评测", hint: "反馈", summary: "查看质量评测与趋势。" }
+    { id: "translate", label: "转译", hint: "核心入口", summary: "承担普通话与方言双向转换，以及候选结果输出。" },
+    { id: "scene", label: "场景", hint: "语境组织", summary: "按日常、校园、文旅、内容表达组织常用表达。" },
+    { id: "lexicon", label: "词库", hint: "维护更新", summary: "集中展示待审核词条与高频词库，支持持续迭代。" },
+    { id: "insights", label: "评测", hint: "效果反馈", summary: "展示转换质量、用户反馈与阶段性趋势。" }
   ],
   scenePacks: [
     {
