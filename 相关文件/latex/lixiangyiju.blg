@@ -1,15 +1,15 @@
 [0] Config.pm:308> INFO - This is Biber 2.20
 [0] Config.pm:311> INFO - Logfile is 'lixiangyiju.blg'
-[225] biber-MSWIN64:340> INFO - === 
-[313] Biber.pm:420> INFO - Reading 'lixiangyiju.bcf'
-[467] Biber.pm:994> INFO - Found 19 citekeys in bib section 0
-[478] Biber.pm:4463> INFO - Processing section 0
-[509] Biber.pm:4654> INFO - Looking for bibtex file 'wenxian.bib' for section 0
-[573] bibtex.pm:1713> INFO - LaTeX decoding ...
-[596] bibtex.pm:1519> INFO - Found BibTeX data source 'wenxian.bib'
-[823] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
-[823] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
-[823] Biber.pm:4283> INFO - Sorting list 'none/global//global/global/global' of type 'entry' with template 'none' and locale 'en-US'
-[823] Biber.pm:4289> INFO - No sort tailoring available for locale 'en-US'
-[874] bbl.pm:676> INFO - Writing 'lixiangyiju.bbl' with encoding 'UTF-8'
-[889] bbl.pm:779> INFO - Output to lixiangyiju.bbl
+[123] biber-MSWIN64:340> INFO - === 
+[159] Biber.pm:420> INFO - Reading 'lixiangyiju.bcf'
+[289] Biber.pm:994> INFO - Found 19 citekeys in bib section 0
+[300] Biber.pm:4463> INFO - Processing section 0
+[311] Biber.pm:4654> INFO - Looking for bibtex file 'wenxian.bib' for section 0
+[361] bibtex.pm:1713> INFO - LaTeX decoding ...
+[391] bibtex.pm:1519> INFO - Found BibTeX data source 'wenxian.bib'
+[571] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'normalization = NFD' with 'normalization = prenormalized'
+[572] UCollate.pm:68> INFO - Overriding locale 'en-US' defaults 'variable = shifted' with 'variable = non-ignorable'
+[572] Biber.pm:4283> INFO - Sorting list 'none/global//global/global/global' of type 'entry' with template 'none' and locale 'en-US'
+[572] Biber.pm:4289> INFO - No sort tailoring available for locale 'en-US'
+[613] bbl.pm:676> INFO - Writing 'lixiangyiju.bbl' with encoding 'UTF-8'
+[628] bbl.pm:779> INFO - Output to lixiangyiju.bbl
