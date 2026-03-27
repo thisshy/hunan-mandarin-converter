@@ -5,15 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>湘言通 | 湖南方言开放数据库与普通话互转平台</title>
   <meta name="description" content="湖南方言开放数据库与普通话互转平台，支持公开上传、专业审核、双向转换与后续 APP 延展。">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23c04f1d'/%3E%3Ctext x='50%25' y='52%25' dominant-baseline='middle' text-anchor='middle' font-size='34' fill='white'%3E湘%3C/text%3E%3C/svg%3E">
   <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-  <div class="grid-overlay"></div>
-  <div class="blob blob-a"></div>
-  <div class="blob blob-b"></div>
+  <div class="atmosphere" aria-hidden="true"></div>
 
-  <main class="page">
-    <header class="hero">
+  <header class="hero">
+    <div class="hero-inner">
       <div class="hero-bar">
         <div class="hero-topline">
           <span class="brand-chip">XIANGYAN OPEN PLATFORM</span>
@@ -22,36 +21,66 @@
         <a id="adminToggleLink" class="hero-link" href="?admin=1">进入后台审核</a>
       </div>
 
-      <h1 id="heroTitle">湘言通</h1>
-      <p id="heroDesc" class="hero-desc">湖南方言开放数据库与普通话互转平台</p>
-      <p id="heroSubDesc" class="hero-subdesc" hidden></p>
+      <div class="hero-grid">
+        <div class="hero-copy">
+          <h1 id="heroTitle">湘言通</h1>
+          <p id="heroDesc" class="hero-desc">湖南方言开放数据库与普通话互转平台</p>
+          <p id="heroSubDesc" class="hero-subdesc" hidden></p>
 
-      <div class="hero-actions">
-        <a class="btn btn-primary" href="#converterSection">体验即时转换</a>
-        <a id="secondaryAction" class="btn btn-ghost hero-anchor" href="#lexiconSection">上传方言词条</a>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="#converterSection">体验即时转换</a>
+            <a id="secondaryAction" class="btn btn-ghost hero-anchor" href="#lexiconSection">上传方言词条</a>
+          </div>
+
+          <div class="hero-metrics">
+            <div class="metric">
+              <strong data-stat="lexicon">0</strong>
+              <span>开放词条</span>
+            </div>
+            <div class="metric">
+              <strong id="heroMiddleMetricValue">3</strong>
+              <span id="heroMiddleMetricLabel">方言试点</span>
+            </div>
+            <div class="metric">
+              <strong data-stat="evaluations">0</strong>
+              <span>评测记录</span>
+            </div>
+          </div>
+        </div>
+
+        <aside class="hero-visual" aria-label="数据库工作流示意">
+          <p class="visual-eyebrow">共享数据库流程</p>
+          <ol class="flow-list">
+            <li>
+              <span>公开上传</span>
+              <small>收集真实场景方言表达</small>
+            </li>
+            <li>
+              <span>专业审核</span>
+              <small>管理员校准后写入开放词库</small>
+            </li>
+            <li>
+              <span>双向转换</span>
+              <small>普通话与湖南方言互转联动</small>
+            </li>
+            <li>
+              <span>持续评测</span>
+              <small>反馈反哺规则和词条质量</small>
+            </li>
+          </ol>
+        </aside>
       </div>
+    </div>
+  </header>
 
-      <div class="hero-metrics">
-        <div class="metric">
-          <strong data-stat="lexicon">0</strong>
-          <span>开放词条</span>
-        </div>
-        <div class="metric">
-          <strong id="heroMiddleMetricValue">3</strong>
-          <span id="heroMiddleMetricLabel">方言试点</span>
-        </div>
-        <div class="metric">
-          <strong data-stat="evaluations">0</strong>
-          <span>评测记录</span>
-        </div>
-      </div>
-    </header>
-
-    <section id="converterSection" class="card converter-card">
-      <div class="section-heading">
+  <main class="page">
+    <section id="converterSection" class="surface converter-surface">
+      <div class="section-head">
         <div>
           <h2 id="workspaceTitle">即时转换实验区</h2>
+          <p id="workspaceDesc" class="section-copy" hidden></p>
         </div>
+        <p id="workspaceNote" class="section-note">当前优先支持三种方言试点，并按四类使用场景组织规则。</p>
       </div>
 
       <div class="toolbar">
@@ -118,12 +147,13 @@
       </div>
     </section>
 
-    <section class="card evaluation-card">
-      <div class="lexicon-head">
+    <section class="surface evaluation-surface">
+      <div class="section-head">
         <div>
           <h2 id="qualityTitle">转换效果评测记录</h2>
+          <p id="qualityDesc" class="section-copy" hidden></p>
         </div>
-        <p id="evaluationStats">暂无评测记录</p>
+        <p id="evaluationStats" class="section-note">暂无评测记录</p>
       </div>
 
       <form id="evaluationForm" class="evaluation-form">
@@ -155,12 +185,20 @@
       </div>
     </section>
 
-    <section id="lexiconSection" class="card lexicon-card">
-      <div class="lexicon-head">
+    <section id="lexiconSection" class="surface lexicon-surface">
+      <div class="section-head">
         <div>
           <h2 id="contributeTitle">开放数据库词库面板</h2>
+          <p id="contributeDesc" class="section-copy" hidden></p>
         </div>
-        <p id="countInfo">词条数量：0</p>
+        <p id="countInfo" class="section-note">词条数量：0</p>
+      </div>
+
+      <p id="contributeNote" class="section-note secondary" hidden></p>
+
+      <div class="subsection-head">
+        <h3 id="submissionHeading">词条上传入口</h3>
+        <p id="submissionMeta" class="section-copy">每次提交都会进入审核流程。</p>
       </div>
 
       <form id="addForm" class="add-form">
@@ -177,6 +215,7 @@
 
       <div class="dataset-note">
         <strong id="pendingMetric">专业审核中</strong>
+        <span id="datasetFlowText" class="dataset-flow" hidden></span>
       </div>
 
       <div class="review-zone" data-admin-only hidden>
@@ -185,7 +224,7 @@
             <h3>待审核变更</h3>
             <p id="reviewMeta" class="section-copy">管理员审核通过后，词条会写入公开数据库并用于后续转换与共享。</p>
           </div>
-          <p id="pendingCountInfo">待审核：0</p>
+          <p id="pendingCountInfo" class="section-note">待审核：0</p>
         </div>
         <div class="review-actions">
           <button id="approveAllBtn" class="btn btn-ghost" type="button">全部通过</button>
@@ -194,8 +233,9 @@
         <div id="pendingList" class="pending-list"></div>
       </div>
 
-      <div class="tool-header">
-        <h3>已发布词库浏览与维护</h3>
+      <div class="subsection-head tool-header">
+        <h3 id="explorerHeading">已发布词库浏览与维护</h3>
+        <p id="maintenanceMeta" class="section-copy" hidden></p>
       </div>
 
       <div class="lexicon-toolbar">
@@ -210,6 +250,7 @@
 
       <div id="entryList" class="entry-list"></div>
     </section>
+
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.26.0/dist/index.js"></script>
