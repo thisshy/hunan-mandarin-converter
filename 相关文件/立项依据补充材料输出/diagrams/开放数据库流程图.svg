@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f8f4ec"/>
+      <stop offset="100%" stop-color="#f0f7f4"/>
+    </linearGradient>
+    <linearGradient id="stage" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#244f63"/>
+      <stop offset="100%" stop-color="#34799b"/>
+    </linearGradient>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L12,6 L0,12 z" fill="#60727a"/>
+    </marker>
+    <style>
+      .title { font: 700 34px "Microsoft YaHei", sans-serif; fill: #1f1a16; }
+      .subtitle { font: 400 16px "Microsoft YaHei", sans-serif; fill: #66584c; }
+      .boxTitle { font: 700 22px "Microsoft YaHei", sans-serif; fill: white; }
+      .boxText { font: 400 17px "Microsoft YaHei", sans-serif; fill: #f5f7f8; }
+      .note { font: 400 16px "Microsoft YaHei", sans-serif; fill: #4d4037; }
+      .stroke { stroke: #60727a; stroke-width: 5; fill: none; marker-end: url(#arrow); }
+      .panel { fill: #ffffff; stroke: #d9cec0; stroke-width: 2; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="900" rx="28" fill="url(#bg)"/>
+  <text x="80" y="92" class="title">开放数据库流程图</text>
+  <text x="80" y="126" class="subtitle">用户上传、专业审核、结构化入库、开放共享与反馈迭代的完整闭环</text>
+
+  <rect x="80" y="240" width="210" height="130" rx="22" fill="url(#stage)"/>
+  <text x="185" y="286" text-anchor="middle" class="boxTitle">1. 数据采集</text>
+  <text x="185" y="320" text-anchor="middle" class="boxText">词汇 / 句式 / 语音</text>
+  <text x="185" y="348" text-anchor="middle" class="boxText">用户上传、团队补充</text>
+
+  <rect x="340" y="240" width="210" height="130" rx="22" fill="url(#stage)"/>
+  <text x="445" y="286" text-anchor="middle" class="boxTitle">2. 初审整理</text>
+  <text x="445" y="320" text-anchor="middle" class="boxText">去重 / 纠错 / 分类</text>
+  <text x="445" y="348" text-anchor="middle" class="boxText">基础格式统一</text>
+
+  <rect x="600" y="240" width="210" height="130" rx="22" fill="url(#stage)"/>
+  <text x="705" y="286" text-anchor="middle" class="boxTitle">3. 专业审核</text>
+  <text x="705" y="320" text-anchor="middle" class="boxText">语言学核验</text>
+  <text x="705" y="348" text-anchor="middle" class="boxText">标注与规范化</text>
+
+  <rect x="860" y="240" width="210" height="130" rx="22" fill="url(#stage)"/>
+  <text x="965" y="286" text-anchor="middle" class="boxTitle">4. 结构化入库</text>
+  <text x="965" y="320" text-anchor="middle" class="boxText">字段入库 / 索引</text>
+  <text x="965" y="348" text-anchor="middle" class="boxText">版本与来源记录</text>
+
+  <rect x="1120" y="240" width="210" height="130" rx="22" fill="url(#stage)"/>
+  <text x="1225" y="286" text-anchor="middle" class="boxTitle">5. 开放共享</text>
+  <text x="1225" y="320" text-anchor="middle" class="boxText">检索 / 下载 / 展示</text>
+  <text x="1225" y="348" text-anchor="middle" class="boxText">面向公众与研究者</text>
+
+  <rect x="1380" y="240" width="160" height="130" rx="22" fill="#c95d24"/>
+  <text x="1460" y="286" text-anchor="middle" class="boxTitle">6. 反馈</text>
+  <text x="1460" y="320" text-anchor="middle" class="boxText">评测 / 修订</text>
+  <text x="1460" y="348" text-anchor="middle" class="boxText">持续迭代</text>
+
+  <path d="M290 305 L340 305" class="stroke"/>
+  <path d="M550 305 L600 305" class="stroke"/>
+  <path d="M810 305 L860 305" class="stroke"/>
+  <path d="M1070 305 L1120 305" class="stroke"/>
+  <path d="M1330 305 L1380 305" class="stroke"/>
+
+  <rect x="130" y="500" width="1340" height="210" rx="28" class="panel"/>
+  <text x="210" y="555" class="note">入库数据建议字段：</text>
+  <text x="210" y="595" class="note">普通话词条 · 方言词条 · 场景标签 · 地区信息 · 词性/释义 · 来源链接 · 审核状态 · 上传时间 · 备注说明</text>
+  <text x="210" y="640" class="note">开放共享形式：网页检索、词库导出、后台管理、后续 API 接口、移动端同步。</text>
+  <text x="210" y="685" class="note">建议插入位置：研究内容部分或技术路线部分，用于说明“采集-审核-入库-共享”的闭环。</text>
+</svg>

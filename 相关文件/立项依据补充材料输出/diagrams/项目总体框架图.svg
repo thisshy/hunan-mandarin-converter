@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f7f2e8"/>
+      <stop offset="100%" stop-color="#eef4f7"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#c95d24"/>
+      <stop offset="100%" stop-color="#d97d31"/>
+    </linearGradient>
+    <linearGradient id="blue" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#245f78"/>
+      <stop offset="100%" stop-color="#3b88a8"/>
+    </linearGradient>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L12,6 L0,12 z" fill="#56707d"/>
+    </marker>
+    <style>
+      .title { font: 700 34px "Microsoft YaHei", sans-serif; fill: #1f1a16; }
+      .subtitle { font: 400 16px "Microsoft YaHei", sans-serif; fill: #66584c; }
+      .boxTitle { font: 700 24px "Microsoft YaHei", sans-serif; fill: #1f1a16; }
+      .boxText { font: 400 18px "Microsoft YaHei", sans-serif; fill: #4d4037; }
+      .small { font: 400 16px "Microsoft YaHei", sans-serif; fill: #4d4037; }
+      .label { font: 700 20px "Microsoft YaHei", sans-serif; fill: white; letter-spacing: 1px; }
+      .stroke { stroke: #56707d; stroke-width: 5; fill: none; marker-end: url(#arrow); }
+      .soft { fill: rgba(255,255,255,0.7); stroke: #d9cdbf; stroke-width: 2; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="900" rx="28" fill="url(#bg)"/>
+  <text x="80" y="92" class="title">项目总体框架图</text>
+  <text x="80" y="126" class="subtitle">湘言通：以开放数据库为基础、以双向转换服务为核心、以多终端扩展为方向</text>
+
+  <rect x="80" y="195" width="220" height="120" rx="22" fill="#fff" stroke="#e1d5c7" stroke-width="2"/>
+  <text x="190" y="240" text-anchor="middle" class="boxTitle">数据来源</text>
+  <text x="190" y="272" text-anchor="middle" class="boxText">用户上传</text>
+  <text x="190" y="300" text-anchor="middle" class="boxText">方言采集 / 资料整理</text>
+
+  <rect x="80" y="380" width="220" height="120" rx="22" fill="#fff" stroke="#e1d5c7" stroke-width="2"/>
+  <text x="190" y="425" text-anchor="middle" class="boxTitle">审核治理</text>
+  <text x="190" y="457" text-anchor="middle" class="boxText">人工审核</text>
+  <text x="190" y="485" text-anchor="middle" class="boxText">规范化标注 / 质量控制</text>
+
+  <rect x="80" y="565" width="220" height="120" rx="22" fill="#fff" stroke="#e1d5c7" stroke-width="2"/>
+  <text x="190" y="610" text-anchor="middle" class="boxTitle">成果输出</text>
+  <text x="190" y="642" text-anchor="middle" class="boxText">开放共享</text>
+  <text x="190" y="670" text-anchor="middle" class="boxText">检索 / 下载 / 展示</text>
+
+  <rect x="380" y="250" width="290" height="300" rx="26" fill="url(#accent)"/>
+  <text x="525" y="305" text-anchor="middle" class="label">湘言通平台核心</text>
+  <rect x="415" y="340" width="220" height="62" rx="18" class="soft"/>
+  <text x="525" y="379" text-anchor="middle" class="boxTitle">开放数据库</text>
+  <rect x="415" y="420" width="220" height="62" rx="18" class="soft"/>
+  <text x="525" y="459" text-anchor="middle" class="boxTitle">双向转换引擎</text>
+  <rect x="415" y="500" width="220" height="62" rx="18" class="soft"/>
+  <text x="525" y="539" text-anchor="middle" class="boxTitle">场景适配与评测</text>
+
+  <rect x="770" y="175" width="260" height="130" rx="22" fill="url(#blue)"/>
+  <text x="900" y="225" text-anchor="middle" class="label">网页端</text>
+  <text x="900" y="255" text-anchor="middle" class="small" fill="#fff">转换体验 / 词库浏览 / 评测提交</text>
+
+  <rect x="770" y="355" width="260" height="130" rx="22" fill="url(#blue)"/>
+  <text x="900" y="405" text-anchor="middle" class="label">后台审核端</text>
+  <text x="900" y="435" text-anchor="middle" class="small" fill="#fff">审核队列 / 入库 / 发布 / 管理</text>
+
+  <rect x="770" y="535" width="260" height="130" rx="22" fill="url(#blue)"/>
+  <text x="900" y="585" text-anchor="middle" class="label">移动端 / APP</text>
+  <text x="900" y="615" text-anchor="middle" class="small" fill="#fff">便携访问 / 场景化使用 / 推广扩展</text>
+
+  <rect x="1120" y="255" width="360" height="280" rx="28" fill="#fff" stroke="#d8cfc2" stroke-width="2"/>
+  <text x="1300" y="305" text-anchor="middle" class="boxTitle">应用层</text>
+  <text x="1300" y="350" text-anchor="middle" class="boxText">普通话 ↔ 湖南方言双向转换</text>
+  <text x="1300" y="390" text-anchor="middle" class="boxText">日常交流 / 校园沟通 / 文旅问路</text>
+  <text x="1300" y="430" text-anchor="middle" class="boxText">短视频文案 / 文化传播 / 资料整理</text>
+  <text x="1300" y="470" text-anchor="middle" class="boxText">持续评测与迭代优化</text>
+
+  <path d="M300 255 C340 255, 350 255, 380 310" class="stroke"/>
+  <path d="M300 440 C340 440, 350 440, 380 420" class="stroke"/>
+  <path d="M300 625 C340 625, 350 625, 380 540" class="stroke"/>
+
+  <path d="M670 340 C720 315, 735 270, 770 240" class="stroke"/>
+  <path d="M670 460 C720 460, 730 420, 770 420" class="stroke"/>
+  <path d="M670 540 C720 560, 730 600, 770 600" class="stroke"/>
+
+  <path d="M1030 240 C1080 240, 1090 280, 1120 330" class="stroke"/>
+  <path d="M1030 420 C1080 420, 1090 420, 1120 420" class="stroke"/>
+  <path d="M1030 600 C1080 600, 1090 560, 1120 470" class="stroke"/>
+
+  <text x="80" y="820" class="subtitle">建议插入位置：项目简介首段之后，或研究内容总述前。</text>
+</svg>

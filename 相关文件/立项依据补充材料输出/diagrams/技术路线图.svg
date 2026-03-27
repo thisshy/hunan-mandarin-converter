@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f7f1e8"/>
+      <stop offset="100%" stop-color="#eef1f7"/>
+    </linearGradient>
+    <linearGradient id="phase1" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#8f5d26"/>
+      <stop offset="100%" stop-color="#c97a2d"/>
+    </linearGradient>
+    <linearGradient id="phase2" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#245f78"/>
+      <stop offset="100%" stop-color="#3e8aa9"/>
+    </linearGradient>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto" markerUnits="strokeWidth">
+      <path d="M0,0 L12,6 L0,12 z" fill="#62737a"/>
+    </marker>
+    <style>
+      .title { font: 700 34px "Microsoft YaHei", sans-serif; fill: #1f1a16; }
+      .subtitle { font: 400 16px "Microsoft YaHei", sans-serif; fill: #66584c; }
+      .phaseTitle { font: 700 22px "Microsoft YaHei", sans-serif; fill: white; }
+      .phaseText { font: 400 16px "Microsoft YaHei", sans-serif; fill: #f6f8f9; }
+      .boxTitle { font: 700 20px "Microsoft YaHei", sans-serif; fill: #1f1a16; }
+      .boxText { font: 400 16px "Microsoft YaHei", sans-serif; fill: #4d4037; }
+      .stroke { stroke: #62737a; stroke-width: 5; fill: none; marker-end: url(#arrow); }
+      .panel { fill: #ffffff; stroke: #d9cec0; stroke-width: 2; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="900" rx="28" fill="url(#bg)"/>
+  <text x="80" y="92" class="title">技术路线图</text>
+  <text x="80" y="126" class="subtitle">从原型完善到多终端拓展的分阶段实施路径</text>
+
+  <rect x="90" y="220" width="330" height="160" rx="26" fill="url(#phase1)"/>
+  <text x="255" y="272" text-anchor="middle" class="phaseTitle">阶段一：前期准备</text>
+  <text x="255" y="308" text-anchor="middle" class="phaseText">文献查阅、需求梳理、字段设计</text>
+  <text x="255" y="338" text-anchor="middle" class="phaseText">网页原型分析、基础语料整理</text>
+
+  <rect x="430" y="220" width="330" height="160" rx="26" fill="url(#phase2)"/>
+  <text x="595" y="272" text-anchor="middle" class="phaseTitle">阶段二：平台建设</text>
+  <text x="595" y="308" text-anchor="middle" class="phaseText">上传模块、审核流程、数据库</text>
+  <text x="595" y="338" text-anchor="middle" class="phaseText">双向转换基础功能开发</text>
+
+  <rect x="770" y="220" width="330" height="160" rx="26" fill="url(#phase2)"/>
+  <text x="935" y="272" text-anchor="middle" class="phaseTitle">阶段三：优化拓展</text>
+  <text x="935" y="308" text-anchor="middle" class="phaseText">多方言适配、场景优化</text>
+  <text x="935" y="338" text-anchor="middle" class="phaseText">语音转换预研、评测反馈</text>
+
+  <rect x="1110" y="220" width="330" height="160" rx="26" fill="url(#phase1)"/>
+  <text x="1275" y="272" text-anchor="middle" class="phaseTitle">阶段四：成果总结</text>
+  <text x="1275" y="308" text-anchor="middle" class="phaseText">系统说明、研究报告、展示材料</text>
+  <text x="1275" y="338" text-anchor="middle" class="phaseText">APP 化原型与推广方案</text>
+
+  <path d="M420 300 L430 300" class="stroke"/>
+  <path d="M760 300 L770 300" class="stroke"/>
+  <path d="M1100 300 L1110 300" class="stroke"/>
+
+  <rect x="90" y="460" width="1420" height="320" rx="28" class="panel"/>
+  <text x="140" y="520" class="boxTitle">关键任务与对应输出</text>
+  <text x="140" y="570" class="boxText">1. 完善网页原型和字段规范，明确数据采集、审核与共享方式。</text>
+  <text x="140" y="610" class="boxText">2. 围绕三种试点方言建设初步数据库，并补充场景语料与词库条目。</text>
+  <text x="140" y="650" class="boxText">3. 开发普通话与方言双向转换功能，逐步提升准确性和自然性。</text>
+  <text x="140" y="690" class="boxText">4. 预留语音转换接口，推进网页向 APP 的迁移与延伸。</text>
+  <text x="140" y="730" class="boxText">5. 形成项目报告、文档、图表与展示材料，为后续申报和汇报服务。</text>
+  <text x="140" y="780" class="boxText">建议插入位置：技术路线部分，与“拟解决的问题及预期成果”配合使用。</text>
+</svg>
