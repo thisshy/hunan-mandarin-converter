@@ -1,4 +1,5 @@
 {
+  "latex-workshop.latex.autoBuild.run": "never",
   "latex-workshop.latex.recipe.default": "lastUsed",
   "latex-workshop.latex.recipe.defaultName": "xelatex -> biber -> xelatex*2",
   "latex-workshop.latex.tools": [
@@ -49,6 +50,12 @@
     }
   ],
   "latex-workshop.latex.recipes": [
+    {
+      "name": "XeLaTeX (不更新文献)",
+      "tools": [
+        "xelatex"
+      ]
+    },
     {
       "name": "xelatex -> bibtex -> xelatex*2",
       "tools": [

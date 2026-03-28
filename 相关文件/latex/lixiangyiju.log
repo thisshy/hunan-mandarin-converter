@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex 2025.11.21)  28 MAR 2026 00:59
+This is XeTeX, Version 3.141592653-2.6-0.999997 (TeX Live 2025) (preloaded format=xelatex 2025.11.21)  28 MAR 2026 12:09
 entering extended mode
  restricted \write18 enabled.
  file:line:error style messages enabled.
@@ -1021,23 +1021,23 @@ LaTeX Font Info:    Font shape `T1/txr/b/n' in size <15.05624> not available
 LaTeX Font Warning: Font shape `TU/SimSun(1)/b/n' undefined
 (Font)              using `TU/SimSun(1)/m/n' instead on input line 59.
 
-LaTeX Font Info:    Trying to load font information for OT1+txr on input line 63.
+LaTeX Font Info:    Trying to load font information for OT1+txr on input line 61.
 (c:/texlive/2025/texmf-dist/tex/latex/txfonts/ot1txr.fd
 File: ot1txr.fd 2000/12/15 v3.1
 )
-LaTeX Font Info:    Trying to load font information for U+txmia on input line 63.
+LaTeX Font Info:    Trying to load font information for U+txmia on input line 61.
  (c:/texlive/2025/texmf-dist/tex/latex/txfonts/utxmia.fd
 File: utxmia.fd 2000/12/15 v3.1
 )
-LaTeX Font Info:    Trying to load font information for U+txsya on input line 63.
+LaTeX Font Info:    Trying to load font information for U+txsya on input line 61.
  (c:/texlive/2025/texmf-dist/tex/latex/txfonts/utxsya.fd
 File: utxsya.fd 2000/12/15 v3.1
 )
-LaTeX Font Info:    Trying to load font information for U+txsyb on input line 63.
+LaTeX Font Info:    Trying to load font information for U+txsyb on input line 61.
  (c:/texlive/2025/texmf-dist/tex/latex/txfonts/utxsyb.fd
 File: utxsyb.fd 2000/12/15 v3.1
 )
-LaTeX Font Info:    Trying to load font information for U+txsyc on input line 63.
+LaTeX Font Info:    Trying to load font information for U+txsyc on input line 61.
  (c:/texlive/2025/texmf-dist/tex/latex/txfonts/utxsyc.fd
 File: utxsyc.fd 2000/12/15 v3.1
 )
@@ -1076,23 +1076,23 @@ File: images/开放数据库流程图.png Graphic file (type bmp)
 [6]
 
 [7]
-File: images/国家语言资源服务平台.png Graphic file (type bmp)
-<images/国家语言资源服务平台.png>
-
 
 [8]
+File: images/国家语言资源服务平台.png Graphic file (type bmp)
+<images/国家语言资源服务平台.png>
 File: images/中国语言资源采录展示平台.png Graphic file (type bmp)
 <images/中国语言资源采录展示平台.png>
+
+
+[9]
 File: images/中国语言文字数字博物馆.png Graphic file (type bmp)
 <images/中国语言文字数字博物馆.png>
 
 
-[9]
+[10]
 File: images/PARADISEC.png Graphic file (type bmp)
 <images/PARADISEC.png>
 
-
-[10]
 
 [11]
 
@@ -1123,7 +1123,7 @@ Package fontspec Info:
 (fontspec)             Could not resolve font "FangSong/I" (it probably
 (fontspec)             doesn't exist).
 
-LaTeX Font Info:    Trying to load font information for T1+txtt on input line 409.
+LaTeX Font Info:    Trying to load font information for T1+txtt on input line 406.
  (c:/texlive/2025/texmf-dist/tex/latex/txfonts/t1txtt.fd
 File: t1txtt.fd 2000/12/15 v3.1
 )
@@ -1142,9 +1142,7 @@ Package fontspec Info:
 
 [16]
 
-[17]
-
-[18] (./lixiangyiju.aux)
+[17] (./lixiangyiju.aux)
  ***********
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2022/07/14>
@@ -1160,12 +1158,12 @@ Package logreq Info: Writing requests to 'lixiangyiju.run.xml'.
 
  ) 
 Here is how much of TeX's memory you used:
- 27523 strings out of 473831
- 576060 string characters out of 5733136
- 1535862 words of memory out of 5000000
- 50228 multiletter control sequences out of 15000+600000
+ 27547 strings out of 473831
+ 577654 string characters out of 5733136
+ 1536862 words of memory out of 5000000
+ 50252 multiletter control sequences out of 15000+600000
  591226 words of font info for 122 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
  93i,11n,111p,1248b,5130s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on lixiangyiju.pdf (18 pages).
+Output written on lixiangyiju.pdf (17 pages).
