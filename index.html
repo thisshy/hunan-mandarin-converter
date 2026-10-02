@@ -6,69 +6,48 @@
   <title>湘言通 | 湖南方言开放数据库与普通话互转平台</title>
   <meta name="description" content="湖南方言开放数据库与普通话互转平台，支持公开上传、专业审核、双向转换与后续 APP 延展。">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23c04f1d'/%3E%3Ctext x='50%25' y='52%25' dominant-baseline='middle' text-anchor='middle' font-size='34' fill='white'%3E湘%3C/text%3E%3C/svg%3E">
+  <script src="./assets/theme.js"></script>
+  <link rel="stylesheet" href="./assets/design-system.css">
   <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-  <div class="atmosphere" aria-hidden="true"></div>
-
+  <a class="skip-link" href="#converterSection">跳到即时转换</a>
+  <nav class="site-nav" aria-label="主导航">
+    <div class="nav-inner">
+      <a class="wordmark" href="./">湘言通<span>湖南方言开放平台</span></a>
+      <div class="nav-links">
+        <a href="#converterSection">即时转换</a>
+        <a href="#lexiconSection">开放词库</a>
+        <a href="./hunan-dialect-app-prototype/index.html">App 体验</a>
+      </div>
+      <button class="theme-toggle" type="button">深色外观</button>
+    </div>
+  </nav>
   <header class="hero">
     <div class="hero-inner">
-      <div class="hero-bar">
-        <div class="hero-topline">
-          <span class="brand-chip">XIANGYAN OPEN PLATFORM</span>
-          <span id="pageModeLabel" class="brand-chip ghost">公众模式</span>
-        </div>
-        <a id="adminToggleLink" class="hero-link" href="?admin=1">进入后台审核</a>
-      </div>
-
       <div class="hero-grid">
         <div class="hero-copy">
+          <div class="hero-topline"><span class="brand-chip">湖南方言 · 长株潭试点</span><span id="pageModeLabel" class="brand-chip ghost">公众模式</span></div>
           <h1 id="heroTitle">湘言通</h1>
-          <p id="heroDesc" class="hero-desc">湖南方言开放数据库与普通话互转平台</p>
-          <p id="heroSubDesc" class="hero-subdesc" hidden></p>
-
+          <p id="heroDesc" class="hero-desc">让家乡话，更好懂。</p>
+          <p id="heroSubDesc" class="hero-subdesc">湖南方言开放数据库与普通话互转平台</p>
           <div class="hero-actions">
-            <a class="btn btn-primary" href="#converterSection">体验即时转换</a>
-            <a id="secondaryAction" class="btn btn-ghost hero-anchor" href="#lexiconSection">上传方言词条</a>
-          </div>
-
-          <div class="hero-metrics">
-            <div class="metric">
-              <strong data-stat="lexicon">0</strong>
-              <span>开放词条</span>
-            </div>
-            <div class="metric">
-              <strong id="heroMiddleMetricValue">3</strong>
-              <span id="heroMiddleMetricLabel">方言试点</span>
-            </div>
-            <div class="metric">
-              <strong data-stat="evaluations">0</strong>
-              <span>评测记录</span>
-            </div>
+            <a class="btn btn-primary" href="#converterSection">体验即时转换 <span aria-hidden="true">→</span></a>
+            <a id="secondaryAction" class="btn btn-ghost" href="#lexiconSection">上传方言词条</a>
           </div>
         </div>
-
-        <aside class="hero-visual" aria-label="数据库工作流示意">
-          <p class="visual-eyebrow">共享数据库流程</p>
-          <ol class="flow-list">
-            <li>
-              <span>公开上传</span>
-              <small>收集真实场景方言表达</small>
-            </li>
-            <li>
-              <span>专业审核</span>
-              <small>管理员校准后写入开放词库</small>
-            </li>
-            <li>
-              <span>双向转换</span>
-              <small>普通话与湖南方言互转联动</small>
-            </li>
-            <li>
-              <span>持续评测</span>
-              <small>反馈反哺规则和词条质量</small>
-            </li>
-          </ol>
-        </aside>
+        <figure class="hero-visual">
+          <img src="./assets/xiang-river.png" alt="湘江沿岸的青山、村落与日常交谈主题插画" width="1536" height="1024" fetchpriority="high">
+          <figcaption><span>一方水土，一方乡音。</span><span>从日常表达，走近湖南。</span></figcaption>
+        </figure>
+      </div>
+      <div class="hero-bottom">
+        <div class="hero-metrics">
+          <div class="metric"><strong data-stat="lexicon">0</strong><span>开放词条</span></div>
+          <div class="metric"><strong id="heroMiddleMetricValue">3</strong><span id="heroMiddleMetricLabel">方言试点</span></div>
+          <div class="metric"><strong data-stat="evaluations">0</strong><span>评测记录</span></div>
+        </div>
+        <span class="hero-footnote">长沙 · 湘潭 · 株洲</span>
       </div>
     </div>
   </header>
@@ -77,12 +56,13 @@
     <section id="converterSection" class="surface converter-surface">
       <div class="section-head">
         <div>
-          <h2 id="workspaceTitle">即时转换实验区</h2>
+          <h2 id="workspaceTitle">即时转换</h2>
           <p id="workspaceDesc" class="section-copy" hidden></p>
         </div>
         <p id="workspaceNote" class="section-note">当前优先支持三种方言试点，并按四类使用场景组织规则。</p>
       </div>
 
+      <div id="connectionStatus" class="connection-status" role="status">正在连接开放词库…</div>
       <div class="toolbar">
         <div class="mode" id="modeLabel">普通话 → 湖南方言</div>
         <div class="toolbar-actions">
@@ -117,15 +97,17 @@
 
       <div class="panel-grid">
         <div class="panel input-panel">
-          <label id="inputLabel" for="inputText">输入（普通话）</label>
+          <div class="panel-heading"><label id="inputLabel" for="inputText">输入（普通话）</label><button id="clearInputBtn" class="text-button" type="button">清空</button></div>
           <textarea id="inputText" placeholder="例如：你今天去哪里？吃饭了吗？"></textarea>
         </div>
         <div class="panel output-panel">
-          <label id="outputLabel" for="outputText">输出（湖南方言）</label>
+          <div class="panel-heading"><label id="outputLabel" for="outputText">输出（湖南方言）</label><button id="copyResultBtn" class="text-button" type="button">复制结果</button></div>
           <textarea id="outputText" readonly placeholder="转换结果显示在这里"></textarea>
         </div>
       </div>
 
+      <p class="conversion-note">基于词库与场景规则生成，方言表达因地域和语境而异，结果供参考。</p>
+      <details class="conversion-details"><summary>候选表达与转换依据</summary>
       <div class="insight-grid">
         <div class="insight-box">
           <h3>候选表达</h3>
@@ -139,6 +121,7 @@
         </div>
       </div>
 
+      </details>
       <div class="samples">
         <span>示例：</span>
         <button class="chip" type="button" data-text="你在干嘛？今天忙不忙？">你在干嘛？今天忙不忙？</button>
@@ -147,7 +130,7 @@
       </div>
     </section>
 
-    <section class="surface evaluation-surface">
+    <section id="evaluationSection" class="surface evaluation-surface">
       <div class="section-head">
         <div>
           <h2 id="qualityTitle">转换效果评测记录</h2>
@@ -194,6 +177,9 @@
         <p id="countInfo" class="section-note">词条数量：0</p>
       </div>
 
+      <ol class="flow-list" aria-label="词库共建流程">
+        <li><strong>公开上传</strong><span>记录真实表达</span></li><li><strong>专业审核</strong><span>校准词义用法</span></li><li><strong>双向转换</strong><span>连接方言与普通话</span></li><li><strong>持续评测</strong><span>补充使用反馈</span></li>
+      </ol>
       <p id="contributeNote" class="section-note secondary" hidden></p>
 
       <div class="subsection-head">
@@ -239,7 +225,7 @@
       </div>
 
       <div class="lexicon-toolbar">
-        <input id="searchInput" type="text" placeholder="搜索词条（普通话或方言）">
+        <input aria-label="搜索开放词库" id="searchInput" type="text" placeholder="搜索词条（普通话或方言）">
         <div class="lexicon-actions">
           <button id="exportBtn" class="btn btn-ghost" type="button">导出词库 JSON</button>
           <button id="importBtn" class="btn btn-ghost" type="button">导入词库 JSON</button>
@@ -253,6 +239,7 @@
 
   </main>
 
+  <footer class="site-footer"><div><strong>湘言通</strong><span>记录乡音，也让交流更容易。</span></div><a id="adminToggleLink" href="?admin=1">进入后台审核</a></footer>
   <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.26.0/dist/index.js"></script>
   <script src="./config.js"></script>
   <script src="./app.js"></script>

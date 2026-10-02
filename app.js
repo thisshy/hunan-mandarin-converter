@@ -218,20 +218,20 @@ const EXPERIENCE_COPY = {
     toggleHref: "?admin=1",
     toggleText: "进入后台审核",
     heroTitle: "湘言通",
-    heroDesc: "湖南方言开放数据库与普通话互转平台",
-    heroSubDesc: "",
+    heroDesc: "让家乡话，更好懂。",
+    heroSubDesc: "湖南方言开放数据库与普通话互转平台",
     secondaryAction: "上传方言词条",
     secondaryActionHref: "#lexiconSection",
-    workspaceTitle: "即时转换实验区",
+    workspaceTitle: "即时转换",
     workspaceDesc: "",
-    workspaceNote: "当前优先支持三种方言试点，并按日常交流、校园沟通、文旅问路和短视频文案组织词条与句式。",
-    contributeTitle: "开放数据库入口与词库面板",
+    workspaceNote: "选一个地方，试一句日常用语。",
+    contributeTitle: "一起记录家乡话",
     contributeDesc: "",
-    contributeNote: "管理员模式下，这里会展开审核队列、导入导出和词库维护能力，方便把数据工作流真正做起来。",
+    contributeNote: "你熟悉的一个词、一种说法，都可以成为词库的补充。提交后由管理员审核。",
     submissionHeading: "词条上传入口",
     submissionMeta: "每次提交都会进入审核流程。",
     explorerHeading: "开放数据库浏览",
-    qualityTitle: "转换效果评测记录",
+    qualityTitle: "这句转换，你觉得怎么样？",
     qualityDesc: "",
     datasetFlowText: "",
     reviewMeta: "管理员审核通过后，词条会写入公开数据库并用于后续转换与共享。",
@@ -876,7 +876,7 @@ function renderEntries() {
   countInfo.textContent = `词条数量：${Object.keys(lexicon).length}`;
 
   if (!entries.length) {
-    entryList.innerHTML = `<div class="entry-empty">没有匹配词条。你可以继续搜索，或在左侧提交一条新表达。</div>`;
+    entryList.innerHTML = `<div class="entry-empty">没有匹配词条。你可以继续搜索，或在上方提交一条新表达。</div>`;
     return;
   }
 
@@ -1352,8 +1352,27 @@ async function bootstrap() {
   renderCandidateList([]);
   renderPlatformMetrics();
 
-  await refreshLexicon();
-  await refreshEvaluations();
+  const status = document.getElementById("connectionStatus");
+  try {
+    await refreshLexicon();
+    status.textContent = "开放词库已连接";
+    status.dataset.state = "ready";
+  } catch (error) {
+    status.textContent = "开放词库暂时无法连接，当前仅使用内置场景规则。刷新页面可重试。";
+    status.dataset.state = "error";
+    lexiconStatTargets.forEach(target => { target.textContent = "暂不可用"; });
+    countInfo.textContent = "词库暂不可用";
+    entryList.innerHTML = '<div class="entry-empty">词库连接失败，请稍后刷新重试。</div>';
+  }
+  try { await refreshEvaluations(); }
+  catch (error) {
+    evaluationStats.textContent = "评测记录暂时无法加载";
+    evaluationList.innerHTML = '<div class="entry-empty">暂时无法获取历史评测，请稍后重试。</div>';
+    evaluationStatTargets.forEach(target => { target.textContent = "暂不可用"; });
+  }
+  if (status.dataset.state === "error") {
+    lexiconStatTargets.forEach(target => { target.textContent = "暂不可用"; });
+  }
   if (IS_ADMIN_MODE) {
     await refreshPendingQueue();
   }
@@ -1362,3 +1381,10 @@ async function bootstrap() {
 bootstrap().catch((error) => {
   onAsyncError(error);
 });
+
+document.getElementById("clearInputBtn").addEventListener("click", () => {
+  inputText.value = "";
+  convert();
+  inputText.focus();
+});
+document.getElementById("copyResultBtn").addEventListener("click", () => copyUiText(outputText.value));

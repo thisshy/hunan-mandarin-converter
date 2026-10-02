@@ -303,7 +303,7 @@ const state = {
   mode: "m2h",
   dialect: APP_DATA.dialectRegions[0].id,
   scene: APP_DATA.scenePacks[0].id,
-  source: APP_DATA.quickPhrases[0] || "",
+  source: "",
   query: "",
   lexicon: {},
   currentCandidates: []
@@ -489,13 +489,6 @@ function convertNow() {
 }
 
 function renderBrief() {
-  const avgFromRecords = APP_DATA.evaluationRecords.length
-    ? (
-        APP_DATA.evaluationRecords.reduce((sum, item) => sum + Number(item.accuracy || 0), 0) /
-        APP_DATA.evaluationRecords.length
-      ).toFixed(1)
-    : APP_DATA.kpis.avgScore;
-
   if (refs.designGoal) {
     refs.designGoal.textContent = APP_DATA.designGoal;
   }
@@ -503,7 +496,7 @@ function renderBrief() {
   refs.briefStats.innerHTML = `
     <div class="stat-chip">
       <strong>${Object.keys(state.lexicon).length || 0}</strong>
-      <span>开放词条</span>
+      <span>本地词条</span>
     </div>
     <div class="stat-chip">
       <strong>${APP_DATA.scenePacks.length}</strong>
@@ -514,8 +507,8 @@ function renderBrief() {
       <span>区域口语</span>
     </div>
     <div class="stat-chip">
-      <strong>${avgFromRecords}</strong>
-      <span>平均准确度</span>
+      <strong>双向</strong>
+      <span>文字转换</span>
     </div>
   `;
 
@@ -538,11 +531,12 @@ function renderBrief() {
 }
 
 function renderBottomNav() {
+  const icons = { translate: "language", scene: "compass", lexicon: "book-2", insights: "chart-bar" };
   refs.bottomNav.innerHTML = APP_DATA.navTabs
     .map((item) => `
-      <button class="nav-btn ${item.id === state.activeTab ? "is-active" : ""}" type="button" data-tab="${item.id}">
+      <button class="nav-btn ${item.id === state.activeTab ? "is-active" : ""}" type="button" data-tab="${item.id}" aria-label="${escapeHtml(item.label)}" aria-current="${item.id === state.activeTab ? "page" : "false"}">
+        <svg class="icon" aria-hidden="true"><use href="../assets/icons.svg#${icons[item.id] || "language"}"></use></svg>
         <strong>${escapeHtml(item.label)}</strong>
-        <span>${escapeHtml(item.hint || "")}</span>
       </button>
     `)
     .join("");
@@ -588,21 +582,21 @@ function renderSceneTab() {
 
   refs.sceneGrid.innerHTML = APP_DATA.scenePacks
     .map((scene) => `
-      <div class="scene-card">
+      <button type="button" class="scene-card" data-scene="${escapeHtml(scene.id)}" aria-pressed="${scene.id === state.scene}">
         <strong>${escapeHtml(scene.name)}</strong>
         <p>${escapeHtml(scene.description || scene.tip || "")}</p>
-        <span class="small-pill">${escapeHtml(scene.accent || "场景包")}</span>
-      </div>
+        <span class="small-pill">${scene.id === state.scene ? "当前场景" : "使用此场景"}</span>
+      </button>
     `)
     .join("");
 
   refs.regionList.innerHTML = APP_DATA.dialectRegions
     .map((region) => `
-      <div class="region-card">
+      <button type="button" class="region-card" data-region="${escapeHtml(region.id)}" aria-pressed="${region.id === state.dialect}">
         <strong>${escapeHtml(region.name)}</strong>
         <p>${escapeHtml(region.description || region.note || "")}</p>
-        <span class="small-pill">${escapeHtml(region.short || "区域变体")}</span>
-      </div>
+        <span class="small-pill">${region.id === state.dialect ? "当前区域" : "切换此区域"}</span>
+      </button>
     `)
     .join("");
 }
@@ -674,16 +668,16 @@ function renderInsightsTab() {
       <span>覆盖范围</span>
     </div>
     <div class="insight-chip">
-      <strong>${escapeHtml(APP_DATA.kpis.approvalLatency || "< 1 天")}</strong>
-      <span>待审核状态</span>
+      <strong>${APP_DATA.reviewQueue.length} 条</strong>
+      <span>演示审核队列</span>
     </div>
     <div class="insight-chip">
       <strong>${avgNaturalness}</strong>
-      <span>自然度均值</span>
+      <span>示例自然度均值</span>
     </div>
   `;
 
-  refs.trendCaption.textContent = `${APP_DATA.trendSeries.length} 个时间点`;
+  refs.trendCaption.textContent = `演示数据 · ${APP_DATA.trendSeries.length} 个时间点`;
   const maxValue = Math.max(...APP_DATA.trendSeries.map((item) => Number(item.value) || 0), 1);
   refs.trendChart.innerHTML = APP_DATA.trendSeries
     .map((item) => {
@@ -724,16 +718,45 @@ function resolveDialectName(dialectId) {
 
 function renderActiveScreen() {
   document.querySelectorAll(".screen").forEach((screen) => {
-    screen.classList.toggle("is-active", screen.dataset.screen === state.activeTab);
+    const active = screen.dataset.screen === state.activeTab;
+    screen.classList.toggle("is-active", active);
+    screen.hidden = !active;
+    screen.inert = !active;
   });
   renderBottomNav();
 }
 
 function updateStatus() {
-  refs.statusPill.textContent = `词库 ${Object.keys(state.lexicon).length} 条`;
+  refs.statusPill.textContent = `本地词库 ${Object.keys(state.lexicon).length} 条`;
 }
 
 function bindEvents() {
+  document.getElementById("copyResultBtn").addEventListener("click", () => {
+    copyUiText(state.currentCandidates.length ? refs.resultOutput.textContent : "");
+  });
+  document.getElementById("clearInputBtn").addEventListener("click", () => {
+    refs.sourceInput.value = "";
+    convertNow();
+    refs.sourceInput.focus();
+  });
+  refs.sceneGrid.addEventListener("click", event => {
+    const button = event.target.closest("[data-scene]");
+    if (!button) return;
+    state.scene = button.dataset.scene;
+    refs.sceneSelect.value = state.scene;
+    updateModeCopy(); renderSceneTab(); renderLexiconTab(); convertNow();
+    state.activeTab = "translate";
+    renderActiveScreen();
+    showUiMessage(`已切换到${getScene().name}`);
+  });
+  refs.regionList.addEventListener("click", event => {
+    const button = event.target.closest("[data-region]");
+    if (!button) return;
+    state.dialect = button.dataset.region;
+    refs.dialectSelect.value = state.dialect;
+    updateModeCopy(); renderSceneTab(); convertNow();
+    showUiMessage(`已选择${getDialect().name}`);
+  });
   refs.bottomNav.addEventListener("click", (event) => {
     const button = event.target.closest(".nav-btn");
     if (!button) return;
@@ -742,12 +765,21 @@ function bindEvents() {
   });
 
   refs.swapBtn.addEventListener("click", () => {
+    if (state.currentCandidates.length) refs.sourceInput.value = refs.resultOutput.textContent;
     state.mode = state.mode === "m2h" ? "h2m" : "m2h";
     updateModeCopy();
     convertNow();
   });
 
-  refs.convertBtn.addEventListener("click", convertNow);
+  refs.convertBtn.addEventListener("click", () => {
+    convertNow();
+    if (state.currentCandidates.length) {
+      refs.resultOutput.scrollIntoView({
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "instant" : "smooth",
+        block: "center"
+      });
+    }
+  });
 
   refs.dialectSelect.addEventListener("change", () => {
     state.dialect = refs.dialectSelect.value;

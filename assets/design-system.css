@@ -1,0 +1,49 @@
+/* Shared Xiangyantong palette. A quiet river-green theme for both surfaces. */
+:root {
+  color-scheme: light;
+  --paper: #f4f6f3;
+  --card: #ffffff;
+  --tint: #eaf1ed;
+  --ink: #203b35;
+  --muted: #61736d;
+  --accent: #236655;
+  --accent-hover: #184f41;
+  --on-accent: #ffffff;
+  --line: #dce5de;
+  --danger: #a43d36;
+  --shadow: 0 12px 40px #1b44390a;
+  --radius: 18px;
+  --font: "Microsoft YaHei", "PingFang SC", system-ui, sans-serif;
+  --serif: "Noto Serif SC", "Source Han Serif SC", "SimSun", serif;
+}
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --paper: #15221f;
+  --card: #1d2e29;
+  --tint: #263d34;
+  --ink: #e3ede5;
+  --muted: #b0c2b6;
+  --accent: #9ed3b8;
+  --accent-hover: #b5e5ca;
+  --on-accent: #17372b;
+  --line: #385047;
+  --danger: #f6a59d;
+  --shadow: 0 12px 40px #00000014;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { scroll-behavior: smooth; }
+body { margin: 0; color: var(--ink); font-family: var(--font); background: var(--paper); line-height: 1.65; }
+button, input, select, textarea { font: inherit; }
+button, a, input, select, textarea, summary { -webkit-tap-highlight-color: transparent; }
+button, a { touch-action: manipulation; }
+button { cursor: pointer; }
+a { color: var(--accent); text-underline-offset: 4px; }
+button:disabled { cursor: default; opacity: .55; }
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 4px; }
+input::placeholder, textarea::placeholder { color: var(--muted); opacity: 1; }
+::selection { background: var(--accent); color: var(--on-accent); }
+.theme-toggle { border: 1px solid var(--line); border-radius: 10px; background: var(--card); color: var(--muted); padding: 8px 12px; font-size: 12px; white-space: nowrap; }
+.ui-toast { position: fixed; z-index: 10; bottom: 30px; left: 50%; transform: translateX(-50%); width: max-content; max-width: calc(100% - 32px); padding: 12px 20px; border-radius: 12px; color: var(--on-accent); background: var(--accent); box-shadow: var(--shadow); font-size: 14px; }
+.icon { width: 21px; height: 21px; flex: 0 0 auto; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { animation: none !important; transition: none !important; } }

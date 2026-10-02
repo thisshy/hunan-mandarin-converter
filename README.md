@@ -26,6 +26,8 @@
   - 后端数据与默认词库文件
 - `config.js`
   - 前端 API 地址配置
+- `assets/`
+  - 网页与 App 共用的配色、主题切换、湘江主题插画及图标
 - `hunan-dialect-app-prototype/`
   - 专家展示版 App 原型页面
 - `hunan-mandarin-converter-work/`
@@ -64,7 +66,7 @@ window.APP_CONFIG = {
 };
 ```
 
-如果需要本地联调后端，可将 `API_BASE_URL` 改为 `"/api"`，或留空让前端自动走同源接口。
+默认配置会在 `localhost` 或 `127.0.0.1` 下使用同源 `/api`，其余域名使用线上后端。需要覆盖时，可修改 `API_BASE_URL`。
 
 ## 后端与数据
 
@@ -89,6 +91,8 @@ window.APP_CONFIG = {
 - 普通前台：`/index.html`
 - 后台审核：`/index.html?admin=1` 或 `/admin`
 - App 原型：`/hunan-dialect-app-prototype/index.html`
+
+网页和 App 共用青绿配色，支持跟随系统的深浅色外观与手动切换。App 在手机宽度下直接展示操作界面，桌面下保留项目介绍和设备预览。原型词库来自本地快照，审核、评分和趋势均为演示数据，不能作为实际评测结果。推荐通过根目录 `npm start` 同时预览两端。
 
 ## 当前展示重点
 

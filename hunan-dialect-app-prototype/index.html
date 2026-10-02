@@ -4,23 +4,26 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>湘言通 App</title>
+  <script src="../assets/theme.js"></script>
+  <link rel="stylesheet" href="../assets/design-system.css">
   <link rel="stylesheet" href="./style.css">
 </head>
 <body>
-  <div class="ambient ambient-a"></div>
-  <div class="ambient ambient-b"></div>
-  <div class="grain"></div>
+
 
   <main class="studio">
     <section class="brief-panel">
-      <p class="eyebrow">XIANGYAN APP</p>
+      <a class="back-link" href="../index.html">返回网页</a><p class="eyebrow">湖南方言 · 随身体验</p>
       <h1>湘言通</h1>
-      <p class="lede">湖南方言与普通话互转 App 原型</p>
+      <p class="lede">走到哪里，<br>都能聊一句家乡话。</p>
+      <p class="brief-intro">湖南方言与普通话双向转换。日常聊天、校园交流、出门问路，从一句话开始。</p>
+      <img class="brief-landscape" src="../assets/xiang-river.png" alt="湘江沿岸青山与村落主题插画" width="1536" height="1024">
+      <p class="prototype-note">App 交互原型 · 词库为本地快照，审核与评测为演示数据。</p>
 
       <div class="brief-stats" id="briefStats"></div>
 
       <div class="brief-block">
-        <span class="block-label">设计目标</span>
+        <span class="block-label">关于湘言通</span>
         <p id="designGoal"></p>
       </div>
 
@@ -30,31 +33,31 @@
       </div>
 
       <div class="brief-block">
-        <span class="block-label">模块编排</span>
+        <span class="block-label">功能一览</span>
         <div class="module-strip" id="moduleStrip"></div>
       </div>
     </section>
 
     <section class="device-stage">
-      <div class="device-glow"></div>
+
       <div class="device-shell">
-        <div class="notch"></div>
+        <div class="device-status"><span id="timePill">09:41</span><span>App 体验版</span><button class="theme-toggle" type="button">深色外观</button></div>
         <div class="screen-header">
           <div>
-            <p class="screen-brand">湘言通</p>
-            <h2>湖南方言与普通话互转</h2>
+            <h2>湘言通</h2><p class="screen-brand">让家乡话，更好懂。</p>
           </div>
           <div class="status-cluster">
             <span class="status-pill" id="statusPill">词库在线</span>
-            <span class="time-pill" id="timePill">09:41</span>
+
           </div>
         </div>
 
         <div class="screen-body">
           <section class="screen is-active" data-screen="translate">
+            <div class="app-landscape"><img src="../assets/xiang-river.png" alt="" width="1536" height="1024"><p>一方水土，一方乡音。</p></div>
             <div class="surface surface-hero">
               <div>
-                <p class="surface-kicker">实时互转</p>
+                <p class="surface-kicker">文字互转</p>
                 <h3 id="modeHeadline">普通话 → 长沙话</h3>
                 <p id="modeDescription">场景化双向转换</p>
               </div>
@@ -73,7 +76,7 @@
             </div>
 
             <div class="surface editor-surface">
-              <label for="sourceInput">输入文本</label>
+              <div class="editor-head"><label for="sourceInput">输入文本</label><button id="clearInputBtn" class="text-button" type="button">清空</button></div>
               <textarea id="sourceInput" placeholder="例如：你今天去哪里，吃饭了吗？"></textarea>
               <div class="quick-phrases" id="quickPhrases"></div>
             </div>
@@ -89,10 +92,10 @@
                   <span class="block-label">推荐结果</span>
                   <p class="mini-note" id="resultMeta">候选表达与推荐结果</p>
                 </div>
-                <button class="ghost-btn small" id="applyCandidateBtn" type="button">应用首选</button>
+                <div class="result-actions"><button class="ghost-btn small" id="applyCandidateBtn" type="button">应用首选</button><button class="ghost-btn small" id="copyResultBtn" type="button">复制</button></div>
               </div>
-              <div class="result-output" id="resultOutput">点击“立即转译”后在这里显示结果。</div>
-              <div class="candidate-list" id="candidateList"></div>
+              <div class="result-output" id="resultOutput" role="status" aria-live="polite">点击“立即转译”后在这里显示结果。</div>
+              <details class="candidate-details"><summary>查看候选表达</summary><div class="candidate-list" id="candidateList"></div></details><p class="mini-note">基于词库与规则生成，结果供参考。</p>
             </div>
           </section>
 
@@ -117,10 +120,11 @@
             </div>
 
             <div class="search-row">
-              <input id="lexiconSearch" type="text" placeholder="搜索普通话或方言词条">
+              <input aria-label="搜索本地词库" id="lexiconSearch" type="text" placeholder="搜索普通话或方言词条">
               <span class="inline-stat" id="lexiconCount">词条 0</span>
             </div>
 
+            <p class="demo-note">本地词库快照 · 下方审核队列为演示数据</p>
             <div class="surface queue-surface">
               <div class="section-inline-head">
                 <span class="block-label">待审核</span>
@@ -146,6 +150,7 @@
               </div>
             </div>
 
+            <p class="demo-note">本页为界面演示，评分与趋势不代表实际测试结果。</p>
             <div class="insight-stats" id="insightStats"></div>
 
             <div class="surface chart-surface">
@@ -166,7 +171,7 @@
           </section>
         </div>
 
-        <nav class="bottom-nav" id="bottomNav"></nav>
+        <nav class="bottom-nav" id="bottomNav" aria-label="App 功能导航"></nav>
       </div>
     </section>
   </main>

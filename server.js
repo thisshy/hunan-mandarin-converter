@@ -1,4 +1,4 @@
-﻿"use strict";
+"use strict";
 
 const http = require("http");
 const fs = require("fs");
@@ -34,14 +34,22 @@ const STATIC_FILE_MAP = {
   "/index.html": path.join(ROOT_DIR, "index.html"),
   "/style.css": path.join(ROOT_DIR, "style.css"),
   "/app.js": path.join(ROOT_DIR, "app.js"),
-  "/config.js": path.join(ROOT_DIR, "config.js")
+  "/config.js": path.join(ROOT_DIR, "config.js"),
+  ...Object.fromEntries([
+    "assets/design-system.css", "assets/theme.js", "assets/xiang-river.png", "assets/icons.svg",
+    "hunan-dialect-app-prototype/index.html", "hunan-dialect-app-prototype/style.css",
+    "hunan-dialect-app-prototype/app.js", "hunan-dialect-app-prototype/data/app-data.js",
+    "hunan-dialect-app-prototype/data/default-lexicon.js"
+  ].map(file => [`/${file}`, path.join(ROOT_DIR, file)]))
 };
 
 const CONTENT_TYPE = {
   ".html": "text/html; charset=utf-8",
   ".css": "text/css; charset=utf-8",
   ".js": "application/javascript; charset=utf-8",
-  ".json": "application/json; charset=utf-8"
+  ".json": "application/json; charset=utf-8",
+  ".png": "image/png",
+  ".svg": "image/svg+xml"
 };
 
 let defaultLexicon = {};
