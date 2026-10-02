@@ -32,10 +32,7 @@
   - 早期网页方案与样式工作目录
 - `deploy/oracle/`
   - 部署脚本与部署说明
-- `相关文件/`
-  - 项目申报、附件与相关参考资料
-- `项目申报框架初稿/`
-  - 项目申报框架与阶段性文档
+- 项目申报与中期材料：保存在私有仓库 `Comprehensive/大创/湘言通/`。
 
 ## 本地运行
 
@@ -73,7 +70,7 @@ window.APP_CONFIG = {
 
 后端提供词库、待审核申请和评测记录的统一存储能力。未配置数据库时，可使用本地数据目录；配置 `DATABASE_URL` 后，可切换到 PostgreSQL/Neon 存储。
 
-相关文件位置：
+后端数据文件位置：
 
 - 默认词库：`server/data/default-lexicon.json`
 - 后端迁移说明：[BACKEND_MIGRATION_README.md](./BACKEND_MIGRATION_README.md)
